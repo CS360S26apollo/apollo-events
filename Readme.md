@@ -19,7 +19,7 @@
 
 - [Object-Oriented Analysis (CRC Cards)](#object-oriented-analysis)
 ## Object-Oriented Analysis
-![image alt](https://raw.githubusercontent.com/CS360S26apollo/apollo-events/main/doc/crc_cards.png)
+![CRC Cards](./doc/crc_cards.png)
 
 ### Class Rationales
   - Account: Serves as the security and identity hub, centralizing authentication logic and the "Verified" badge system to ensure platform trust (US 01, 04).
