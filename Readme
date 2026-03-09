@@ -19,7 +19,7 @@
 
 - [Object-Oriented Analysis (CRC Cards)](#object-oriented-analysis)
 ## Object-Oriented Analysis
-![Apollo Project CRC Cards](doc/crc_cards.png)
+![Apollo Project CRC Cards](./doc/crc_cards.png)
 ### Class Rationales
   - Account: Serves as the security and identity hub, centralizing authentication logic and the "Verified" badge system to ensure platform trust (US 01, 04).
   - Student: Encapsulates learner-specific behaviors, focusing on setting educational goals, preferences, and the booking lifecycle (US 05, 07, 18).
