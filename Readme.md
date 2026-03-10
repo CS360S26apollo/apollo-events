@@ -229,5 +229,8 @@ _Add screenshots or links to wireframe images._
 ### Wireframes – Project Part 2
 _Add screenshots or links to wireframe images._
 
+https://droop-area-07497312.figma.site/
+User Story 1
+
 ### Wireframes – Project Part 3
 _Add screenshots or links to wireframe images._
