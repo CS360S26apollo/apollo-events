@@ -121,8 +121,40 @@ Monday, March 2, 2026
 
 ---
 
-### Meeting – TBD
-_Content to be added._
+### Meeting – Mar 8, 2026
+
+#### Date
+Sunday, March 8, 2026
+
+#### Attendance
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
+
+---
+
+#### Key Takeaways
+- Completed the Object Oriented Analysis by consolidating team ideas into a 9 class CRC card structure.
+- Updated the Phase 2 Product Backlog to include mandatory columns for Story Points, Risk, and Checkpoint tracking.
+- Clarifications were provided regarding the Figma screens.
+
+---
+
+#### Discussion Points
+- Defining the boundaries between the Wallet and EscrowManager to handle token security.
+- Categorizing the RankingEngine and Payment logic as "High Risk" due to technical complexity.
+- Feedback on ongoing work
+- Ensuring all diagrams are embedded as images directly in the README
+
+---
+
+#### Action Items
+- [ ] Finalize CRC card image and upload to /doc folder
+- [ ] Map 25 user stories to class rationales for requirement coverage  
+- [ ] Populate the Part 2 Product Backlog table with Priority and Points
+- [ ] Embed Figma UI screenshots into the Wireframes section
 
 ---
 
