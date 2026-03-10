@@ -19,7 +19,7 @@
 
 - [Wireframes](#wireframes)
   - [Wireframes – Project Part 1](#wireframes--project-part-1)
-  - [Wireframes – Project Part 2](#wireframes--project-part-2)
+  - [Wireframes – Project Part 2 (Figma)](#wireframes--project-part-2) 
   - [Wireframes – Project Part 3](#wireframes--project-part-3)
 
 ---
