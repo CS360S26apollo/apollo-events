@@ -229,10 +229,13 @@ _Add screenshots or links to wireframe images._
 ### Wireframes – Project Part 2
 _Add screenshots or links to wireframe images._
 
-_https://droop-area-07497312.figma.site/
-_User Story 1
-_https://upbeat-type-80148988.figma.site/
-_User Story 2
+#### **Phase 1: User Onboarding & Identity**
+* **User Story 01: Student Registration**
+  * [View Interactive Prototype](https://droop-area-07497312.figma.site/)
+  * **Description:** This screen handles the initial student signup, goal setting, and subject selection.
+* **User Story 02: Tutor Profile Creation**
+  * [View Interactive Prototype](https://upbeat-type-80148988.figma.site/)
+  * **Description:** This screen allows tutors to set their rates, bio, and expertise levels.
 
 ### Wireframes – Project Part 3
 _Add screenshots or links to wireframe images._
