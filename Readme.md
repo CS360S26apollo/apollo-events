@@ -154,8 +154,33 @@ _Add UML diagrams here or link images from the repository._
 |----|------------|----------|--------|
 
 ### Product Backlog – Project Part 2
-| ID | User Story | Priority | Status |
-|----|------------|----------|--------|
+| ID | User Story | Priority | Status | Risk | Points | Checkpoint |
+|:---|:---|:---|:---|:---|:---|:---|
+| **US 01** | Student Signup: Create account with goals/subjects | High | Open | Low | 3 | Half |
+| **US 02** | Tutor Signup: Create profile with bio/rates | High | Open | Low | 3 | Half |
+| **US 03** | Edit Profile: Manage visibility and accuracy | Medium | Open | Low | 2 | Half |
+| **US 08** | Request a Session: Student sends request with goals | High | Open | Medium | 5 | Half |
+| **US 09** | Tutor Response: Accept, decline, or counter-offer | High | Open | Medium | 5 | Half |
+| **US 10** | Track Request Status: View pending/accepted status | Medium | Open | Low | 3 | Half |
+| **US 13** | Tutor Availability: Set weekly hours/breaks | High | Open | Medium | 5 | Half |
+| **US 16** | Session Lifecycle: Track from request to completion | High | Open | Medium | 5 | Half |
+| **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | Open | Medium | 5 | Final |
+| **US 05** | Recommended Tutors: View tutors based on needs | High | Open | High | 8 | Final |
+| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final |
+| **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final |
+| **US 11** | Auto-Expire: System clears old pending requests | Low | Open | Medium | 3 | Final |
+| **US 12** | Instant Book: Book slots without tutor approval | Medium | Open | Medium | 5 | Final |
+| **US 14** | Prevent Double-Booking: Detect scheduling conflicts | High | Open | High | 8 | Final |
+| **US 15** | Reschedule/Cancel: Change bookings within rules | Medium | Open | Medium | 5 | Final |
+| **US 17** | Session Notes: Tutor adds outcomes/action items | Low | Open | Low | 3 | Final |
+| **US 18** | Progress Tracking: View milestones/feedback trends | Medium | Open | Medium | 5 | Final |
+| **US 19** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final |
+| **US 20** | Verified Reviews: One review per completed session | Medium | Open | Medium | 5 | Final |
+| **US 21** | Report Reviews: Flag inappropriate/suspicious content | Low | Open | Low | 3 | Final |
+| **US 22** | Review Sorting: Sort by helpfulness/quality | Low | Open | Low | 3 | Final |
+| **US 23** | Buy Tokens: Purchase and load in-app wallet | High | Open | High | 8 | Final |
+| **US 24** | Escrow Hold: Tokens held until session completion | High | Open | High | 13 | Final |
+| **US 25** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final |
 
 ### Product Backlog – Project Part 3
 | ID | User Story | Priority | Status |
