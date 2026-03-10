@@ -220,6 +220,10 @@ _Add UML diagrams here or link images from the repository._
 
 ---
 
+## Figma Screens
+
+---
+
 ## Wireframes
 
 ### Wireframes – Project Part 1
