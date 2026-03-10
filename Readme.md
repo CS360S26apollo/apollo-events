@@ -1,14 +1,7 @@
 # Project Documentation
 
 
-- [Team Information]
-| Name                  | Roll Number | GitHub ID            |
-|-----------------------|-------------|----------------------|
-| Ali Iqbal             | 27100129    | aliiqbal07           |
-| Abdullah Khaliq       | 27100400    | abdullahkhaliq12     |
-| M. Abdullah Iqbal     | 27100457    | abdullahiqbal27100457|
-| Hassan Fayyaz         | 27100397    | HassanFyyz           |
-| M. Zain ul Abideen    | 27100180    | Zain100796           |
+- [Team Information](#team-information)
 
 - [Meeting Minutes](#meeting-minutes)
   - [Meeting – Feb 23, 2026](#meeting--feb-23-2026)
@@ -31,7 +24,7 @@
 
 ---
 
-## Team Information
+## Team Information <a name="team-information"></a>
 - Team Name: apollo
 
 | Name                  | Roll Number | GitHub ID            |
@@ -154,7 +147,7 @@ Sunday, March 8, 2026
 - [ ] Finalize CRC card image and upload to /doc folder
 - [ ] Map 25 user stories to class rationales for requirement coverage  
 - [ ] Populate the Part 2 Product Backlog table with Priority and Points
-- [ ] Embed Figma UI screenshots into the Wireframes section
+- [ ] Embed Figma UI URLS into the Wireframes section with description
 
 ---
 
@@ -227,15 +220,88 @@ _Add UML diagrams here or link images from the repository._
 _Add screenshots or links to wireframe images._
 
 ### Wireframes – Project Part 2
-_Add screenshots or links to wireframe images._
 
 #### **Phase 1: User Onboarding & Identity**
 * **User Story 01: Student Registration**
-  * [View Interactive Prototype](https://droop-area-07497312.figma.site/)
+  * [US 01 - figma screen](https://droop-area-07497312.figma.site/)
   * **Description:** This screen handles the initial student signup, goal setting, and subject selection.
 * **User Story 02: Tutor Profile Creation**
-  * [View Interactive Prototype](https://upbeat-type-80148988.figma.site/)
+  * [US 02 - figma screen](https://upbeat-type-80148988.figma.site/)
   * **Description:** This screen allows tutors to set their rates, bio, and expertise levels.
+* **User Story 03: Profile Visibility Management**
+  * [US 03 - figma screen](https://disc-nebula-91631195.figma.site/)
+  * **Description:** Interface for users to toggle profile privacy and update account information.
+* **User Story 04: Identity Verification Badge**
+  * [US 04 - figma screen](https://wool-tempo-72920640.figma.site/)
+  * **Description:** Upload portal for official ID documents to earn the "Verified" badge for trust.
+  * #### **Phase 2: Discovery & Matching Logic**
+* **User Story 05: Tutor Recommendations**
+  * [US 05 - figma screen](https://frame-theme-83662306.figma.site/)
+  * **Description:** A personalized dashboard showing tutors that match the student's specific learning goals.
+* **User Story 06: Ranking Engine Display**
+  * [US 06 - figma screen](https://type-azalea-96297080.figma.site/)
+  * **Description:** Dynamic list of tutors sorted by rating, responsiveness, and subject relevance.
+* **User Story 07: Advanced Matching Filters**
+  * [US 07 - figma screen](https://cell-apron-07825627.figma.site/)
+  * **Description:** Detailed search interface to filter tutors by budget, language, and session level.
+#### **Phase 3: Scheduling & The Booking Lifecycle**
+* **User Story 08: Session Request Submission**
+  * [US 08 - figma screen](https://retina-step-47133644.figma.site/)
+  * **Description:** Form for students to send session requests with specific topics and desired times.
+* **User Story 09: Tutor Request Management**
+  * [US 09 - figma screen](https://snow-party-78133997.figma.site/)
+  * **Description:** Tutor side dashboard to accept, decline, or suggest counter offers for session requests.
+* **User Story 10: Request Status Tracking**
+  * [US 10 - figma screen](https://glass-ruler-66720644.figma.site/)
+  * **Description:** Real time tracking of request states (Pending, Accepted, or Declined) for both users.
+* **User Story 11: Request Auto-Expiration**
+  * [US 11 - figma screen](https://maroon-action-89075264.figma.site/)
+  * **Description:** Visual feedback/notification screen for requests that have expired due to inactivity.
+* **User Story 12: Instant Booking Portal**
+  * [US 12 - figma screen](https://whirl-mop-53947330.figma.site/)
+  * **Description:** Interface allowing students to book available slots immediately without tutor manual approval.
+* **User Story 13: Availability Calendar Manager**
+  * [US 13 - figma screen](https://upload-self-32625465.figma.site/)
+  * **Description:** Calendar tool for tutors to set their working hours, breaks, and unavailable dates.
+* **User Story 14: Double-Booking Prevention**
+  * [US 14 - figma screen](https://zebra-mentor-49868617.figma.site/)
+  * **Description:** Error state and conflict detection alerts that prevent scheduling sessions during busy slots.
+* **User Story 15: Cancellation & Rescheduling**
+  * [US 15 - figma screen](https://pry-beige-43915897.figma.site/)
+  * **Description:** Management screen for modifying or cancelling bookings according to platform rules.
+* **User Story 16: Active Session Lifecycle**
+  * [US 16 - figma screen](https://veggie-oats-68762995.figma.site/)
+  * **Description:** Monitoring screen for ongoing sessions, showing time remaining and status updates.
+#### **Phase 4: Feedback & Progress Monitoring**
+* **User Story 17: Post-Session Tutor Notes**
+  * [US 17 - figma screen](https://import-done-88623223.figma.site/)
+  * **Description:** Form for tutors to record session outcomes, homework, and student feedback.
+* **User Story 18: Student Progress Dashboard**
+  * [US 18 - figma screen](https://wise-taupe-57553558.figma.site/)
+  * **Description:** Visual representation of student milestones, hours completed, and learning trends.
+* **User Story 19: Student Rating & Review**
+  * [US 19 - figma screen](https://koala-fix-35034417.figma.site/)
+  * **Description:** Interactive rating system for students to provide qualitative feedback on tutors.
+* **User Story 20: Verified Review Verification**
+  * [US 20 - figma screen](https://modify-kite-56382271.figma.site/)
+  * **Description:** Badge system ensuring only students who completed a session can post a review.
+* **User Story 21: Content Moderation & Reporting**
+  * [US 21 - figma screen](https://tower-bass-85856634.figma.site/)
+  * **Description:** Reporting tool to flag inappropriate reviews or suspicious profiles for admin review.
+* **User Story 22: Review Filtering & Sorting**
+  * [US 22 - figma screen](https://jazz-os-97737612.figma.site/)
+  * **Description:** Utility to sort reviews by most recent, highest rating, or community helpfulness.
+#### **Phase 5: Financial Lifecycle & Token Security**
+* **User Story 23: Token Purchase & Wallet Balance**
+  * [US 23 - figma screen](https://photo-goat-19100088.figma.site/)
+  * **Description:** Secure payment gateway for students to buy platform tokens and view balances.
+* **User Story 24: Escrow Hold & Payment Security**
+  * [US 24 - figma screen](https://cerise-base-50475017.figma.site/)
+  * **Description:** Notification screen showing tokens being held securely until session completion.
+* **User Story 25: Tutor Token Withdrawal**
+  * [US 25 - figma screen](https://grain-verify-90660343.figma.site/)
+  * **Description:** Professional portal for tutors to request payouts and convert tokens to currency.
+    
 
 ### Wireframes – Project Part 3
 _Add screenshots or links to wireframe images._
