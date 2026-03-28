@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "982175523028",
+    "project_id": "peertutoring-apollo",
+    "storage_bucket": "peertutoring-apollo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982175523028:android:d540e1e0a06a2d25441b41",
+        "android_client_info": {
+          "package_name": "com.example.peertutoring_apollo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFpb7ZoWEKzgTUxh63fhrFfnZ0bpjLTDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
