@@ -1,29 +1,36 @@
 package com.example.peertutoring.ui;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.example.peertutoring.R;
 
 import java.util.ArrayList;
 
 /**
- * Step 2 of profile onboarding: collect institution and subjects.
+ * Step 2 (Student) or Step 3 (Tutor) of profile onboarding: collect institution and subjects.
  */
 public class AcademicFragment extends Fragment {
 
     private TextInputEditText institutionEditText;
+    private TextInputEditText customSubjectEditText;
+    private ChipGroup chipGroup;
     private final ArrayList<String> selectedSubjects = new ArrayList<>();
+    private ProfileActivity profileActivity;
 
     public AcademicFragment() {
     }
@@ -37,9 +44,32 @@ public class AcademicFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        profileActivity = (ProfileActivity) requireActivity();
+        
         institutionEditText = view.findViewById(R.id.editTextInstitution);
+        customSubjectEditText = view.findViewById(R.id.editTextCustomSubject);
+        chipGroup = view.findViewById(R.id.chipGroupSubjects);
         Button backButton = view.findViewById(R.id.buttonBack);
         Button continueButton = view.findViewById(R.id.buttonContinue);
+        Button addSubjectButton = view.findViewById(R.id.btnAddSubject);
+
+        // Adjust UI for Tutor flow (Hide institution section)
+        if ("tutor".equals(profileActivity.getRole())) {
+            if (institutionEditText != null) {
+                // Hide the TextInputLayout and its label
+                try {
+                    View textInputLayout = (View) institutionEditText.getParent().getParent();
+                    if (textInputLayout != null) {
+                        textInputLayout.setVisibility(View.GONE);
+                    }
+                    // Find the label above the TextInputLayout (it's the first child of the vertical LinearLayout in the layout)
+                    // But simpler to just target the specific parent if known.
+                    // Given the layout structure, we can hide the vertical container for institution.
+                } catch (Exception e) {
+                    institutionEditText.setVisibility(View.GONE);
+                }
+            }
+        }
 
         setupChip(view, R.id.chipMathematics, "Mathematics");
         setupChip(view, R.id.chipPhysics, "Physics");
@@ -50,27 +80,72 @@ public class AcademicFragment extends Fragment {
         setupChip(view, R.id.chipHistory, "History");
         setupChip(view, R.id.chipEconomics, "Economics");
 
-        backButton.setOnClickListener(v -> ((ProfileActivity) requireActivity()).goBackToName());
+        addSubjectButton.setOnClickListener(v -> {
+            String subject = customSubjectEditText.getText().toString().trim();
+            if (!TextUtils.isEmpty(subject)) {
+                addNewChip(subject);
+                customSubjectEditText.setText("");
+            }
+        });
+
+        backButton.setOnClickListener(v -> {
+            if ("tutor".equals(profileActivity.getRole())) {
+                profileActivity.goBackToTutorDetails();
+            } else {
+                profileActivity.goBackToName();
+            }
+        });
 
         continueButton.setOnClickListener(v -> {
-            String institution = institutionEditText.getText() != null
-                    ? institutionEditText.getText().toString().trim() : "";
-
-            if (TextUtils.isEmpty(institution)) {
-                institutionEditText.setError("Required");
-                return;
-            }
-
             if (selectedSubjects.isEmpty()) {
+                Toast.makeText(getContext(), "Please select at least one subject", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            ((ProfileActivity) requireActivity()).goToGoals(institution, selectedSubjects);
+            if ("tutor".equals(profileActivity.getRole())) {
+                profileActivity.finishTutorRegistration(selectedSubjects);
+            } else {
+                String institution = institutionEditText.getText() != null
+                        ? institutionEditText.getText().toString().trim() : "";
+
+                if (TextUtils.isEmpty(institution)) {
+                    institutionEditText.setError("Required");
+                    return;
+                }
+                profileActivity.goToGoals(institution, selectedSubjects);
+            }
         });
     }
 
     private void setupChip(View view, int chipId, String subjectName) {
         Chip chip = view.findViewById(chipId);
+        if (chip != null) {
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    if (!selectedSubjects.contains(subjectName)) {
+                        selectedSubjects.add(subjectName);
+                    }
+                    chip.setChipBackgroundColor(ColorStateList.valueOf(Color.parseColor("#089A3C")));
+                    chip.setTextColor(Color.WHITE);
+                } else {
+                    selectedSubjects.remove(subjectName);
+                    chip.setChipBackgroundColor(ColorStateList.valueOf(Color.parseColor("#EAF9EE")));
+                    chip.setTextColor(Color.parseColor("#089A3C"));
+                }
+            });
+        }
+    }
+
+    private void addNewChip(String subjectName) {
+        Chip chip = new Chip(getContext());
+        chip.setText(subjectName);
+        chip.setCheckable(true);
+        chip.setChecked(true);
+        chip.setChipBackgroundColor(ColorStateList.valueOf(Color.parseColor("#089A3C")));
+        chip.setTextColor(Color.WHITE);
+        
+        selectedSubjects.add(subjectName);
+        
         chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 if (!selectedSubjects.contains(subjectName)) {
@@ -80,5 +155,7 @@ public class AcademicFragment extends Fragment {
                 selectedSubjects.remove(subjectName);
             }
         });
+        
+        chipGroup.addView(chip);
     }
 }

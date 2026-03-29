@@ -56,7 +56,7 @@ public class GoalsFragment extends Fragment {
                 return;
             }
 
-            ((ProfileActivity) requireActivity()).finishRegistration(
+            ((ProfileActivity) requireActivity()).finishStudentRegistration(
                     new ArrayList<>(selectedGoals)
             );
         });
@@ -65,23 +65,16 @@ public class GoalsFragment extends Fragment {
     private void setupGoalCard(View root, int cardId, String goal) {
         MaterialCardView card = root.findViewById(cardId);
 
-        card.setClickable(true);
-        card.setFocusable(true);
-
         card.setOnClickListener(v -> {
             if (selectedGoals.contains(goal)) {
                 selectedGoals.remove(goal);
-                card.setStrokeWidth(2);
                 card.setStrokeColor(Color.parseColor("#D9DCE3"));
+                card.setStrokeWidth(1);
             } else {
                 selectedGoals.add(goal);
-                card.setStrokeWidth(6);
-                card.setStrokeColor(Color.parseColor("#6C4CCF"));
+                card.setStrokeColor(Color.parseColor("#8A2EFF"));
+                card.setStrokeWidth(4);
             }
-
-            Toast.makeText(requireContext(),
-                    "Selected goals: " + selectedGoals.size(),
-                    Toast.LENGTH_SHORT).show();
         });
     }
 }

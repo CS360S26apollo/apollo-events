@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,14 +15,14 @@ import com.example.peertutoring.R;
 import com.example.peertutoring.utils.ValidationUtils;
 
 /**
- * MainActivity acts as the first signup screen for User Story 1.
- * It creates the Firebase Auth account before continuing to profile onboarding.
+ * MainActivity handles signup and role selection.
  */
 public class MainActivity extends AppCompatActivity {
 
     private EditText emailEditText;
     private EditText passwordEditText;
     private EditText confirmPasswordEditText;
+    private RadioGroup roleRadioGroup;
     private Button continueButton;
 
     private FirebaseAuth auth;
@@ -35,15 +37,19 @@ public class MainActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.editTextEmail);
         passwordEditText = findViewById(R.id.editTextPassword);
         confirmPasswordEditText = findViewById(R.id.editTextConfirmPassword);
+        roleRadioGroup = findViewById(R.id.radioGroupRole);
         continueButton = findViewById(R.id.buttonContinue);
 
-        continueButton.setOnClickListener(v -> registerStudent());
+        continueButton.setOnClickListener(v -> registerUser());
     }
 
-    private void registerStudent() {
+    private void registerUser() {
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
         String confirmPassword = confirmPasswordEditText.getText().toString().trim();
+
+        int selectedId = roleRadioGroup.getCheckedRadioButtonId();
+        final String role = (selectedId == R.id.radioTutor) ? "tutor" : "student";
 
         if (!ValidationUtils.isValidEmail(email)) {
             showToast("Please enter a valid email address.");
@@ -68,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                         intent.putExtra("uid", uid);
                         intent.putExtra("email", email);
+                        intent.putExtra("role", role);
                         startActivity(intent);
                     }
                 })
