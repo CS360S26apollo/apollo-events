@@ -1,5 +1,6 @@
 package com.example.peertutoring.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +14,12 @@ import androidx.fragment.app.Fragment;
 import com.example.peertutoring.R;
 
 /**
- * Final step of student onboarding: Profile Complete success screen.
+ * Final step of student onboarding.
+ * Both buttons navigate to HomeActivity (the main app dashboard).
  */
 public class ProfileCompleteFragment extends Fragment {
 
-    public ProfileCompleteFragment() {
-    }
+    public ProfileCompleteFragment() {}
 
     @Nullable
     @Override
@@ -29,17 +30,13 @@ public class ProfileCompleteFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Button findTutorButton = view.findViewById(R.id.buttonFindTutor);
-        Button viewDashboardButton = view.findViewById(R.id.buttonViewDashboard);
+        view.findViewById(R.id.buttonFindTutor).setOnClickListener(v -> goToHome());
+        view.findViewById(R.id.buttonViewDashboard).setOnClickListener(v -> goToHome());
+    }
 
-        findTutorButton.setOnClickListener(v -> {
-            // Logic to navigate to Tutor Discovery
-            requireActivity().finishAffinity();
-        });
-
-        viewDashboardButton.setOnClickListener(v -> {
-            // Logic to navigate to Dashboard
-            requireActivity().finishAffinity();
-        });
+    private void goToHome() {
+        Intent intent = new Intent(requireActivity(), HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

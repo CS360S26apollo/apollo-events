@@ -14,8 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PeerTutoringApollo">
 
-        <activity android:name=".ui.ProfileActivity" />
-
+        <!-- Entry point: Sign Up -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -24,6 +23,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Onboarding flow (User story 1 + User Story2) -->
+        <activity
+            android:name=".ui.ProfileActivity"
+            android:exported="false" />
+
+        <!-- Home screen (dashboard) -->
+        <activity
+            android:name=".ui.HomeActivity"
+            android:exported="false" />
+
+        <!-- Browse Tutors screen -->
+        <activity
+            android:name=".ui.BrowseTutorsActivity"
+            android:exported="false" />
+
+        <!-- Tutor Detail screen -->
+        <activity
+            android:name=".ui.TutorDetailActivity"
+            android:exported="false" />
+
+        <!-- Edit Profile + Privacy (US3) -->
+        <activity
+            android:name=".ui.EditProfileActivity"
+            android:label="Profile Settings"
+            android:exported="false" />
 
     </application>
 

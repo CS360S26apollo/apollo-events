@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- ── SCROLLABLE BODY ── -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ── GRADIENT HEADER ── -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_button_gradient"
+                android:paddingTop="48dp"
+                android:paddingBottom="32dp"
+                android:paddingHorizontal="20dp">
+
+                <!-- Back -->
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@android:color/transparent"
+                    android:src="@android:drawable/ic_media_previous"
+                    android:contentDescription="Back"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    app:tint="#FFFFFF" />
+
+                <!-- Heart + Share -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnFavourite"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="10dp"
+                        app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#33FFFFFF"
+                        app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🤍" android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnShare"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#33FFFFFF"
+                        app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="↗" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Tutor photo + info -->
+                <LinearLayout
+                    android:id="@+id/layoutTutorInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_below="@id/btnBack"
+                    android:layout_marginTop="20dp">
+
+                    <!-- Avatar -->
+                    <FrameLayout android:layout_width="80dp" android:layout_height="80dp" android:layout_marginEnd="16dp">
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            app:cardCornerRadius="40dp"
+                            app:cardBackgroundColor="#D0C4F7"
+                            app:cardElevation="4dp">
+                            <TextView
+                                android:id="@+id/tvTutorInitials"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="SJ"
+                                android:textColor="#FFFFFF"
+                                android:textSize="28sp"
+                                android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Verified badge -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="bottom|end"
+                            app:cardCornerRadius="12dp"
+                            app:cardBackgroundColor="#0062FF"
+                            app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </FrameLayout>
+
+                    <!-- Name, subject, rating, students -->
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tvTutorName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sarah Johnson"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/tvTutorSubject"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mathematics Tutor"
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="14sp"
+                            android:layout_marginTop="2dp" />
+
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="10dp">
+                            <!-- Rating badge -->
+                            <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="12dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFB300" app:cardElevation="0dp">
+                                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="10dp" android:paddingVertical="5dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⭐ " android:textSize="13sp" />
+                                    <TextView android:id="@+id/tvRating" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4.9" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Students badge -->
+                            <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
+                                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="10dp" android:paddingVertical="5dp">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👥 " android:textSize="13sp" />
+                                    <TextView android:id="@+id/tvStudents" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="127" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Hourly Rate card inside header -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layoutTutorInfo"
+                    android:layout_marginTop="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hourly Rate" android:textColor="#8B97A8" android:textSize="12sp" android:layout_marginBottom="4dp" />
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙  " android:textSize="22sp" />
+                                <TextView android:id="@+id/tvRate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="45" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" tokens" android:textColor="#4B5D7A" android:textSize="14sp" android:layout_marginTop="8dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#E8F5E9" app:cardElevation="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="Expert" android:textColor="#089A3C" android:textSize="13sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </RelativeLayout>
+
+            <!-- ── INFO LIST CARD ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Location -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+                        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="📍" android:textSize="16sp" />
+                        <TextView android:id="@+id/tvLocation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="San Francisco, CA" android:textColor="#4B5D7A" android:textSize="14sp" android:layout_marginStart="12dp" />
+                    </LinearLayout>
+
+                    <!-- Experience -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+                        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="🎓" android:textSize="16sp" />
+                        <TextView android:id="@+id/tvExperience" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="8 years of teaching experience" android:textColor="#4B5D7A" android:textSize="14sp" android:layout_marginStart="12dp" />
+                    </LinearLayout>
+
+                    <!-- Languages -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+                        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="🌐" android:textSize="16sp" />
+                        <TextView android:id="@+id/tvLanguages" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="English, Spanish" android:textColor="#4B5D7A" android:textSize="14sp" android:layout_marginStart="12dp" />
+                    </LinearLayout>
+
+                    <!-- Availability -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="🕒" android:textSize="16sp" />
+                        <TextView android:id="@+id/tvAvailability" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mon-Fri: 4PM-9PM, Sat-Sun: 10AM-6PM" android:textColor="#4B5D7A" android:textSize="14sp" android:layout_marginStart="12dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── ABOUT ME CARD ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📖 " android:textSize="18sp" app:tint="#8A2EFF" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="About Me" android:textColor="#071A3D" android:textSize="18sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvBio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Passionate mathematics educator with 8 years of experience helping students from high school to university level. I specialize in making complex concepts accessible and building genuine understanding."
+                        android:textColor="#4B5D7A"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── SUBJECTS CARD ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="100dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Subjects" android:textColor="#071A3D" android:textSize="17sp" android:textStyle="bold" android:layout_marginBottom="12dp" />
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="14dp" android:paddingVertical="7dp" android:text="Mathematics" android:textColor="#8A2EFF" android:textSize="13sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#EEF4FF" app:cardElevation="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="14dp" android:paddingVertical="7dp" android:text="Calculus" android:textColor="#0062FF" android:textSize="13sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ── BOTTOM ACTION BUTTONS ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:elevation="12dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp">
+
+        <Button
+            android:id="@+id/btnMessage"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="12dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="💬  Message"
+            android:textAllCaps="false"
+            android:textColor="#8A2EFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:strokeColor="#8A2EFF"
+            app:strokeWidth="1.5dp"
+            app:cornerRadius="28dp" />
+
+        <Button
+            android:id="@+id/btnBookSession"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_button_gradient"
+            android:text="📅  Book Session"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="@null"
+            app:cornerRadius="28dp" />
+    </LinearLayout>
+
+</LinearLayout>
