@@ -2,7 +2,7 @@ package com.example.peertutoring.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +11,7 @@ import com.example.peertutoring.R;
 /**
  * Home screen — shown after onboarding completes.
  * Displays popular subjects and featured tutors.
+ * US 04: Featured tutors show verified status.
  */
 public class HomeActivity extends AppCompatActivity {
 
@@ -45,26 +46,27 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupTutorCards() {
-        // Click on featured tutor cards → open TutorDetailActivity
-        LinearLayout cardTutor1 = findViewById(R.id.cardTutor1);
-        LinearLayout cardTutor2 = findViewById(R.id.cardTutor2);
-
+        // Sarah Johnson (Verified)
+        View cardTutor1 = findViewById(R.id.cardTutor1);
         if (cardTutor1 != null) {
-            cardTutor1.setOnClickListener(v -> openTutorDetail("Sarah Johnson", "Mathematics Tutor", "45", "4.9", "127"));
+            cardTutor1.setOnClickListener(v -> openTutorDetail("Sarah Johnson", "Mathematics Tutor", "45", "4.9", "127", true));
         }
+
+        // Emily Chen (Verified)
+        View cardTutor2 = findViewById(R.id.cardTutor2);
         if (cardTutor2 != null) {
-            cardTutor2.setOnClickListener(v -> openTutorDetail("Emily Chen", "Physics Tutor", "50", "5.0", "98"));
+            cardTutor2.setOnClickListener(v -> openTutorDetail("Emily Chen", "Physics Tutor", "50", "5.0", "98", true));
         }
     }
 
     private void setupSubjectCards() {
-        // Subject cards navigate to Browse with filter
         int[] subjectCardIds = {R.id.cardMath, R.id.cardScience, R.id.cardEnglish,
                 R.id.cardCoding, R.id.cardMusic, R.id.cardArt};
 
         for (int id : subjectCardIds) {
-            if (findViewById(id) != null) {
-                findViewById(id).setOnClickListener(v -> {
+            View card = findViewById(id);
+            if (card != null) {
+                card.setOnClickListener(v -> {
                     startActivity(new Intent(this, BrowseTutorsActivity.class));
                     overridePendingTransition(0, 0);
                 });
@@ -73,13 +75,14 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void openTutorDetail(String name, String subject, String rate,
-                                 String rating, String students) {
+                                 String rating, String students, boolean isVerified) {
         Intent intent = new Intent(this, TutorDetailActivity.class);
         intent.putExtra("name", name);
         intent.putExtra("subject", subject);
         intent.putExtra("rate", rate);
         intent.putExtra("rating", rating);
         intent.putExtra("students", students);
+        intent.putExtra("isVerified", isVerified);
         startActivity(intent);
     }
 }

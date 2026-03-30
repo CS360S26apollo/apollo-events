@@ -12,6 +12,7 @@ import com.example.peertutoring.R;
 
 /**
  * Browse Tutors screen — lists all available tutors with search.
+ * US 04: Displays verification status in tutor list.
  */
 public class BrowseTutorsActivity extends AppCompatActivity {
 
@@ -30,20 +31,23 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
-                // Filter tutor list — extend with RecyclerView for dynamic results
+                // Filter tutor list
             }
             @Override public void afterTextChanged(Editable s) {}
         });
     }
 
     private void setupTutorCards() {
+        // Sarah Johnson (Verified)
         if (findViewById(R.id.cardTutor1) != null) {
             findViewById(R.id.cardTutor1).setOnClickListener(v ->
-                    openTutorDetail("Sarah Johnson", "Mathematics Tutor", "45", "4.9", "127"));
+                    openTutorDetail("Sarah Johnson", "Mathematics Tutor", "45", "4.9", "127", true));
         }
+
+        // Emily Chen (Verified)
         if (findViewById(R.id.cardTutor2) != null) {
             findViewById(R.id.cardTutor2).setOnClickListener(v ->
-                    openTutorDetail("Emily Chen", "Physics Tutor", "50", "5.0", "98"));
+                    openTutorDetail("Emily Chen", "Physics Tutor", "50", "5.0", "98", true));
         }
     }
 
@@ -68,13 +72,14 @@ public class BrowseTutorsActivity extends AppCompatActivity {
     }
 
     private void openTutorDetail(String name, String subject, String rate,
-                                 String rating, String students) {
+                                 String rating, String students, boolean isVerified) {
         Intent intent = new Intent(this, TutorDetailActivity.class);
         intent.putExtra("name", name);
         intent.putExtra("subject", subject);
         intent.putExtra("rate", rate);
         intent.putExtra("rating", rating);
         intent.putExtra("students", students);
+        intent.putExtra("isVerified", isVerified);
         startActivity(intent);
     }
 }
