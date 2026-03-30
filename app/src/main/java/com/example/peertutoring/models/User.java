@@ -5,6 +5,8 @@ public class User {
     protected String email;
     protected String role;
     protected boolean profileVisible;
+    protected boolean verified;
+    protected String idDocumentUrl;
 
     public User() {
         // Required empty constructor for Firestore
@@ -15,6 +17,8 @@ public class User {
         this.email = email;
         this.role = role;
         this.profileVisible = profileVisible;
+        this.verified = false;
+        this.idDocumentUrl = null;
     }
 
     public String getUid() {
@@ -33,6 +37,14 @@ public class User {
         return profileVisible;
     }
 
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public String getIdDocumentUrl() {
+        return idDocumentUrl;
+    }
+
     public void setUid(String uid) {
         this.uid = uid;
     }
@@ -47,5 +59,13 @@ public class User {
 
     public void setProfileVisible(boolean profileVisible) {
         this.profileVisible = profileVisible;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public void setIdDocumentUrl(String idDocumentUrl) {
+        this.idDocumentUrl = idDocumentUrl;
     }
 }

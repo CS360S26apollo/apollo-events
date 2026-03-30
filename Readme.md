@@ -151,6 +151,67 @@ Sunday, March 8, 2026
 
 ---
 
+### Meeting – Mar 7, 2026
+
+#### Date
+Tuesday, March 7, 2026
+
+#### Attendance
+Ali Iqbal  
+Abdullah Khaliq  
+M. Abdullah Iqbal  
+Hassan Fayyaz  
+M. Zain ul Abideen  
+
+---
+
+#### Key Takeaways
+A detailed demo was presented to the TA showcasing the work completed in Project Phase 2. Each team member presented their respective contributions: Abdullah Khaliq acted as the general presenter, providing an overall walkthrough of the project; M. Abdullah Iqbal presented the CRC cards; Hassan Fayyaz demonstrated the Figma screens; and Ali Iqbal and M. Zain ul Abideen provided a detailed explanation of the user stories, including value-added features such as the token-based system.
+
+---
+
+#### Discussion Points
+- Demonstration of Project Phase 2 progress  
+
+---
+
+#### Action Items
+- Continue working on the next phase of the project  
+
+---
+
+### Meeting – Mar 27, 2026
+
+#### Date
+Friday, March 27, 2026
+
+#### Attendance
+Ali Iqbal  
+Abdullah Khaliq  
+M. Abdullah Iqbal  
+Hassan Fayyaz  
+M. Zain ul Abideen  
+
+---
+
+#### Key Takeaways
+The team discussed the approach for Project Phase 3 and clarified the overall direction with the TA. Feedback was requested regarding the team’s strengths and weaknesses from Phase 2 to better plan improvements for Phase 3. Confusions were addressed regarding whether to structure the work epic-wise or user story-wise, and guidance was provided to ensure a more organized and effective execution strategy.
+
+---
+
+#### Discussion Points
+- Planning approach for Phase 3  
+- Feedback on strengths and weaknesses from Phase 2  
+- Clarification on working structure (epic-wise vs user story-wise)  
+
+---
+
+#### Action Items
+- Start a sprint for Phase 3
+
+---
+
+
 ## UML Diagrams
 _Add UML diagrams here or link images from the repository._
 

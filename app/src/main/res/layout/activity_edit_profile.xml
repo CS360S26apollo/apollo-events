@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="#F5F5FA">
 
-    <!-- ── GRADIENT HEADER (matches Figma purple→green) ── -->
+    <!-- ── HEADER ── -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,51 +15,33 @@
         android:paddingBottom="32dp"
         android:paddingHorizontal="20dp">
 
-        <!-- Back arrow -->
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@android:color/transparent"
             android:src="@android:drawable/ic_media_previous"
-            android:contentDescription="Back"
+            app:tint="#FFFFFF"
             android:layout_centerVertical="true"
-            app:tint="#FFFFFF" />
+            android:contentDescription="Back" />
 
-        <!-- Title -->
-        <LinearLayout
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_centerInParent="true">
+            android:text="Account Settings"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true" />
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@android:drawable/ic_menu_preferences"
-                app:tint="#FFFFFF"
-                android:layout_marginEnd="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Profile Settings"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Profile card inside header -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/btnBack"
             android:layout_marginTop="20dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="#FFFFFF">
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -68,991 +50,155 @@
                 android:gravity="center_vertical"
                 android:padding="16dp">
 
-                <!-- Avatar with camera icon -->
-                <FrameLayout
-                    android:layout_width="64dp"
-                    android:layout_height="64dp">
-
-                    <!-- Avatar circle -->
+                <FrameLayout android:layout_width="64dp" android:layout_height="64dp">
                     <com.google.android.material.card.MaterialCardView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        app:cardCornerRadius="32dp"
-                        app:cardBackgroundColor="#B54CFF"
+                        android:layout_width="64dp" android:layout_height="64dp"
+                        app:cardCornerRadius="32dp" app:cardBackgroundColor="#B54CFF"
                         app:cardElevation="0dp">
-
-                        <TextView
-                            android:id="@+id/tvAvatarInitials"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="AJ"
-                            android:textColor="#FFFFFF"
-                            android:textSize="22sp"
-                            android:textStyle="bold" />
+                        <TextView android:id="@+id/tvAvatarInitials" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="AJ" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Camera overlay -->
+                    <!-- US 04 Badge -->
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnChangePhoto"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="bottom|end"
-                        app:cardCornerRadius="11dp"
-                        app:cardBackgroundColor="#8A2EFF"
-                        app:cardElevation="2dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="4dp"
-                            android:src="@android:drawable/ic_menu_camera"
-                            app:tint="#FFFFFF" />
+                        android:id="@+id/badgeVerified"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:layout_gravity="top|end"
+                        app:cardCornerRadius="10dp" app:cardBackgroundColor="#0062FF"
+                        app:cardElevation="2dp"
+                        android:visibility="gone">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
 
-                <!-- Name + role + status -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="14dp">
-
-                    <TextView
-                        android:id="@+id/tvUserName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Alex Johnson"
-                        android:textColor="#071A3D"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvUserRole"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Student"
-                        android:textColor="#8A2EFF"
-                        android:textSize="13sp"
-                        android:layout_marginTop="2dp" />
-
-                    <!-- Active badge -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardBackgroundColor="#EAF9EE"
-                        app:cardElevation="0dp"
-                        app:strokeColor="#BDE7C6"
-                        app:strokeWidth="1dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="3dp"
-                            android:text="Active"
-                            android:textColor="#089A3C"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-                    </com.google.android.material.card.MaterialCardView>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
+                    <TextView android:id="@+id/tvUserName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Loading..." android:textColor="#071A3D" android:textSize="18sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvUserRole" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Student" android:textColor="#8A2EFF" android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </RelativeLayout>
 
-    <!-- ── TAB SWITCHER: Edit Profile | Privacy ── -->
+    <!-- ── TABS ── -->
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        app:cardCornerRadius="28dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardElevation="2dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:padding="4dp">
-
-            <Button
-                android:id="@+id/tabEditProfile"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_button_gradient"
-                android:text="Edit Profile"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:backgroundTint="@null"
-                app:cornerRadius="24dp" />
-
-            <Button
-                android:id="@+id/tabPrivacy"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:text="Privacy"
-                android:textAllCaps="false"
-                android:textColor="#4B5D7A"
-                android:textSize="14sp"
-                app:backgroundTint="@null"
-                app:cornerRadius="24dp" />
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp" android:layout_marginTop="20dp"
+        app:cardCornerRadius="24dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:padding="4dp">
+            <Button android:id="@+id/tabEditProfile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Profile" android:textAllCaps="false" android:textColor="#FFFFFF" android:background="@drawable/bg_button_gradient" app:backgroundTint="@null" app:cornerRadius="20dp" />
+            <Button android:id="@+id/tabPrivacy" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Privacy" android:textAllCaps="false" android:textColor="#4B5D7A" android:background="@android:color/transparent" app:backgroundTint="@null" />
+            <Button android:id="@+id/tabVerification" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Verify" android:textAllCaps="false" android:textColor="#4B5D7A" android:background="@android:color/transparent" app:backgroundTint="@null" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- ── SCROLLABLE CONTENT ── -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <!-- Edit Profile Panel -->
-            <LinearLayout
-                android:id="@+id/panelEditProfile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="visible">
-
-                <!-- Role Selector Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:strokeColor="#E4D5FF"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="I am a:"
-                            android:textColor="#4B5D7A"
-                            android:textSize="14sp"
-                            android:layout_marginBottom="12dp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="56dp"
-                            android:orientation="horizontal">
-
-                            <Button
-                                android:id="@+id/btnRoleStudent"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:layout_marginEnd="8dp"
-                                android:background="@drawable/bg_button_gradient"
-                                android:text="📖  Student"
-                                android:textAllCaps="false"
-                                android:textColor="#FFFFFF"
-                                android:textSize="15sp"
-                                android:textStyle="bold"
-                                app:backgroundTint="@null"
-                                app:cornerRadius="16dp" />
-
-                            <Button
-                                android:id="@+id/btnRoleTutor"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:layout_marginStart="8dp"
-                                android:backgroundTint="#FFFFFF"
-                                android:text="🎓  Tutor"
-                                android:textAllCaps="false"
-                                android:textColor="#4B5D7A"
-                                android:textSize="15sp"
-                                app:strokeColor="#D9DCE3"
-                                app:strokeWidth="1.5dp"
-                                app:cornerRadius="16dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Basic Information Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:strokeColor="#E4D5FF"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Basic Information"
-                            android:textColor="#071A3D"
-                            android:textSize="17sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="16dp" />
-
-                        <!-- First Name + Last Name row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginEnd="8dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="First Name"
-                                    android:textColor="#1F355B"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginBottom="6dp" />
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    app:boxBackgroundColor="#F3F4F6"
-                                    app:boxCornerRadiusTopStart="12dp"
-                                    app:boxCornerRadiusTopEnd="12dp"
-                                    app:boxCornerRadiusBottomStart="12dp"
-                                    app:boxCornerRadiusBottomEnd="12dp"
-                                    app:boxStrokeWidth="0dp">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/editTextFirstName"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:hint="First name"
-                                        android:inputType="textPersonName"
-                                        android:padding="14dp" />
-                                </com.google.android.material.textfield.TextInputLayout>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="8dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Last Name"
-                                    android:textColor="#1F355B"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginBottom="6dp" />
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    app:boxBackgroundColor="#FFFFFF"
-                                    app:boxCornerRadiusTopStart="12dp"
-                                    app:boxCornerRadiusTopEnd="12dp"
-                                    app:boxCornerRadiusBottomStart="12dp"
-                                    app:boxCornerRadiusBottomEnd="12dp"
-                                    app:boxStrokeColor="#E4D5FF"
-                                    app:boxStrokeWidth="1dp">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/editTextLastName"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:hint="Last name"
-                                        android:inputType="textPersonName"
-                                        android:padding="14dp" />
-                                </com.google.android.material.textfield.TextInputLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- Email -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Email"
-                            android:textColor="#1F355B"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="14dp"
-                            android:layout_marginBottom="6dp" />
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:boxBackgroundColor="#F3F4F6"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
-                            app:boxStrokeWidth="0dp"
-                            app:startIconDrawable="@android:drawable/ic_dialog_email"
-                            app:startIconTint="#8B97A8">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/editTextEmail"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="your@email.com"
-                                android:inputType="textEmailAddress"
-                                android:padding="14dp" />
+            <!-- PROFILE PANEL -->
+            <LinearLayout android:id="@+id/panelEditProfile" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:strokeColor="#E4D5FF" app:strokeWidth="1dp" app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Basic Information" android:textColor="#071A3D" android:textSize="17sp" android:textStyle="bold" android:layout_marginBottom="16dp" />
+                        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" app:boxBackgroundColor="#F3F4F6" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp" app:boxStrokeWidth="0dp">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/editTextFirstName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="First Name" />
                         </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Institution (student only) -->
-                        <LinearLayout
-                            android:id="@+id/layoutInstitution"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="visible">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Institution"
-                                android:textColor="#1F355B"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="14dp"
-                                android:layout_marginBottom="6dp" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:boxBackgroundColor="#F3F4F6"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusBottomEnd="12dp"
-                                app:boxStrokeWidth="0dp">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/editTextInstitution"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="e.g., MIT, Stanford University"
-                                    android:padding="14dp" />
+                        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" app:boxBackgroundColor="#F3F4F6" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp" app:boxStrokeWidth="0dp">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/editTextLastName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Last Name" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" app:boxBackgroundColor="#F3F4F6" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp" app:boxStrokeWidth="0dp">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/editTextEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Email" android:enabled="false" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <LinearLayout android:id="@+id/layoutInstitution" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp">
+                            <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" app:boxBackgroundColor="#F3F4F6" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp" app:boxStrokeWidth="0dp">
+                                <com.google.android.material.textfield.TextInputEditText android:id="@+id/editTextInstitution" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Institution" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
-
-                        <!-- Bio (tutor only) -->
-                        <LinearLayout
-                            android:id="@+id/layoutBio"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="gone">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Bio"
-                                android:textColor="#1F355B"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="14dp"
-                                android:layout_marginBottom="6dp" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:boxBackgroundColor="#F3F4F6"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusBottomEnd="12dp"
-                                app:boxStrokeWidth="0dp">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/editTextBio"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="Tell students about yourself..."
-                                    android:inputType="textMultiLine"
-                                    android:gravity="top"
-                                    android:lines="4"
-                                    android:padding="14dp" />
+                        <LinearLayout android:id="@+id/layoutBio" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" android:visibility="gone">
+                            <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" app:boxBackgroundColor="#F3F4F6" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp" app:boxStrokeWidth="0dp">
+                                <com.google.android.material.textfield.TextInputEditText android:id="@+id/editTextBio" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Bio (Tutor)" android:lines="3" android:gravity="top" />
                             </com.google.android.material.textfield.TextInputLayout>
-
-                            <TextView
-                                android:id="@+id/tvCharCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0/500 characters"
-                                android:textColor="#8B97A8"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp" />
+                            <TextView android:id="@+id/tvCharCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0/500" android:textSize="11sp" android:layout_marginTop="4dp" />
                         </LinearLayout>
-
-                        <!-- Tutor rate (tutor only) -->
-                        <LinearLayout
-                            android:id="@+id/layoutRate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="gone">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Hourly Rate (Tokens)"
-                                android:textColor="#1F355B"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="14dp"
-                                android:layout_marginBottom="6dp" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:boxCornerRadiusTopStart="12dp"
-                                app:boxCornerRadiusTopEnd="12dp"
-                                app:boxCornerRadiusBottomStart="12dp"
-                                app:boxCornerRadiusBottomEnd="12dp"
-                                app:boxStrokeColor="#0062FF"
-                                app:prefixText="Tokens: "
-                                app:prefixTextColor="#00D285">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/editTextRate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="e.g. 25"
-                                    android:inputType="number"
-                                    android:padding="14dp" />
+                        <LinearLayout android:id="@+id/layoutRate" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" android:visibility="gone">
+                            <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" app:boxBackgroundColor="#F3F4F6" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp" app:boxStrokeWidth="0dp">
+                                <com.google.android.material.textfield.TextInputEditText android:id="@+id/editTextRate" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Rate (Tokens)" android:inputType="number" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
-
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-
-                <!-- Subjects Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:strokeColor="#E4D5FF"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Subjects"
-                                android:textColor="#071A3D"
-                                android:textSize="17sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tap to select"
-                                android:textColor="#8B97A8"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <com.google.android.material.chip.ChipGroup
-                            android:id="@+id/chipGroupSubjects"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:chipSpacingHorizontal="8dp"
-                            app:chipSpacingVertical="8dp">
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipMathematics"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Mathematics"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipPhysics"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Physics"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipChemistry"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Chemistry"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipBiology"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Biology"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipComputerScience"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Computer Science"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipEnglish"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="English"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipHistory"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="History"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipEconomics"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Economics"
-                                app:chipBackgroundColor="#E0E0E0"
-                                android:textColor="#33476A"
-                                app:chipStrokeWidth="0dp" />
-                        </com.google.android.material.chip.ChipGroup>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Save Button -->
-                <Button
-                    android:id="@+id/btnSaveProfile"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@drawable/bg_button_gradient"
-                    android:text="Save Changes"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="@null" />
-
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Subjects" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                <com.google.android.material.chip.ChipGroup android:id="@+id/chipGroupSubjects" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
+                    <com.google.android.material.chip.Chip android:id="@+id/chipMathematics" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mathematics" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipPhysics" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Physics" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipChemistry" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chemistry" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipBiology" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Biology" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipComputerScience" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Computer Science" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipEnglish" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="English" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipHistory" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="History" />
+                    <com.google.android.material.chip.Chip android:id="@+id/chipEconomics" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Economics" />
+                </com.google.android.material.chip.ChipGroup>
+                <Button android:id="@+id/btnSaveProfile" android:layout_width="match_parent" android:layout_height="56dp" android:text="Update Profile" android:background="@drawable/bg_button_gradient" app:backgroundTint="@null" android:textColor="#FFFFFF" />
             </LinearLayout>
 
-            <!-- Privacy Panel (hidden by default) -->
-            <LinearLayout
-                android:id="@+id/panelPrivacy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <!-- Profile Visibility Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:strokeColor="#E4D5FF"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="4dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_view"
-                                app:tint="#8A2EFF"
-                                android:layout_marginEnd="8dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Profile Visibility"
-                                android:textColor="#071A3D"
-                                android:textSize="17sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Control what others can see on your profile"
-                            android:textColor="#8B97A8"
-                            android:textSize="13sp"
-                            android:layout_marginBottom="20dp" />
-
-                        <!-- Show Name -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="16dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Show my name"
-                                    android:textColor="#071A3D"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Your full name is visible to others"
-                                    android:textColor="#8B97A8"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switchShowName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true"
-                                app:thumbTint="#8A2EFF"
-                                app:trackTint="#E4D5FF" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="#F0F0F0"
-                            android:layout_marginBottom="16dp" />
-
-                        <!-- Show Institution -->
-                        <LinearLayout
-                            android:id="@+id/rowShowInstitution"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="16dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Show institution"
-                                    android:textColor="#071A3D"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Your school or university name"
-                                    android:textColor="#8B97A8"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switchShowInstitution"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true"
-                                app:thumbTint="#8A2EFF"
-                                app:trackTint="#E4D5FF" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="#F0F0F0"
-                            android:layout_marginBottom="16dp" />
-
-                        <!-- Show Subjects -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="16dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Show subjects"
-                                    android:textColor="#071A3D"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Your courses and subject list"
-                                    android:textColor="#8B97A8"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switchShowSubjects"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true"
-                                app:thumbTint="#8A2EFF"
-                                app:trackTint="#E4D5FF" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="#F0F0F0"
-                            android:layout_marginBottom="16dp" />
-
-                        <!-- Show Rate (tutor only) -->
-                        <LinearLayout
-                            android:id="@+id/rowShowRate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:visibility="gone">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Show hourly rate"
-                                    android:textColor="#071A3D"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Your token cost per session"
-                                    android:textColor="#8B97A8"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switchShowRate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true"
-                                app:thumbTint="#8A2EFF"
-                                app:trackTint="#E4D5FF" />
-                        </LinearLayout>
-
+            <!-- PRIVACY PANEL -->
+            <LinearLayout android:id="@+id/panelPrivacy" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:strokeColor="#E4D5FF" app:strokeWidth="1dp" app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchProfileVisible" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Publicly Discoverable" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Full Name" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowInstitution" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Institution" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowSubjects" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Subjects" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowRate" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Hourly Rate" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+                <Button android:id="@+id/btnSavePrivacy" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="20dp" android:text="Save Privacy Settings" android:background="@drawable/bg_button_gradient" app:backgroundTint="@null" android:textColor="#FFFFFF" />
+            </LinearLayout>
 
-                <!-- Account Privacy Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:strokeColor="#E4D5FF"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="4dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/ic_lock_idle_lock"
-                                app:tint="#8A2EFF"
-                                android:layout_marginEnd="8dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Account Privacy"
-                                android:textColor="#071A3D"
-                                android:textSize="17sp"
-                                android:textStyle="bold" />
+            <!-- VERIFICATION PANEL -->
+            <LinearLayout android:id="@+id/panelVerification" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone" android:gravity="center_horizontal">
+                <com.google.android.material.card.MaterialCardView android:layout_width="100dp" android:layout_height="100dp" app:cardCornerRadius="24dp" app:cardElevation="8dp" android:layout_marginTop="16dp" app:cardBackgroundColor="@null">
+                    <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_button_gradient" />
+                    <ImageView android:id="@+id/imgVerificationStatus" android:layout_width="50dp" android:layout_height="50dp" android:layout_gravity="center" android:src="@android:drawable/ic_lock_idle_lock" app:tint="#FFFFFF" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView android:id="@+id/tvVerificationTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Verify Your Identity" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" android:layout_marginTop="24dp" />
+                <TextView android:id="@+id/tvVerificationDesc" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Earn a \&quot;Verified\&quot; badge to increase student trust and unlock premium features" android:textColor="#4B5D7A" android:textSize="15sp" android:gravity="center" android:layout_marginTop="12dp" android:paddingHorizontal="20dp" />
+                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="32dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="16dp" android:gravity="center_vertical">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#EEF4FF" app:cardElevation="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="🎗️" android:textSize="20sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Get Verified Badge" android:textStyle="bold" android:textColor="#071A3D" android:textSize="15sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stand out to students" android:textColor="#8B97A8" android:textSize="13sp" />
                         </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Manage who can discover and contact you"
-                            android:textColor="#8B97A8"
-                            android:textSize="13sp"
-                            android:layout_marginBottom="20dp" />
-
-                        <!-- Profile discoverable -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="16dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Profile discoverable"
-                                    android:textColor="#071A3D"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Appear in tutor/student search results"
-                                    android:textColor="#8B97A8"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switchProfileVisible"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="true"
-                                app:thumbTint="#8A2EFF"
-                                app:trackTint="#E4D5FF" />
-                        </LinearLayout>
-
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-
-                <!-- Save Privacy Button -->
-                <Button
-                    android:id="@+id/btnSavePrivacy"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@drawable/bg_button_gradient"
-                    android:text="Save Privacy Settings"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="@null" />
-
+                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="16dp" android:gravity="center_vertical">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#EAF9EE" app:cardElevation="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="✨" android:textSize="20sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Earn More Tokens" android:textStyle="bold" android:textColor="#071A3D" android:textSize="15sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+50% token bonus" android:textColor="#8B97A8" android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="16dp" android:gravity="center_vertical">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="✔️" android:textSize="20sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Build Trust" android:textStyle="bold" android:textColor="#071A3D" android:textSize="15sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Verified tutors get 3x more bookings" android:textColor="#8B97A8" android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/btnUploadID" android:layout_width="match_parent" android:layout_height="100dp" android:layout_marginTop="32dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#F5F5FA" app:strokeColor="#D9DCE3" app:strokeWidth="1dp" app:cardElevation="0dp">
+                    <TextView android:id="@+id/tvUploadLabel" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Tap to select document" android:textColor="#8A2EFF" android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+                <Button android:id="@+id/btnSubmitVerification" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="20dp" android:layout_marginBottom="40dp" android:text="Submit for Review" android:textAllCaps="false" android:enabled="false" android:background="@drawable/bg_button_gradient" app:backgroundTint="@null" android:textColor="#FFFFFF" />
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>
