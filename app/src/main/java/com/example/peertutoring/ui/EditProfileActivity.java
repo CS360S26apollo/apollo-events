@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import com.example.peertutoring.R;
 
@@ -32,11 +33,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * User Story 3
+ * User Story 3 — Edit Profile & Privacy Settings
  */
 public class EditProfileActivity extends AppCompatActivity {
 
-    // ── Firebase setup
+    // ── Firebase
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
 
@@ -49,7 +50,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     // ── Role toggle
     private Button btnRoleStudent, btnRoleTutor;
-    private String currentRole = "student"; // tracks which role tab is active in UI
+    private String currentRole = "student";
 
     // ── Edit Profile fields
     private TextInputEditText etFirstName, etLastName, etEmail,
@@ -58,15 +59,15 @@ public class EditProfileActivity extends AppCompatActivity {
     private LinearLayout layoutInstitution, layoutBio, layoutRate;
     private ChipGroup chipGroupSubjects;
 
-    // ── Privacy fields ────────────────────────────────────────
+    // ── Privacy switches
     private SwitchMaterial switchShowName, switchShowInstitution,
             switchShowSubjects, switchShowRate, switchProfileVisible;
     private LinearLayout rowShowInstitution, rowShowRate;
 
-    // ── Firestore doc role
+    // ── Role from Firestore
     private String savedRole = "student";
 
-    // ── All subject chip IDs in order ────────────────────────
+    // ── Subject chip IDs and names (must match activity_edit_profile.xml)
     private static final int[] CHIP_IDS = {
             R.id.chipMathematics, R.id.chipPhysics, R.id.chipChemistry,
             R.id.chipBiology, R.id.chipComputerScience, R.id.chipEnglish,
@@ -78,14 +79,14 @@ public class EditProfileActivity extends AppCompatActivity {
             "History", "Economics"
     };
 
-    // ──────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        db = FirebaseFirestore.getInstance();
+        db          = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         bindViews();
@@ -95,11 +96,13 @@ public class EditProfileActivity extends AppCompatActivity {
         setupBioCharCount();
         setupSaveButtons();
 
-        // Back button
+        // Back button — null-safe
         ImageButton btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> finish());
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
-        // Load existing data from Firestore
+        // Load profile or exit if not logged in
         if (currentUser != null) {
             loadUserProfile(currentUser.getUid());
         } else {
@@ -108,38 +111,33 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    // ── Bind all views
+    // ── Bind all views (all null-safe) ────────────────────────────────────────
 
     private void bindViews() {
-        // Header
-        tvAvatarInitials  = findViewById(R.id.tvAvatarInitials);
-        tvUserName        = findViewById(R.id.tvUserName);
-        tvUserRole        = findViewById(R.id.tvUserRole);
+        tvAvatarInitials      = findViewById(R.id.tvAvatarInitials);
+        tvUserName            = findViewById(R.id.tvUserName);
+        tvUserRole            = findViewById(R.id.tvUserRole);
 
-        // Tabs
-        tabEditProfile    = findViewById(R.id.tabEditProfile);
-        tabPrivacy        = findViewById(R.id.tabPrivacy);
-        panelEditProfile  = findViewById(R.id.panelEditProfile);
-        panelPrivacy      = findViewById(R.id.panelPrivacy);
+        tabEditProfile        = findViewById(R.id.tabEditProfile);
+        tabPrivacy            = findViewById(R.id.tabPrivacy);
+        panelEditProfile      = findViewById(R.id.panelEditProfile);
+        panelPrivacy          = findViewById(R.id.panelPrivacy);
 
-        // Role toggle
-        btnRoleStudent    = findViewById(R.id.btnRoleStudent);
-        btnRoleTutor      = findViewById(R.id.btnRoleTutor);
+        btnRoleStudent        = findViewById(R.id.btnRoleStudent);
+        btnRoleTutor          = findViewById(R.id.btnRoleTutor);
 
-        // Fields
-        etFirstName       = findViewById(R.id.editTextFirstName);
-        etLastName        = findViewById(R.id.editTextLastName);
-        etEmail           = findViewById(R.id.editTextEmail);
-        etInstitution     = findViewById(R.id.editTextInstitution);
-        etBio             = findViewById(R.id.editTextBio);
-        etRate            = findViewById(R.id.editTextRate);
-        tvCharCount       = findViewById(R.id.tvCharCount);
-        layoutInstitution = findViewById(R.id.layoutInstitution);
-        layoutBio         = findViewById(R.id.layoutBio);
-        layoutRate        = findViewById(R.id.layoutRate);
-        chipGroupSubjects = findViewById(R.id.chipGroupSubjects);
+        etFirstName           = findViewById(R.id.editTextFirstName);
+        etLastName            = findViewById(R.id.editTextLastName);
+        etEmail               = findViewById(R.id.editTextEmail);
+        etInstitution         = findViewById(R.id.editTextInstitution);
+        etBio                 = findViewById(R.id.editTextBio);
+        etRate                = findViewById(R.id.editTextRate);
+        tvCharCount           = findViewById(R.id.tvCharCount);
+        layoutInstitution     = findViewById(R.id.layoutInstitution);
+        layoutBio             = findViewById(R.id.layoutBio);
+        layoutRate            = findViewById(R.id.layoutRate);
+        chipGroupSubjects     = findViewById(R.id.chipGroupSubjects);
 
-        // Privacy switches
         switchShowName        = findViewById(R.id.switchShowName);
         switchShowInstitution = findViewById(R.id.switchShowInstitution);
         switchShowSubjects    = findViewById(R.id.switchShowSubjects);
@@ -149,93 +147,97 @@ public class EditProfileActivity extends AppCompatActivity {
         rowShowRate           = findViewById(R.id.rowShowRate);
     }
 
-    // ── Tab switcher ──────────────────────────────────────────
+    // ── Tab switcher ──────────────────────────────────────────────────────────
 
     private void setupTabSwitcher() {
-        tabEditProfile.setOnClickListener(v -> showTab(true));
-        tabPrivacy.setOnClickListener(v -> showTab(false));
+        if (tabEditProfile != null) tabEditProfile.setOnClickListener(v -> showTab(true));
+        if (tabPrivacy != null)     tabPrivacy.setOnClickListener(v -> showTab(false));
     }
 
     private void showTab(boolean editProfile) {
-        if (editProfile) {
-            panelEditProfile.setVisibility(View.VISIBLE);
-            panelPrivacy.setVisibility(View.GONE);
-            // Active style
-            tabEditProfile.setBackground(getDrawable(R.drawable.bg_button_gradient));
-            tabEditProfile.setTextColor(Color.WHITE);
-            // Inactive style
-            tabPrivacy.setBackground(null);
-            tabPrivacy.setTextColor(Color.parseColor("#4B5D7A"));
-        } else {
-            panelEditProfile.setVisibility(View.GONE);
-            panelPrivacy.setVisibility(View.VISIBLE);
-            // Active style
-            tabPrivacy.setBackground(getDrawable(R.drawable.bg_button_gradient));
-            tabPrivacy.setTextColor(Color.WHITE);
-            // Inactive style
-            tabEditProfile.setBackground(null);
-            tabEditProfile.setTextColor(Color.parseColor("#4B5D7A"));
+        if (panelEditProfile != null)
+            panelEditProfile.setVisibility(editProfile ? View.VISIBLE : View.GONE);
+        if (panelPrivacy != null)
+            panelPrivacy.setVisibility(editProfile ? View.GONE : View.VISIBLE);
+
+        if (tabEditProfile != null) {
+            if (editProfile) {
+                tabEditProfile.setBackground(getDrawable(R.drawable.bg_button_gradient));
+                tabEditProfile.setTextColor(Color.WHITE);
+            } else {
+                tabEditProfile.setBackground(null);
+                tabEditProfile.setTextColor(Color.parseColor("#4B5D7A"));
+            }
+        }
+        if (tabPrivacy != null) {
+            if (!editProfile) {
+                tabPrivacy.setBackground(getDrawable(R.drawable.bg_button_gradient));
+                tabPrivacy.setTextColor(Color.WHITE);
+            } else {
+                tabPrivacy.setBackground(null);
+                tabPrivacy.setTextColor(Color.parseColor("#4B5D7A"));
+            }
         }
     }
 
-    // ── Role toggle (Student / Tutor) ─────────────────────────
+    // ── Role toggle ───────────────────────────────────────────────────────────
 
     private void setupRoleToggle() {
-        btnRoleStudent.setOnClickListener(v -> applyRoleUI("student"));
-        btnRoleTutor.setOnClickListener(v -> applyRoleUI("tutor"));
+        if (btnRoleStudent != null) btnRoleStudent.setOnClickListener(v -> applyRoleUI("student"));
+        if (btnRoleTutor != null)   btnRoleTutor.setOnClickListener(v -> applyRoleUI("tutor"));
     }
 
     private void applyRoleUI(String role) {
         currentRole = role;
 
-        if ("student".equals(role)) {
-            // Student active
-            btnRoleStudent.setBackground(getDrawable(R.drawable.bg_button_gradient));
-            btnRoleStudent.setTextColor(Color.WHITE);
-            // Tutor inactive
-            btnRoleTutor.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-            btnRoleTutor.setTextColor(Color.parseColor("#4B5D7A"));
-            // Show/hide fields
-            layoutInstitution.setVisibility(View.VISIBLE);
-            layoutBio.setVisibility(View.GONE);
-            layoutRate.setVisibility(View.GONE);
-            // Privacy rows
-            rowShowInstitution.setVisibility(View.VISIBLE);
-            rowShowRate.setVisibility(View.GONE);
-        } else {
-            // Tutor active
-            btnRoleTutor.setBackground(getDrawable(R.drawable.bg_button_gradient));
-            btnRoleTutor.setTextColor(Color.WHITE);
-            // Student inactive
-            btnRoleStudent.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-            btnRoleStudent.setTextColor(Color.parseColor("#4B5D7A"));
-            // Show/hide fields
-            layoutInstitution.setVisibility(View.GONE);
-            layoutBio.setVisibility(View.VISIBLE);
-            layoutRate.setVisibility(View.VISIBLE);
-            // Privacy rows
-            rowShowInstitution.setVisibility(View.GONE);
-            rowShowRate.setVisibility(View.VISIBLE);
+        // Show/hide fields
+        if (layoutInstitution != null)
+            layoutInstitution.setVisibility(role.equals("student") ? View.VISIBLE : View.GONE);
+        if (layoutBio != null)
+            layoutBio.setVisibility(role.equals("tutor") ? View.VISIBLE : View.GONE);
+        if (layoutRate != null)
+            layoutRate.setVisibility(role.equals("tutor") ? View.VISIBLE : View.GONE);
+
+        // Show/hide privacy rows
+        if (rowShowInstitution != null)
+            rowShowInstitution.setVisibility(role.equals("student") ? View.VISIBLE : View.GONE);
+        if (rowShowRate != null)
+            rowShowRate.setVisibility(role.equals("tutor") ? View.VISIBLE : View.GONE);
+
+        // Role button styles
+        if (btnRoleStudent != null) {
+            if (role.equals("student")) {
+                btnRoleStudent.setBackground(getDrawable(R.drawable.bg_button_gradient));
+                btnRoleStudent.setTextColor(Color.WHITE);
+            } else {
+                btnRoleStudent.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                btnRoleStudent.setTextColor(Color.parseColor("#4B5D7A"));
+            }
+        }
+        if (btnRoleTutor != null) {
+            if (role.equals("tutor")) {
+                btnRoleTutor.setBackground(getDrawable(R.drawable.bg_button_gradient));
+                btnRoleTutor.setTextColor(Color.WHITE);
+            } else {
+                btnRoleTutor.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                btnRoleTutor.setTextColor(Color.parseColor("#4B5D7A"));
+            }
         }
     }
 
-    // ── Chips
+    // ── Chips ─────────────────────────────────────────────────────────────────
 
     private void setupChips() {
         for (int i = 0; i < CHIP_IDS.length; i++) {
             Chip chip = findViewById(CHIP_IDS[i]);
             if (chip == null) continue;
-            String subject = CHIP_NAMES[i];
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    chip.setChipBackgroundColor(
-                            ColorStateList.valueOf(Color.parseColor("#089A3C")));
-                    chip.setTextColor(Color.WHITE);
-                } else {
-                    chip.setChipBackgroundColor(
-                            ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
-                    chip.setTextColor(Color.parseColor("#33476A"));
-                }
+                chip.setChipBackgroundColor(ColorStateList.valueOf(
+                        isChecked
+                                ? Color.parseColor("#089A3C")
+                                : Color.parseColor("#E0E0E0")
+                ));
+                chip.setTextColor(isChecked ? Color.WHITE : Color.parseColor("#33476A"));
             });
         }
     }
@@ -261,9 +263,11 @@ public class EditProfileActivity extends AppCompatActivity {
         return selected;
     }
 
-    // ── Bio char count
+    // ── Bio character count ───────────────────────────────────────────────────
 
     private void setupBioCharCount() {
+        // Guard: etBio or tvCharCount may be null if IDs don't match layout
+        if (etBio == null || tvCharCount == null) return;
         etBio.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
@@ -273,14 +277,16 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    // ── Save buttons
+    // ── Save buttons ──────────────────────────────────────────────────────────
 
     private void setupSaveButtons() {
-        findViewById(R.id.btnSaveProfile).setOnClickListener(v -> saveProfile());
-        findViewById(R.id.btnSavePrivacy).setOnClickListener(v -> savePrivacy());
+        View btnSaveProfile = findViewById(R.id.btnSaveProfile);
+        View btnSavePrivacy = findViewById(R.id.btnSavePrivacy);
+        if (btnSaveProfile != null) btnSaveProfile.setOnClickListener(v -> saveProfile());
+        if (btnSavePrivacy != null) btnSavePrivacy.setOnClickListener(v -> savePrivacy());
     }
 
-    // ── Load from Firestore
+    // ── Load from Firestore ───────────────────────────────────────────────────
 
     private void loadUserProfile(String uid) {
         db.collection("users").document(uid).get()
@@ -290,14 +296,15 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to load profile: " + e.getMessage(),
+                        Toast.makeText(this,
+                                "Failed to load profile: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show());
     }
 
     @SuppressWarnings("unchecked")
     private void populateUI(DocumentSnapshot doc) {
         // Role
-        savedRole = doc.getString("role") != null ? doc.getString("role") : "student";
+        savedRole   = doc.getString("role") != null ? doc.getString("role") : "student";
         currentRole = savedRole;
         applyRoleUI(currentRole);
 
@@ -306,70 +313,80 @@ public class EditProfileActivity extends AppCompatActivity {
         String lastName  = doc.getString("lastName");
         String fullName  = doc.getString("fullName");
 
-        if (firstName != null) etFirstName.setText(firstName);
-        if (lastName != null)  etLastName.setText(lastName);
+        if (etFirstName != null && firstName != null) etFirstName.setText(firstName);
+        if (etLastName  != null && lastName  != null) etLastName.setText(lastName);
 
         // Avatar initials
         String initials = "";
         if (firstName != null && !firstName.isEmpty()) initials += firstName.charAt(0);
         if (lastName  != null && !lastName.isEmpty())  initials += lastName.charAt(0);
-        tvAvatarInitials.setText(initials.toUpperCase());
+        if (tvAvatarInitials != null) tvAvatarInitials.setText(initials.toUpperCase());
 
-        // Header name + role
-        tvUserName.setText(fullName != null ? fullName : "");
-        tvUserRole.setText(Character.toUpperCase(savedRole.charAt(0)) + savedRole.substring(1));
+        // Header name + role label
+        if (tvUserName != null) tvUserName.setText(fullName != null ? fullName : "");
+        if (tvUserRole != null && savedRole.length() > 0) {
+            tvUserRole.setText(
+                    Character.toUpperCase(savedRole.charAt(0)) + savedRole.substring(1)
+            );
+        }
 
-        // Email (from FirebaseAuth, read-only feel)
-        if (currentUser != null && currentUser.getEmail() != null) {
+        // Email (read-only display)
+        if (etEmail != null && currentUser != null && currentUser.getEmail() != null) {
             etEmail.setText(currentUser.getEmail());
         }
 
         // Student fields
         String institution = doc.getString("institution");
-        if (institution != null) etInstitution.setText(institution);
+        if (etInstitution != null && institution != null) etInstitution.setText(institution);
 
         // Tutor fields
         String bio = doc.getString("bio");
-        if (bio != null) etBio.setText(bio);
+        if (etBio != null && bio != null) etBio.setText(bio);
 
         Long rate = doc.getLong("rate");
-        if (rate != null) etRate.setText(String.valueOf(rate));
+        if (etRate != null && rate != null) etRate.setText(String.valueOf(rate));
 
         // Subjects
         List<String> subjects = (List<String>) doc.get("subjects");
         preSelectChips(subjects);
 
-        // Privacy / visibility
-        Boolean showName    = doc.getBoolean("showName");
-        Boolean showInst    = doc.getBoolean("showInstitution");
-        Boolean showSubj    = doc.getBoolean("showSubjects");
-        Boolean showRate    = doc.getBoolean("showRate");
-        Boolean profileVis  = doc.getBoolean("profileVisible");
+        // Privacy switches
+        Boolean showName   = doc.getBoolean("showName");
+        Boolean showInst   = doc.getBoolean("showInstitution");
+        Boolean showSubj   = doc.getBoolean("showSubjects");
+        Boolean showRate   = doc.getBoolean("showRate");
+        Boolean profileVis = doc.getBoolean("profileVisible");
 
-        if (showName   != null) switchShowName.setChecked(showName);
-        if (showInst   != null) switchShowInstitution.setChecked(showInst);
-        if (showSubj   != null) switchShowSubjects.setChecked(showSubj);
-        if (showRate   != null) switchShowRate.setChecked(showRate);
-        if (profileVis != null) switchProfileVisible.setChecked(profileVis);
+        if (switchShowName        != null && showName   != null) switchShowName.setChecked(showName);
+        if (switchShowInstitution != null && showInst   != null) switchShowInstitution.setChecked(showInst);
+        if (switchShowSubjects    != null && showSubj   != null) switchShowSubjects.setChecked(showSubj);
+        if (switchShowRate        != null && showRate   != null) switchShowRate.setChecked(showRate);
+        if (switchProfileVisible  != null && profileVis != null) switchProfileVisible.setChecked(profileVis);
     }
 
-    // ── Save profile to Firestore
+    // ── Save profile to Firestore ─────────────────────────────────────────────
 
     private void saveProfile() {
-        String firstName = etFirstName.getText() != null
+        // Guard: must be logged in
+        if (currentUser == null) {
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validate name
+        String firstName = etFirstName != null && etFirstName.getText() != null
                 ? etFirstName.getText().toString().trim() : "";
-        String lastName  = etLastName.getText() != null
-                ? etLastName.getText().toString().trim() : "";
+        String lastName  = etLastName  != null && etLastName.getText()  != null
+                ? etLastName.getText().toString().trim()  : "";
 
         if (TextUtils.isEmpty(firstName)) {
-            etFirstName.setError("First name is required");
+            if (etFirstName != null) etFirstName.setError("First name is required");
             return;
         }
         if (TextUtils.isEmpty(lastName)) {
-            etLastName.setError("Last name is required");
+            if (etLastName != null) etLastName.setError("Last name is required");
             return;
         }
-
         if (getSelectedSubjects().isEmpty()) {
             Toast.makeText(this, "Please select at least one subject", Toast.LENGTH_SHORT).show();
             return;
@@ -380,62 +397,81 @@ public class EditProfileActivity extends AppCompatActivity {
         updates.put("lastName",  lastName);
         updates.put("fullName",  firstName + " " + lastName);
         updates.put("subjects",  getSelectedSubjects());
+        updates.put("role",      currentRole);
 
-        if ("student".equals(currentRole)) {
-            String institution = etInstitution.getText() != null
+        if (currentRole.equals("student")) {
+            String institution = etInstitution != null && etInstitution.getText() != null
                     ? etInstitution.getText().toString().trim() : "";
             if (TextUtils.isEmpty(institution)) {
-                etInstitution.setError("Institution is required");
+                if (etInstitution != null) etInstitution.setError("Institution is required");
                 return;
             }
             updates.put("institution", institution);
+
         } else {
-            String bio = etBio.getText() != null
-                    ? etBio.getText().toString().trim() : "";
-            String rateStr = etRate.getText() != null
+            String bio     = etBio  != null && etBio.getText()  != null
+                    ? etBio.getText().toString().trim()  : "";
+            String rateStr = etRate != null && etRate.getText() != null
                     ? etRate.getText().toString().trim() : "";
+
             if (TextUtils.isEmpty(bio)) {
-                etBio.setError("Bio is required");
+                if (etBio != null) etBio.setError("Bio is required");
                 return;
             }
             if (TextUtils.isEmpty(rateStr)) {
-                etRate.setError("Rate is required");
+                if (etRate != null) etRate.setError("Rate is required");
                 return;
             }
             updates.put("bio",  bio);
             updates.put("rate", Integer.parseInt(rateStr));
         }
 
+        // Use set + merge so it works even if the document is new
         db.collection("users")
                 .document(currentUser.getUid())
-                .update(updates)
+                .set(updates, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, "✅ Profile saved!", Toast.LENGTH_SHORT).show();
                     // Refresh header
-                    tvUserName.setText(firstName + " " + lastName);
-                    String initials = "" + firstName.charAt(0) + lastName.charAt(0);
-                    tvAvatarInitials.setText(initials.toUpperCase());
+                    if (tvUserName != null) tvUserName.setText(firstName + " " + lastName);
+                    if (tvAvatarInitials != null && !firstName.isEmpty() && !lastName.isEmpty()) {
+                        tvAvatarInitials.setText(
+                                ("" + firstName.charAt(0) + lastName.charAt(0)).toUpperCase()
+                        );
+                    }
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Save failed: " + e.getMessage(),
                                 Toast.LENGTH_LONG).show());
     }
 
-    // ── Save privacy settings to Firestore ────────────────────
+    // ── Save privacy settings to Firestore ────────────────────────────────────
 
     private void savePrivacy() {
-        Map<String, Object> privacy = new HashMap<>();
-        privacy.put("showName",        switchShowName.isChecked());
-        privacy.put("showInstitution", switchShowInstitution.isChecked());
-        privacy.put("showSubjects",    switchShowSubjects.isChecked());
-        privacy.put("showRate",        switchShowRate.isChecked());
-        privacy.put("profileVisible",  switchProfileVisible.isChecked());
+        // Guard: must be logged in
+        if (currentUser == null) {
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        Map<String, Object> privacy = new HashMap<>();
+        if (switchShowName        != null) privacy.put("showName",        switchShowName.isChecked());
+        if (switchShowInstitution != null) privacy.put("showInstitution", switchShowInstitution.isChecked());
+        if (switchShowSubjects    != null) privacy.put("showSubjects",    switchShowSubjects.isChecked());
+        if (switchShowRate        != null) privacy.put("showRate",        switchShowRate.isChecked());
+        if (switchProfileVisible  != null) privacy.put("profileVisible",  switchProfileVisible.isChecked());
+
+        if (privacy.isEmpty()) {
+            Toast.makeText(this, "Nothing to save", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Use set + merge so it works even if the document is new
         db.collection("users")
                 .document(currentUser.getUid())
-                .update(privacy)
+                .set(privacy, SetOptions.merge())
                 .addOnSuccessListener(unused ->
-                        Toast.makeText(this, "🔒 Privacy settings saved!", Toast.LENGTH_SHORT).show())
+                        Toast.makeText(this, " Privacy settings saved!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Save failed: " + e.getMessage(),
                                 Toast.LENGTH_LONG).show());

@@ -2,7 +2,7 @@ package com.example.peertutoring.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,46 +25,48 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupBottomNav() {
-        findViewById(R.id.navHome).setOnClickListener(v -> {
-            // Already on home
-        });
+        View navHome     = findViewById(R.id.navHome);
+        View navBrowse   = findViewById(R.id.navBrowse);
+        View navMessages = findViewById(R.id.navMessages);
+        View navProfile  = findViewById(R.id.navProfile);
 
-        findViewById(R.id.navBrowse).setOnClickListener(v -> {
+        if (navHome != null)     navHome.setOnClickListener(v -> { /* already on home */ });
+        if (navBrowse != null)   navBrowse.setOnClickListener(v -> {
             startActivity(new Intent(this, BrowseTutorsActivity.class));
             overridePendingTransition(0, 0);
         });
-
-        findViewById(R.id.navMessages).setOnClickListener(v -> {
+        if (navMessages != null) navMessages.setOnClickListener(v -> {
             // Messages screen — to be implemented
         });
-
-        findViewById(R.id.navProfile).setOnClickListener(v -> {
+        if (navProfile != null)  navProfile.setOnClickListener(v -> {
             startActivity(new Intent(this, EditProfileActivity.class));
             overridePendingTransition(0, 0);
         });
     }
 
     private void setupTutorCards() {
-        // Click on featured tutor cards → open TutorDetailActivity
-        LinearLayout cardTutor1 = findViewById(R.id.cardTutor1);
-        LinearLayout cardTutor2 = findViewById(R.id.cardTutor2);
+        // ✅ Use View (not LinearLayout) — cards in XML are MaterialCardView
+        View cardTutor1 = findViewById(R.id.cardTutor1);
+        View cardTutor2 = findViewById(R.id.cardTutor2);
 
-        if (cardTutor1 != null) {
-            cardTutor1.setOnClickListener(v -> openTutorDetail("Sarah Johnson", "Mathematics Tutor", "45", "4.9", "127"));
-        }
-        if (cardTutor2 != null) {
-            cardTutor2.setOnClickListener(v -> openTutorDetail("Emily Chen", "Physics Tutor", "50", "5.0", "98"));
-        }
+        if (cardTutor1 != null)
+            cardTutor1.setOnClickListener(v ->
+                    openTutorDetail("Sarah Johnson", "Mathematics Tutor", "45", "4.9", "127"));
+        if (cardTutor2 != null)
+            cardTutor2.setOnClickListener(v ->
+                    openTutorDetail("Emily Chen", "Physics Tutor", "50", "5.0", "98"));
     }
 
     private void setupSubjectCards() {
-        // Subject cards navigate to Browse with filter
-        int[] subjectCardIds = {R.id.cardMath, R.id.cardScience, R.id.cardEnglish,
-                R.id.cardCoding, R.id.cardMusic, R.id.cardArt};
+        int[] subjectCardIds = {
+                R.id.cardMath, R.id.cardScience, R.id.cardEnglish,
+                R.id.cardCoding, R.id.cardMusic, R.id.cardArt
+        };
 
         for (int id : subjectCardIds) {
-            if (findViewById(id) != null) {
-                findViewById(id).setOnClickListener(v -> {
+            View card = findViewById(id);
+            if (card != null) {
+                card.setOnClickListener(v -> {
                     startActivity(new Intent(this, BrowseTutorsActivity.class));
                     overridePendingTransition(0, 0);
                 });
@@ -75,10 +77,10 @@ public class HomeActivity extends AppCompatActivity {
     private void openTutorDetail(String name, String subject, String rate,
                                  String rating, String students) {
         Intent intent = new Intent(this, TutorDetailActivity.class);
-        intent.putExtra("name", name);
-        intent.putExtra("subject", subject);
-        intent.putExtra("rate", rate);
-        intent.putExtra("rating", rating);
+        intent.putExtra("name",     name);
+        intent.putExtra("subject",  subject);
+        intent.putExtra("rate",     rate);
+        intent.putExtra("rating",   rating);
         intent.putExtra("students", students);
         startActivity(intent);
     }
