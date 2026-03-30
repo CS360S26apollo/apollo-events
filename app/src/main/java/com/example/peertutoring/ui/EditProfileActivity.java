@@ -34,6 +34,7 @@ import java.util.Map;
 
 /**
  * User Story 3 — Edit Profile & Privacy Settings
+ * User Story 4 — Tutor Verification
  */
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -45,8 +46,8 @@ public class EditProfileActivity extends AppCompatActivity {
     private TextView tvAvatarInitials, tvUserName, tvUserRole;
 
     // ── Tab views
-    private Button tabEditProfile, tabPrivacy;
-    private LinearLayout panelEditProfile, panelPrivacy;
+    private Button tabEditProfile, tabPrivacy, tabVerification;
+    private LinearLayout panelEditProfile, panelPrivacy, panelVerification;
 
     // ── Role toggle
     private Button btnRoleStudent, btnRoleTutor;
@@ -120,8 +121,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
         tabEditProfile        = findViewById(R.id.tabEditProfile);
         tabPrivacy            = findViewById(R.id.tabPrivacy);
+        tabVerification       = findViewById(R.id.tabVerification);
+        
         panelEditProfile      = findViewById(R.id.panelEditProfile);
         panelPrivacy          = findViewById(R.id.panelPrivacy);
+        panelVerification     = findViewById(R.id.panelVerification);
 
         btnRoleStudent        = findViewById(R.id.btnRoleStudent);
         btnRoleTutor          = findViewById(R.id.btnRoleTutor);
@@ -150,33 +154,31 @@ public class EditProfileActivity extends AppCompatActivity {
     // ── Tab switcher ──────────────────────────────────────────────────────────
 
     private void setupTabSwitcher() {
-        if (tabEditProfile != null) tabEditProfile.setOnClickListener(v -> showTab(true));
-        if (tabPrivacy != null)     tabPrivacy.setOnClickListener(v -> showTab(false));
+        if (tabEditProfile != null)  tabEditProfile.setOnClickListener(v -> showTab(0));
+        if (tabPrivacy != null)      tabPrivacy.setOnClickListener(v -> showTab(1));
+        if (tabVerification != null) tabVerification.setOnClickListener(v -> showTab(2));
     }
 
-    private void showTab(boolean editProfile) {
-        if (panelEditProfile != null)
-            panelEditProfile.setVisibility(editProfile ? View.VISIBLE : View.GONE);
-        if (panelPrivacy != null)
-            panelPrivacy.setVisibility(editProfile ? View.GONE : View.VISIBLE);
+    private void showTab(int index) {
+        // Panels visibility
+        if (panelEditProfile != null)  panelEditProfile.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
+        if (panelPrivacy != null)      panelPrivacy.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
+        if (panelVerification != null) panelVerification.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
 
-        if (tabEditProfile != null) {
-            if (editProfile) {
-                tabEditProfile.setBackground(getDrawable(R.drawable.bg_button_gradient));
-                tabEditProfile.setTextColor(Color.WHITE);
-            } else {
-                tabEditProfile.setBackground(null);
-                tabEditProfile.setTextColor(Color.parseColor("#4B5D7A"));
-            }
-        }
-        if (tabPrivacy != null) {
-            if (!editProfile) {
-                tabPrivacy.setBackground(getDrawable(R.drawable.bg_button_gradient));
-                tabPrivacy.setTextColor(Color.WHITE);
-            } else {
-                tabPrivacy.setBackground(null);
-                tabPrivacy.setTextColor(Color.parseColor("#4B5D7A"));
-            }
+        // Tab styles
+        updateTabStyle(tabEditProfile, index == 0);
+        updateTabStyle(tabPrivacy, index == 1);
+        updateTabStyle(tabVerification, index == 2);
+    }
+
+    private void updateTabStyle(Button btn, boolean selected) {
+        if (btn == null) return;
+        if (selected) {
+            btn.setBackground(getDrawable(R.drawable.bg_button_gradient));
+            btn.setTextColor(Color.WHITE);
+        } else {
+            btn.setBackground(null);
+            btn.setTextColor(Color.parseColor("#4B5D7A"));
         }
     }
 
