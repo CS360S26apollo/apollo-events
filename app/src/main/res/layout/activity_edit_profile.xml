@@ -94,6 +94,45 @@
 
             <!-- PROFILE PANEL -->
             <LinearLayout android:id="@+id/panelEditProfile" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="I am a..."
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="#071A3D" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp">
+
+                    <Button
+                        android:id="@+id/btnRoleStudent"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Student"
+                        android:textAllCaps="false"
+                        android:layout_marginEnd="8dp"
+                        app:cornerRadius="12dp"
+                        android:backgroundTint="#FFFFFF"
+                        android:textColor="#4B5D7A" />
+
+                    <Button
+                        android:id="@+id/btnRoleTutor"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Tutor"
+                        android:textAllCaps="false"
+                        app:cornerRadius="12dp"
+                        android:backgroundTint="#FFFFFF"
+                        android:textColor="#4B5D7A" />
+                </LinearLayout>
+
                 <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:strokeColor="#E4D5FF" app:strokeWidth="1dp" app:cardElevation="0dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Basic Information" android:textColor="#071A3D" android:textSize="17sp" android:textStyle="bold" android:layout_marginBottom="16dp" />
@@ -144,9 +183,32 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
                         <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchProfileVisible" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Publicly Discoverable" />
                         <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Full Name" />
-                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowInstitution" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Institution" />
+
+                        <LinearLayout
+                            android:id="@+id/rowShowInstitution"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchShowInstitution"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Show Institution" />
+                        </LinearLayout>
+
                         <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowSubjects" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Subjects" />
-                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchShowRate" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Hourly Rate" />
+
+                        <LinearLayout
+                            android:id="@+id/rowShowRate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchShowRate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Show Hourly Rate" />
+                        </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
                 <Button android:id="@+id/btnSavePrivacy" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="20dp" android:text="Save Privacy Settings" android:background="@drawable/bg_button_gradient" app:backgroundTint="@null" android:textColor="#FFFFFF" />

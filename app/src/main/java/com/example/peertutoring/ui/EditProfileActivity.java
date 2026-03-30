@@ -76,7 +76,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final String[] CHIP_NAMES = {
             "Mathematics", "Physics", "Chemistry",
             "Biology", "Computer Science", "English",
-            "History", "Economics"
+            "History", "Economics","Accounting"
     };
 
     // ─────────────────────────────────────────────────────────────────────────
