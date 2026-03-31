@@ -11,23 +11,41 @@ import java.util.Map;
 
 /**
  * Handles all Firestore operations for user profiles.
- * Extended for US3: updateProfile and updatePrivacy.
- * Extended for US4: Verification badge methods.
+ * This class serves as the Data Access Object (DAO) for the application,
+ * centralizing all interactions with the Firebase Firestore database.
+ * 
+ * Role: Controller/Data Repository for User Profiles.
+ * Implementation of User Stories 1, 2, 3, and 4.
  */
 public class UserRepository {
 
     private final FirebaseFirestore firestore;
 
+    /**
+     * Initializes the repository with the default Firestore instance.
+     */
     public UserRepository() {
         firestore = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Callback interface for asynchronous Firestore operations.
+     */
     public interface SaveCallback {
+        /** Called when the operation completes successfully. */
         void onSuccess();
+        /** 
+         * Called when the operation fails.
+         * @param error Descriptive error message.
+         */
         void onFailure(String error);
     }
 
-    // ── US1: Save student on signup ───────────────────────────
+    /**
+     * US1: Saves a new student profile to Firestore.
+     * @param student The student model to persist.
+     * @param callback Result listener.
+     */
     public void saveStudentProfile(@NonNull Student student, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(student.getUid())
@@ -36,7 +54,11 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    // ── US2: Save tutor on signup ─────────────────────────────
+    /**
+     * US2: Saves a new tutor profile to Firestore.
+     * @param tutor The tutor model to persist.
+     * @param callback Result listener.
+     */
     public void saveTutorProfile(@NonNull Tutor tutor, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(tutor.getUid())
@@ -45,7 +67,12 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    // ── US3: Update specific profile fields ───────────────────
+    /**
+     * US3: Updates specific fields in a user's profile.
+     * @param uid The unique identifier of the user.
+     * @param updates A map containing the fields and their new values.
+     * @param callback Result listener.
+     */
     public void updateProfile(@NonNull String uid,
                               @NonNull Map<String, Object> updates,
                               @NonNull SaveCallback callback) {
@@ -56,7 +83,12 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    // ── US3: Update only visibility/privacy fields ────────────
+    /**
+     * US3: Updates privacy and visibility settings for a user.
+     * @param uid The unique identifier of the user.
+     * @param privacySettings Map of privacy-related fields (e.g., profileVisible).
+     * @param callback Result listener.
+     */
     public void updatePrivacy(@NonNull String uid,
                               @NonNull Map<String, Object> privacySettings,
                               @NonNull SaveCallback callback) {
@@ -67,9 +99,13 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    // ── US4: Identity Verification ────────────────────────────
     /**
+     * US4: Submits an identification document for tutor verification.
      * Updates the user's document URL and sets verification status to false (pending).
+     * 
+     * @param uid The unique identifier of the user.
+     * @param idDocumentUrl The URL of the uploaded document.
+     * @param callback Result listener.
      */
     public void submitVerificationId(@NonNull String uid,
                                    @NonNull String idDocumentUrl,
@@ -87,6 +123,10 @@ public class UserRepository {
 
     /**
      * Admin method (mocked for now) to verify a user.
+     * Transitions a user from pending to verified status.
+     * 
+     * @param uid The unique identifier of the user.
+     * @param callback Result listener.
      */
     public void verifyUser(@NonNull String uid, @NonNull SaveCallback callback) {
         firestore.collection("users")

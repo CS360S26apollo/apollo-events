@@ -14,8 +14,9 @@ import androidx.fragment.app.Fragment;
 import com.example.peertutoring.R;
 
 /**
- * Final step of student onboarding.
- * Both buttons navigate to HomeActivity (the main app dashboard).
+ * Fragment that displays a success message upon completion of the student onboarding.
+ * Role: View component for the final confirmation step of User Story 1.
+ * Purpose: Confirms profile creation and provides navigation to the main application dashboard.
  */
 public class ProfileCompleteFragment extends Fragment {
 
@@ -30,10 +31,17 @@ public class ProfileCompleteFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        view.findViewById(R.id.buttonFindTutor).setOnClickListener(v -> goToHome());
-        view.findViewById(R.id.buttonViewDashboard).setOnClickListener(v -> goToHome());
+        if (view.findViewById(R.id.buttonFindTutor) != null) {
+            view.findViewById(R.id.buttonFindTutor).setOnClickListener(v -> goToHome());
+        }
+        if (view.findViewById(R.id.buttonViewDashboard) != null) {
+            view.findViewById(R.id.buttonViewDashboard).setOnClickListener(v -> goToHome());
+        }
     }
 
+    /**
+     * Navigates the user to the HomeActivity and clears the activity stack.
+     */
     private void goToHome() {
         Intent intent = new Intent(requireActivity(), HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

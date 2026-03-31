@@ -9,8 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.peertutoring.R;
 
 /**
- * Home screen — shown after onboarding completes.
- * Displays popular subjects and featured tutors.
+ * Main landing screen of the application after successful login or onboarding.
+ * Role: View component for the application dashboard.
+ * Purpose: Displays a summary of popular subjects and featured tutors to the user.
+ * 
+ * Implementation Details:
+ * - Provides navigation to the tutor marketplace and user profile.
+ * - Showcases a curated list of top-rated tutors for quick access.
  */
 public class HomeActivity extends AppCompatActivity {
 
@@ -24,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
         setupSubjectCards();
     }
 
+    /** Initializes the bottom navigation menu and its associated click actions. */
     private void setupBottomNav() {
         View navHome     = findViewById(R.id.navHome);
         View navBrowse   = findViewById(R.id.navBrowse);
@@ -36,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         });
         if (navMessages != null) navMessages.setOnClickListener(v -> {
-            // Messages screen — to be implemented
+            // Messages screen — to be implemented in a future phase
         });
         if (navProfile != null)  navProfile.setOnClickListener(v -> {
             startActivity(new Intent(this, EditProfileActivity.class));
@@ -44,8 +50,8 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    /** Sets up click listeners for featured tutor cards to open their detailed views. */
     private void setupTutorCards() {
-        // ✅ Use View (not LinearLayout) — cards in XML are MaterialCardView
         View cardTutor1 = findViewById(R.id.cardTutor1);
         View cardTutor2 = findViewById(R.id.cardTutor2);
 
@@ -57,6 +63,7 @@ public class HomeActivity extends AppCompatActivity {
                     openTutorDetail("Emily Chen", "Physics Tutor", "50", "5.0", "98"));
     }
 
+    /** Configures subject cards to navigate to the browse screen with pre-applied filters. */
     private void setupSubjectCards() {
         int[] subjectCardIds = {
                 R.id.cardMath, R.id.cardScience, R.id.cardEnglish,
@@ -74,6 +81,14 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Helper method to open the TutorDetailActivity with static data (for prototype).
+     * @param name Name of the tutor.
+     * @param subject Subject specialization.
+     * @param rate Hourly rate.
+     * @param rating Average rating.
+     * @param students Total students count.
+     */
     private void openTutorDetail(String name, String subject, String rate,
                                  String rating, String students) {
         Intent intent = new Intent(this, TutorDetailActivity.class);

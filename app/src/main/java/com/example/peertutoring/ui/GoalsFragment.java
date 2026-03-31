@@ -18,7 +18,10 @@ import com.example.peertutoring.R;
 import java.util.ArrayList;
 
 /**
- * Step 3 of profile onboarding: collect learning goals and save profile.
+ * Fragment for the final step of student onboarding.
+ * Role: View component for Step 3 of the student-specific profile creation flow.
+ * Purpose: Collects the student's learning goals (e.g., Improve Grades, Homework Help)
+ * and triggers the final profile save operation to Firestore.
  */
 public class GoalsFragment extends Fragment {
 
@@ -62,19 +65,27 @@ public class GoalsFragment extends Fragment {
         });
     }
 
+    /**
+     * Initializes a goal card with selection logic and visual feedback.
+     * @param root The parent view.
+     * @param cardId The resource ID of the MaterialCardView.
+     * @param goal The string representation of the goal.
+     */
     private void setupGoalCard(View root, int cardId, String goal) {
         MaterialCardView card = root.findViewById(cardId);
 
-        card.setOnClickListener(v -> {
-            if (selectedGoals.contains(goal)) {
-                selectedGoals.remove(goal);
-                card.setStrokeColor(Color.parseColor("#D9DCE3"));
-                card.setStrokeWidth(1);
-            } else {
-                selectedGoals.add(goal);
-                card.setStrokeColor(Color.parseColor("#8A2EFF"));
-                card.setStrokeWidth(4);
-            }
-        });
+        if (card != null) {
+            card.setOnClickListener(v -> {
+                if (selectedGoals.contains(goal)) {
+                    selectedGoals.remove(goal);
+                    card.setStrokeColor(Color.parseColor("#D9DCE3"));
+                    card.setStrokeWidth(1);
+                } else {
+                    selectedGoals.add(goal);
+                    card.setStrokeColor(Color.parseColor("#8A2EFF"));
+                    card.setStrokeWidth(4);
+                }
+            });
+        }
     }
 }

@@ -11,8 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.peertutoring.R;
 
 /**
- * Browse Tutors screen — lists all available tutors with search.
- * US 04: Displays verification status in tutor list.
+ * Activity for browsing and searching available tutors.
+ * Role: View component for the tutor marketplace/search feature.
+ * Purpose: Allows students to find tutors by name or subject and view their profiles.
+ * 
+ * Implementation of User Story 4: Displays verification status in the tutor list
+ * to help students identify trusted tutors.
  */
 public class BrowseTutorsActivity extends AppCompatActivity {
 
@@ -26,17 +30,27 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         setupBottomNav();
     }
 
+    /**
+     * Initializes the search input field with a text listener.
+     * Note: Full search filtering logic is currently a stub for Phase 3.
+     */
     private void setupSearch() {
         EditText etSearch = findViewById(R.id.etSearchTutor);
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
-            @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
-                // Filter tutor list
-            }
-            @Override public void afterTextChanged(Editable s) {}
-        });
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+                @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+                    // Filter tutor list based on search query
+                }
+                @Override public void afterTextChanged(Editable s) {}
+            });
+        }
     }
 
+    /**
+     * Sets up click listeners for the tutor cards displayed in the list.
+     * Navigates to the detailed view of the selected tutor.
+     */
     private void setupTutorCards() {
         // Sarah Johnson (Verified)
         if (findViewById(R.id.cardTutor1) != null) {
@@ -51,26 +65,38 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initializes the bottom navigation bar and its destination routing.
+     */
     private void setupBottomNav() {
-        findViewById(R.id.navHome).setOnClickListener(v -> {
-            startActivity(new Intent(this, HomeActivity.class));
-            overridePendingTransition(0, 0);
-        });
+        if (findViewById(R.id.navHome) != null) {
+            findViewById(R.id.navHome).setOnClickListener(v -> {
+                startActivity(new Intent(this, HomeActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
 
         findViewById(R.id.navBrowse).setOnClickListener(v -> {
-            // Already on Browse
+            // Already on Browse screen
         });
 
-        findViewById(R.id.navMessages).setOnClickListener(v -> {
-            // Messages — to be implemented
-        });
-
-        findViewById(R.id.navProfile).setOnClickListener(v -> {
-            startActivity(new Intent(this, EditProfileActivity.class));
-            overridePendingTransition(0, 0);
-        });
+        if (findViewById(R.id.navProfile) != null) {
+            findViewById(R.id.navProfile).setOnClickListener(v -> {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
     }
 
+    /**
+     * Helper to launch the TutorDetailActivity with relevant data.
+     * @param name Name of the tutor.
+     * @param subject Main subject taught.
+     * @param rate Hourly token rate.
+     * @param rating Average rating.
+     * @param students Number of students taught.
+     * @param isVerified Whether the tutor has a verified identity badge.
+     */
     private void openTutorDetail(String name, String subject, String rate,
                                  String rating, String students, boolean isVerified) {
         Intent intent = new Intent(this, TutorDetailActivity.class);

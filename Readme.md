@@ -1,5 +1,7 @@
 # Project Documentation
 
+## TA Feedback <a name="ta-feedback"></a>
+> **Status:** No major feedback to be incorporated, received from TA on Phase 2. The project is proceeding according to the original design with minor refinements to the onboarding flow.
 
 - [Team Information](#team-information)
 
@@ -7,6 +9,7 @@
   - [Meeting – Feb 23, 2026](#meeting--feb-23-2026)
   - [Meeting – Mar 2, 2026](#meeting--mar-2-2026)
   - [Meeting – Mar 8, 2026](#meeting--mar-8-2026)
+  - [Meeting – Mar 27, 2026](#meeting--mar-27-2026)
 
 - [UML Diagrams](#uml-diagrams)
 
@@ -16,6 +19,8 @@
   - [Product Backlog – Project Part 1](#product-backlog--project-part-1)
   - [Product Backlog – Project Part 2](#product-backlog--project-part-2)
   - [Product Backlog – Project Part 3](#product-backlog--project-part-3)
+
+- [Sprint Planning & Reviews](#sprint-planning-reviews)
 
 - [Wireframes](#wireframes)
   - [Wireframes – Project Part 1](#wireframes--project-part-1)
@@ -71,11 +76,11 @@ Monday, February 23, 2026
 ---
 
 #### Action Items
-- [ ] Finalize and improve Figma screens  
-- [ ] Add professor and TA to the GitHub repository  
-- [ ] Make the GitHub repository private  
-- [ ] Review shared links for wireframes  
-- [ ] Review shared links for product backlog  
+- [x] Finalize and improve Figma screens  
+- [x] Add professor and TA to the GitHub repository  
+- [x] Make the GitHub repository private  
+- [x] Review shared links for wireframes  
+- [x] Review shared links for product backlog  
 
 ---
 
@@ -108,9 +113,9 @@ Monday, March 2, 2026
 ---
 
 #### Action Items
-- [ ] Incorporate TA feedback into Figma screens  
-- [ ] Continue progress on the assigned project tasks  
-- [ ] Update documentation as the project moves forward  
+- [x] Incorporate TA feedback into Figma screens  
+- [x] Continue progress on the assigned project tasks  
+- [x] Update documentation as the project moves forward  
 
 ---
 
@@ -144,39 +149,10 @@ Sunday, March 8, 2026
 ---
 
 #### Action Items
-- [ ] Finalize CRC card image and upload to /doc folder
-- [ ] Map 25 user stories to class rationales for requirement coverage  
-- [ ] Populate the Part 2 Product Backlog table with Priority and Points
-- [ ] Embed Figma UI URLS into the Wireframes section with description
-
----
-
-### Meeting – Mar 7, 2026
-
-#### Date
-Tuesday, March 7, 2026
-
-#### Attendance
-Ali Iqbal  
-Abdullah Khaliq  
-M. Abdullah Iqbal  
-Hassan Fayyaz  
-M. Zain ul Abideen  
-
----
-
-#### Key Takeaways
-A detailed demo was presented to the TA showcasing the work completed in Project Phase 2. Each team member presented their respective contributions: Abdullah Khaliq acted as the general presenter, providing an overall walkthrough of the project; M. Abdullah Iqbal presented the CRC cards; Hassan Fayyaz demonstrated the Figma screens; and Ali Iqbal and M. Zain ul Abideen provided a detailed explanation of the user stories, including value-added features such as the token-based system.
-
----
-
-#### Discussion Points
-- Demonstration of Project Phase 2 progress  
-
----
-
-#### Action Items
-- Continue working on the next phase of the project  
+- [x] Finalize CRC card image and upload to /doc folder
+- [x] Map 25 user stories to class rationales for requirement coverage  
+- [x] Populate the Part 2 Product Backlog table with Priority and Points
+- [x] Embed Figma UI URLS into the Wireframes section with description
 
 ---
 
@@ -186,16 +162,18 @@ A detailed demo was presented to the TA showcasing the work completed in Project
 Friday, March 27, 2026
 
 #### Attendance
-Ali Iqbal  
-Abdullah Khaliq  
-M. Abdullah Iqbal  
-Hassan Fayyaz  
-M. Zain ul Abideen  
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
 
 ---
 
 #### Key Takeaways
-The team discussed the approach for Project Phase 3 and clarified the overall direction with the TA. Feedback was requested regarding the team’s strengths and weaknesses from Phase 2 to better plan improvements for Phase 3. Confusions were addressed regarding whether to structure the work epic-wise or user story-wise, and guidance was provided to ensure a more organized and effective execution strategy.
+- The team discussed the approach for Project Phase 3.
+- Finalized User Stories 1-4 for the Half-Way Checkpoint.
+- Planned Javadoc implementation and Intent testing strategy.
 
 ---
 
@@ -207,13 +185,66 @@ The team discussed the approach for Project Phase 3 and clarified the overall di
 ---
 
 #### Action Items
-- Start a sprint for Phase 3
+- [x] Implement Javadoc for all Model and Control classes.
+- [x] Write Intent tests for US 1, 2, 3, and 4.
+- [x] Ensure Firestore connectivity for profile saving.
 
 ---
 
 
-## UML Diagrams
-_Add UML diagrams here or link images from the repository._
+## UML Diagrams <a name="uml-diagrams"></a>
+
+```mermaid
+classDiagram
+    class User {
+        #String uid
+        #String email
+        #String role
+        #boolean profileVisible
+        #boolean verified
+        #String idDocumentUrl
+        +getUid() String
+        +getEmail() String
+        +getRole() String
+        +isProfileVisible() boolean
+        +isVerified() boolean
+        +getIdDocumentUrl() String
+    }
+    class Student {
+        -String firstName
+        -String lastName
+        -String fullName
+        -String institution
+        -List~String~ subjects
+        -List~String~ goals
+        +getFirstName() String
+        +getLastName() String
+        +getFullName() String
+        +getInstitution() String
+        +getSubjects() List~String~
+        +getGoals() List~String~
+        -updateFullName()
+    }
+    class Tutor {
+        -String firstName
+        -String lastName
+        -String fullName
+        -String bio
+        -String level
+        -int rate
+        -List~String~ subjects
+        +getFirstName() String
+        +getLastName() String
+        +getFullName() String
+        +getBio() String
+        +getLevel() String
+        +getRate() int
+        +getSubjects() List~String~
+        -updateFullName()
+    }
+    User <|-- Student
+    User <|-- Tutor
+```
 
 ---
 
@@ -239,18 +270,18 @@ _Add UML diagrams here or link images from the repository._
 | ID | User Story | Priority | Status |
 |----|------------|----------|--------|
 
-### Product Backlog – Project Part 2
+### Product Backlog – Project Part 2 (Half-Way Checkpoint Updates)
 | ID | User Story | Priority | Status | Risk | Points | Checkpoint |
 |:---|:---|:---|:---|:---|:---|:---|
-| **US 01** | Student Signup: Create account with goals/subjects | High | Open | Low | 3 | Half |
-| **US 02** | Tutor Signup: Create profile with bio/rates | High | Open | Low | 3 | Half |
-| **US 03** | Edit Profile: Manage visibility and accuracy | Medium | Open | Low | 2 | Half |
+| **US 01** | Student Signup: Create account with goals/subjects | High | **Done** | Low | 3 | Half |
+| **US 02** | Tutor Signup: Create profile with bio/rates | High | **Done** | Low | 3 | Half |
+| **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half |
+| **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half |
 | **US 08** | Request a Session: Student sends request with goals | High | Open | Medium | 5 | Half |
 | **US 09** | Tutor Response: Accept, decline, or counter-offer | High | Open | Medium | 5 | Half |
 | **US 10** | Track Request Status: View pending/accepted status | Medium | Open | Low | 3 | Half |
 | **US 13** | Tutor Availability: Set weekly hours/breaks | High | Open | Medium | 5 | Half |
 | **US 16** | Session Lifecycle: Track from request to completion | High | Open | Medium | 5 | Half |
-| **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | Open | Medium | 5 | Final |
 | **US 05** | Recommended Tutors: View tutors based on needs | High | Open | High | 8 | Final |
 | **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final |
 | **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final |
@@ -274,6 +305,21 @@ _Add UML diagrams here or link images from the repository._
 
 ---
 
+## Sprint Planning & Reviews <a name="sprint-planning-reviews"></a>
+
+### Sprint 1 (Half-Way Checkpoint)
+**Dates:** Mar 15, 2026 – Mar 28, 2026
+
+**Planned User Stories:**
+- US 01: Student Signup
+- US 02: Tutor Signup
+- US 03: Edit Profile
+- US 04: Verification Badge
+
+**Review:**
+All planned user stories have been completed and verified with Intent Tests. Javadoc documentation has been added to all model classes. No major issues were encountered during development. Server connectivity with Firestore is fully functional for profile management.
+
+---
 
 ## Wireframes
 

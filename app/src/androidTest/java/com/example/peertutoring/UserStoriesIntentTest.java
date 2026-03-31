@@ -34,6 +34,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * Intent Tests for User Stories 1 through 4.
+ * This class uses Espresso to simulate user interactions and verify that
+ * the application navigates correctly and displays the expected UI components.
+ * 
+ * Deliverable Requirement #4: Intent tests for completed requirements.
+ * Completed User Stories:
+ * - US1: Student Account Creation
+ * - US2: Tutor Account Creation
+ * - US3: Profile Editing & Privacy
+ * - US4: Identity Verification UI
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class UserStoriesIntentTest {
@@ -66,7 +78,7 @@ public class UserStoriesIntentTest {
     }
 
     /**
-     * User Story 1 & 2: Account Creation and Role Selection Intent Test
+     * Tests US1 & US2: Verifies that registration triggers navigation to the Profile onboarding.
      */
     @Test
     public void testRegistrationIntentToProfileActivity() {
@@ -93,7 +105,7 @@ public class UserStoriesIntentTest {
     }
 
     /**
-     * User Story 3: Edit Profile & Privacy Visibility
+     * Tests US3: Verifies that the privacy tab and its switches are accessible and functional.
      */
     @Test
     public void testEditProfilePrivacyToggle() {
@@ -116,7 +128,7 @@ public class UserStoriesIntentTest {
     }
 
     /**
-     * User Story 4: Tutor Verification Status UI
+     * Tests US4: Verifies that the Verification tab displays the identity verification UI.
      */
     @Test
     public void testVerificationTabNavigation() {
@@ -139,7 +151,7 @@ public class UserStoriesIntentTest {
     }
 
     /**
-     * Realistic Data Test: Profile Completion Flow
+     * Tests realistic data input during the profile completion flow.
      */
     @Test
     public void testEditProfileFieldInput() {

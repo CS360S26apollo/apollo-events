@@ -15,7 +15,9 @@ import com.example.peertutoring.R;
 import com.example.peertutoring.utils.ValidationUtils;
 
 /**
- * MainActivity handles signup and role selection.
+ * MainActivity handles the initial user signup process and role selection.
+ * This activity facilitates User Stories 1 and 2 by allowing users to create
+ * an account as either a Student or a Tutor using Firebase Authentication.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
         continueButton.setOnClickListener(v -> registerUser());
     }
 
+    /**
+     * Validates user input and attempts to register a new account via Firebase Auth.
+     * On success, navigates the user to the ProfileActivity to complete their onboarding.
+     */
     private void registerUser() {
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
@@ -81,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> showToast(e.getMessage()));
     }
 
+    /**
+     * Helper method to display a short Toast message.
+     * @param message The text to display.
+     */
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

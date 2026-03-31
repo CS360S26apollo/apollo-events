@@ -13,7 +13,9 @@ import androidx.fragment.app.Fragment;
 import com.example.peertutoring.R;
 
 /**
- * Initial screen for Tutor onboarding flow.
+ * Fragment that serves as the entry point for the Tutor onboarding flow.
+ * Role: View component for User Story 2.
+ * Purpose: Introduces the tutoring benefits and initiates the multi-step profile creation process.
  */
 public class TutorIntroFragment extends Fragment {
 
@@ -29,8 +31,10 @@ public class TutorIntroFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Button getStartedButton = view.findViewById(R.id.buttonGetStarted);
-        getStartedButton.setOnClickListener(v -> {
-            ((ProfileActivity) requireActivity()).goToNameStep();
-        });
+        if (getStartedButton != null) {
+            getStartedButton.setOnClickListener(v -> {
+                ((ProfileActivity) requireActivity()).goToNameStep();
+            });
+        }
     }
 }

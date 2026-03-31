@@ -22,7 +22,13 @@ import com.example.peertutoring.R;
 import java.util.ArrayList;
 
 /**
- * Step 2 (Student) or Step 3 (Tutor) of profile onboarding: collect institution and subjects.
+ * Fragment responsible for collecting academic information during onboarding.
+ * Role: View component for Step 2 (Student) or Step 3 (Tutor) of profile creation.
+ * Purpose: Captures the user's institution (for students) and subjects of interest.
+ * 
+ * Outstanding Issues: 
+ * - Subject list is currently hardcoded in the layout/code.
+ * - Institution validation is basic (non-empty check).
  */
 public class AcademicFragment extends Fragment {
 
@@ -56,15 +62,11 @@ public class AcademicFragment extends Fragment {
         // Adjust UI for Tutor flow (Hide institution section)
         if ("tutor".equals(profileActivity.getRole())) {
             if (institutionEditText != null) {
-                // Hide the TextInputLayout and its label
                 try {
                     View textInputLayout = (View) institutionEditText.getParent().getParent();
                     if (textInputLayout != null) {
                         textInputLayout.setVisibility(View.GONE);
                     }
-                    // Find the label above the TextInputLayout (it's the first child of the vertical LinearLayout in the layout)
-                    // But simpler to just target the specific parent if known.
-                    // Given the layout structure, we can hide the vertical container for institution.
                 } catch (Exception e) {
                     institutionEditText.setVisibility(View.GONE);
                 }
@@ -117,6 +119,12 @@ public class AcademicFragment extends Fragment {
         });
     }
 
+    /**
+     * Initializes a chip for a specific subject and sets up its selection logic.
+     * @param view The root view containing the chip.
+     * @param chipId Resource ID of the Chip.
+     * @param subjectName The name of the subject associated with this chip.
+     */
     private void setupChip(View view, int chipId, String subjectName) {
         Chip chip = view.findViewById(chipId);
         if (chip != null) {
@@ -136,6 +144,10 @@ public class AcademicFragment extends Fragment {
         }
     }
 
+    /**
+     * Dynamically adds a new chip to the group for a user-entered subject.
+     * @param subjectName The name of the custom subject to add.
+     */
     private void addNewChip(String subjectName) {
         Chip chip = new Chip(getContext());
         chip.setText(subjectName);

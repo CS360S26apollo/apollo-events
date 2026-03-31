@@ -17,7 +17,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.example.peertutoring.R;
 
 /**
- * Step 2 (Tutor) of profile onboarding: collect level and rate.
+ * Fragment responsible for collecting specific professional details for Tutor onboarding.
+ * Role: View component for Step 2 of the Tutor profile creation flow.
+ * Purpose: Captures the tutor's academic level and desired hourly token rate.
+ * 
+ * Implementation Details:
+ * - Uses a dropdown (AutoCompleteTextView) for academic level selection.
+ * - Validates that both level and rate are provided before continuing.
  */
 public class TutorDetailsFragment extends Fragment {
 
@@ -47,26 +53,36 @@ public class TutorDetailsFragment extends Fragment {
         // Setup Level dropdown
         String[] levels = {"Undergraduate - Freshman", "Undergraduate - Sophomore", "Undergraduate - Junior", "Undergraduate - Senior", "Graduate", "PhD Candidate", "Professional"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, levels);
-        levelAutoComplete.setAdapter(adapter);
+        if (levelAutoComplete != null) {
+            levelAutoComplete.setAdapter(adapter);
+        }
 
-        backButton.setOnClickListener(v -> profileActivity.goBackToName());
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> profileActivity.goBackToName());
+        }
 
-        continueButton.setOnClickListener(v -> {
-            String level = levelAutoComplete.getText().toString().trim();
-            String rateStr = rateEditText.getText() != null ? rateEditText.getText().toString().trim() : "";
+        if (continueButton != null) {
+            continueButton.setOnClickListener(v -> {
+                String level = levelAutoComplete.getText().toString().trim();
+                String rateStr = rateEditText.getText() != null ? rateEditText.getText().toString().trim() : "";
 
-            if (TextUtils.isEmpty(level)) {
-                levelAutoComplete.setError("Required");
-                return;
-            }
-            if (TextUtils.isEmpty(rateStr)) {
-                rateEditText.setError("Required");
-                return;
-            }
+                if (TextUtils.isEmpty(level)) {
+                    levelAutoComplete.setError("Required");
+                    return;
+                }
+                if (TextUtils.isEmpty(rateStr)) {
+                    rateEditText.setError("Required");
+                    return;
+                }
 
-            int rate = Integer.parseInt(rateStr);
-            // bio is already stored in ProfileActivity from NameFragment step
-            profileActivity.goToTutorSubjects(null, level, rate);
-        });
+                try {
+                    int rate = Integer.parseInt(rateStr);
+                    // bio is already stored in ProfileActivity from NameFragment step
+                    profileActivity.goToTutorSubjects(null, level, rate);
+                } catch (NumberFormatException e) {
+                    rateEditText.setError("Invalid rate");
+                }
+            });
+        }
     }
 }

@@ -19,7 +19,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.example.peertutoring.R;
 
 /**
- * Step 1 of profile onboarding: collect name (and bio for tutors).
+ * Fragment for the first step of profile onboarding.
+ * Role: View component for Step 1 of profile creation.
+ * Purpose: Collects basic naming information and professional bio (for tutors).
+ * 
+ * Implementation Details:
+ * - Dynamically switches layouts based on whether the user is a student or tutor.
+ * - Includes a real-time character counter for the tutor's bio field.
  */
 public class NameFragment extends Fragment {
 

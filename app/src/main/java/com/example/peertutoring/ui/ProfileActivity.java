@@ -14,7 +14,12 @@ import com.example.peertutoring.models.Tutor;
 import java.util.ArrayList;
 
 /**
- * Container activity for the multi-step onboarding flow for both Students and Tutors.
+ * ProfileActivity serves as the main host for the multi-step onboarding process.
+ * It manages the navigation between different fragments (Name, Academic, Goals, etc.)
+ * based on the user's selected role (Student or Tutor).
+ * 
+ * Role: Navigation Controller / Step Orchestrator for US1 and US2.
+ * Design Pattern: Fragment Container.
  */
 public class ProfileActivity extends AppCompatActivity {
 
@@ -55,10 +60,15 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /** Navigates to the Name collection step. */
     public void goToNameStep() {
         loadFragment(new NameFragment());
     }
 
+    /** 
+     * Navigates to the next step after names are provided.
+     * Routes to TutorDetails for tutors or Academic info for students.
+     */
     public void goToNextStepAfterName(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -71,6 +81,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /** Routes the Tutor flow to the detailed information step. */
     public void goToTutorDetails(String fullName, String bio) {
         this.fullName = fullName;
         this.bio = bio;
@@ -84,12 +95,14 @@ public class ProfileActivity extends AppCompatActivity {
 
     // --- Student Flow Methods ---
     
+    /** Routes the Student flow to the learning goals step. */
     public void goToGoals(String institution, ArrayList<String> subjects) {
         this.institution = institution;
         this.subjects = subjects;
         loadFragment(new GoalsFragment());
     }
 
+    /** Finalizes student registration by persisting the profile to Firestore. */
     public void finishStudentRegistration(ArrayList<String> goals) {
         this.goals = goals;
 
@@ -119,6 +132,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     // --- Tutor Flow Methods ---
 
+    /** Routes the Tutor flow to the subject selection step. */
     public void goToTutorSubjects(String bio, String level, int rate) {
         if (bio != null) this.bio = bio;
         this.level = level;
@@ -126,6 +140,7 @@ public class ProfileActivity extends AppCompatActivity {
         loadFragment(new AcademicFragment());
     }
 
+    /** Finalizes tutor registration by persisting the profile to Firestore. */
     public void finishTutorRegistration(ArrayList<String> subjects) {
         this.subjects = subjects;
 
@@ -158,24 +173,29 @@ public class ProfileActivity extends AppCompatActivity {
 
     // --- Navigation Helpers ---
 
+    /** @return The current user role (student/tutor). */
     public String getRole() {
         return role;
     }
 
+    /** Navigates back to the Tutor introduction screen. */
     public void goBackToIntro() {
         if ("tutor".equals(role)) {
             loadFragment(new TutorIntroFragment());
         }
     }
 
+    /** Navigates back to the Name entry screen. */
     public void goBackToName() {
         loadFragment(new NameFragment());
     }
 
+    /** Navigates back to the Tutor details screen. */
     public void goBackToTutorDetails() {
         loadFragment(new TutorDetailsFragment());
     }
 
+    /** Navigates back to the Academic info screen. */
     public void goBackToAcademic() {
         loadFragment(new AcademicFragment());
     }
