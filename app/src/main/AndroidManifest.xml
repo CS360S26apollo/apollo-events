@@ -24,6 +24,11 @@
             </intent-filter>
         </activity>
 
+        <!-- Login screen -->
+        <activity
+            android:name=".ui.LoginActivity"
+            android:exported="false" />
+
         <!-- Onboarding flow (User story 1 + User Story2) -->
         <activity
             android:name=".ui.ProfileActivity"

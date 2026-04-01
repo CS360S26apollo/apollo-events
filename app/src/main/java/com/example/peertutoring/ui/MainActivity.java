@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText confirmPasswordEditText;
     private RadioGroup roleRadioGroup;
     private Button continueButton;
+    private TextView signInTextView;
 
     private FirebaseAuth auth;
 
@@ -36,13 +38,27 @@ public class MainActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
+        // Check if user is already logged in
+        if (auth.getCurrentUser() != null) {
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
+            return;
+        }
+
         emailEditText = findViewById(R.id.editTextEmail);
         passwordEditText = findViewById(R.id.editTextPassword);
         confirmPasswordEditText = findViewById(R.id.editTextConfirmPassword);
         roleRadioGroup = findViewById(R.id.radioGroupRole);
         continueButton = findViewById(R.id.buttonContinue);
+        signInTextView = findViewById(R.id.textViewSignIn);
 
         continueButton.setOnClickListener(v -> registerUser());
+        
+        if (signInTextView != null) {
+            signInTextView.setOnClickListener(v -> {
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            });
+        }
     }
 
     /**
