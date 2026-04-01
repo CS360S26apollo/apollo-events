@@ -14,9 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,14 +35,6 @@ import java.util.Map;
 /**
  * Activity for users to view and modify their profile information and privacy settings.
  * Role: View component for User Story 3 (Edit Profile & Privacy) and User Story 4 (Verification).
- * 
- * Implementation Details:
- * - Supports both Student and Tutor profile edits with dynamic UI switching.
- * - Manages privacy toggles for field visibility.
- * - Provides an interface for tutors to initiate the identity verification process.
- * 
- * Outstanding Issues:
- * - Verification ID upload (currently just UI placeholders for document selection).
  */
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -66,15 +58,11 @@ public class EditProfileActivity extends AppCompatActivity {
             etInstitution, etBio, etRate;
     private TextView tvCharCount;
     private LinearLayout layoutInstitution, layoutBio, layoutRate;
-    private ChipGroup chipGroupSubjects;
 
     // -- Privacy switches
     private SwitchMaterial switchShowName, switchShowInstitution,
             switchShowSubjects, switchShowRate, switchProfileVisible;
     private LinearLayout rowShowInstitution, rowShowRate;
-
-    // -- Role from Firestore
-    private String savedRole = "student";
 
     // -- Subject chip IDs and names
     private static final int[] CHIP_IDS = {
@@ -85,7 +73,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final String[] CHIP_NAMES = {
             "Mathematics", "Physics", "Chemistry",
             "Biology", "Computer Science", "English",
-            "History", "Economics","Accounting"
+            "History", "Economics"
     };
 
     @Override
@@ -139,7 +127,6 @@ public class EditProfileActivity extends AppCompatActivity {
         layoutInstitution     = findViewById(R.id.layoutInstitution);
         layoutBio             = findViewById(R.id.layoutBio);
         layoutRate            = findViewById(R.id.layoutRate);
-        chipGroupSubjects     = findViewById(R.id.chipGroupSubjects);
         switchShowName        = findViewById(R.id.switchShowName);
         switchShowInstitution = findViewById(R.id.switchShowInstitution);
         switchShowSubjects    = findViewById(R.id.switchShowSubjects);
@@ -170,7 +157,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private void updateTabStyle(Button btn, boolean selected) {
         if (btn == null) return;
         if (selected) {
-            btn.setBackground(getDrawable(R.drawable.bg_button_gradient));
+            btn.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_button_gradient));
             btn.setTextColor(Color.WHITE);
         } else {
             btn.setBackground(null);
@@ -200,7 +187,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (btnRoleStudent != null) {
             if (role.equals("student")) {
-                btnRoleStudent.setBackground(getDrawable(R.drawable.bg_button_gradient));
+                btnRoleStudent.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_button_gradient));
                 btnRoleStudent.setTextColor(Color.WHITE);
             } else {
                 btnRoleStudent.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
@@ -209,7 +196,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         if (btnRoleTutor != null) {
             if (role.equals("tutor")) {
-                btnRoleTutor.setBackground(getDrawable(R.drawable.bg_button_gradient));
+                btnRoleTutor.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_button_gradient));
                 btnRoleTutor.setTextColor(Color.WHITE);
             } else {
                 btnRoleTutor.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
@@ -220,8 +207,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     /** Sets up selection listeners for the subject chips. */
     private void setupChips() {
-        for (int i = 0; i < CHIP_IDS.length; i++) {
-            Chip chip = findViewById(CHIP_IDS[i]);
+        for (int id : CHIP_IDS) {
+            Chip chip = findViewById(id);
             if (chip == null) continue;
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 chip.setChipBackgroundColor(ColorStateList.valueOf(
@@ -261,7 +248,8 @@ public class EditProfileActivity extends AppCompatActivity {
         etBio.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
-                tvCharCount.setText(s.length() + "/500 characters");
+                String count = s.length() + "/500 characters";
+                tvCharCount.setText(count);
             }
             @Override public void afterTextChanged(Editable s) {}
         });
@@ -284,13 +272,13 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to load profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(EditProfileActivity.this, "Failed to load profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     /** Populates the UI widgets with data from a Firestore DocumentSnapshot. */
     @SuppressWarnings("unchecked")
     private void populateUI(DocumentSnapshot doc) {
-        savedRole   = doc.getString("role") != null ? doc.getString("role") : "student";
+        String savedRole = doc.getString("role") != null ? doc.getString("role") : "student";
         currentRole = savedRole;
         applyRoleUI(currentRole);
 
@@ -307,8 +295,9 @@ public class EditProfileActivity extends AppCompatActivity {
         if (tvAvatarInitials != null) tvAvatarInitials.setText(initials.toUpperCase());
 
         if (tvUserName != null) tvUserName.setText(fullName != null ? fullName : "");
-        if (tvUserRole != null && savedRole.length() > 0) {
-            tvUserRole.setText(Character.toUpperCase(savedRole.charAt(0)) + savedRole.substring(1));
+        if (tvUserRole != null && !savedRole.isEmpty()) {
+            String roleText = Character.toUpperCase(savedRole.charAt(0)) + savedRole.substring(1);
+            tvUserRole.setText(roleText);
         }
 
         if (etEmail != null && currentUser != null && currentUser.getEmail() != null) {
@@ -370,12 +359,16 @@ public class EditProfileActivity extends AppCompatActivity {
             String bio     = etBio  != null && etBio.getText()  != null ? etBio.getText().toString().trim()  : "";
             String rateStr = etRate != null && etRate.getText() != null ? etRate.getText().toString().trim() : "";
             if (!TextUtils.isEmpty(bio)) updates.put("bio",  bio);
-            if (!TextUtils.isEmpty(rateStr)) updates.put("rate", Integer.parseInt(rateStr));
+            if (!TextUtils.isEmpty(rateStr)) {
+                try {
+                    updates.put("rate", Integer.parseInt(rateStr));
+                } catch (NumberFormatException ignored) {}
+            }
         }
 
         db.collection("users").document(currentUser.getUid()).set(updates, SetOptions.merge())
-                .addOnSuccessListener(unused -> Toast.makeText(this, "✅ Profile saved!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnSuccessListener(unused -> Toast.makeText(EditProfileActivity.this, "✅ Profile saved!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
     /** Saves only the privacy/visibility settings back to Firestore. */
@@ -390,7 +383,7 @@ public class EditProfileActivity extends AppCompatActivity {
         if (switchProfileVisible  != null) privacy.put("profileVisible",  switchProfileVisible.isChecked());
 
         db.collection("users").document(currentUser.getUid()).set(privacy, SetOptions.merge())
-                .addOnSuccessListener(unused -> Toast.makeText(this, " Privacy settings saved!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnSuccessListener(unused -> Toast.makeText(EditProfileActivity.this, " Privacy settings saved!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 }

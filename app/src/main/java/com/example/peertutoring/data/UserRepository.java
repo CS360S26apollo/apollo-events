@@ -2,11 +2,15 @@ package com.example.peertutoring.data;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.peertutoring.models.Student;
 import com.example.peertutoring.models.Tutor;
+import com.google.firebase.firestore.Query;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +19,7 @@ import java.util.Map;
  * centralizing all interactions with the Firebase Firestore database.
  * 
  * Role: Controller/Data Repository for User Profiles.
- * Implementation of User Stories 1, 2, 3, and 4.
+ * Implementation of User Stories 1, 2, 3, 4, and 5.
  */
 public class UserRepository {
 
@@ -38,6 +42,11 @@ public class UserRepository {
          * Called when the operation fails.
          * @param error Descriptive error message.
          */
+        void onFailure(String error);
+    }
+
+    public interface LoadCallback<T> {
+        void onSuccess(T data);
         void onFailure(String error);
     }
 
@@ -133,6 +142,45 @@ public class UserRepository {
                 .document(uid)
                 .update("verified", true)
                 .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+    }
+
+    /**
+     * US5: Fetches tutors based on student preferences (subjects).
+     *
+     * @param studentSubjects List of subjects the student is interested in.
+     * @param callback Result listener returning a list of Tutor models.
+     */
+    public void getRecommendedTutors(@NonNull List<String> studentSubjects, @NonNull LoadCallback<List<DocumentSnapshot>> callback) {
+        if (studentSubjects.isEmpty()) {
+            // Fallback: Fetch featured tutors if no preferences set
+            firestore.collection("users")
+                    .whereEqualTo("role", "tutor")
+                    .orderBy("rating", Query.Direction.DESCENDING)
+                    .limit(5)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> callback.onSuccess(queryDocumentSnapshots.getDocuments()))
+                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+            return;
+        }
+
+        firestore.collection("users")
+                .whereEqualTo("role", "tutor")
+                .whereArrayContainsAny("subjects", studentSubjects)
+                .limit(10)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> callback.onSuccess(queryDocumentSnapshots.getDocuments()))
+                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+    }
+
+    /**
+     * Fetches a user document by UID.
+     */
+    public void getUserProfile(@NonNull String uid, @NonNull LoadCallback<DocumentSnapshot> callback) {
+        firestore.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(callback::onSuccess)
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 }
