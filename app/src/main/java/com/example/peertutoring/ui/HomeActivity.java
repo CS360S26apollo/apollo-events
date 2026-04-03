@@ -42,7 +42,8 @@ public class HomeActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         });
         if (navMessages != null) navMessages.setOnClickListener(v -> {
-            // Messages screen — to be implemented in a future phase
+            startActivity(new Intent(this, SessionRequestsActivity.class));
+            overridePendingTransition(0, 0);
         });
         if (navProfile != null)  navProfile.setOnClickListener(v -> {
             startActivity(new Intent(this, EditProfileActivity.class));

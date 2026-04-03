@@ -196,12 +196,20 @@ public class BrowseTutorsActivity extends AppCompatActivity {
     private void setupBottomNav() {
         View navHome = findViewById(R.id.navHome);
         View navBrowse = findViewById(R.id.navBrowse);
+        View navMessages = findViewById(R.id.navMessages);
         View navProfile = findViewById(R.id.navProfile);
 
         if (navHome != null) {
             navHome.setOnClickListener(v -> {
                 startActivity(new Intent(this, HomeActivity.class));
                 finish();
+                overridePendingTransition(0, 0);
+            });
+        }
+
+        if (navMessages != null) {
+            navMessages.setOnClickListener(v -> {
+                startActivity(new Intent(this, SessionRequestsActivity.class));
                 overridePendingTransition(0, 0);
             });
         }

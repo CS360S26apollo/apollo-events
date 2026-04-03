@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="20dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <!-- Top row: avatar + name + rating + rate -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="10dp">
+
+            <!-- Avatar with verified badge -->
+            <FrameLayout
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="14dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAvatar"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardBackgroundColor="#7C3AED"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:id="@+id/tvTutorInitials"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="SC"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Verified badge -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/badgeVerified"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="bottom|end"
+                    app:cardCornerRadius="10dp"
+                    app:cardBackgroundColor="#00C853"
+                    app:cardElevation="2dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
+
+            <!-- Name + rating + rate -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTutorName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dr. Sarah Chen"
+                    android:textColor="#071A3D"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- Star rating -->
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⭐ " android:textSize="13sp" />
+                        <TextView android:id="@+id/tvRating" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4.9" android:textColor="#E07B00" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvReviewCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" (127)" android:textColor="#8B97A8" android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Rate chip -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#089A3C"
+                        app:cardElevation="0dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="10dp" android:paddingVertical="4dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙 " android:textSize="11sp" />
+                            <TextView android:id="@+id/tvRate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="45" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" /hr" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Subject tags -->
+        <LinearLayout
+            android:id="@+id/layoutSubjectTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Tutor message / pitch -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="top"
+            android:background="#F8F9FA"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="12dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💬 " android:textSize="14sp" android:layout_marginEnd="4dp" />
+
+            <TextView
+                android:id="@+id/tvTutorMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hi! I have a PhD in Mathematics and 8 years of tutoring experience. I specialize in calculus and can help you master these techniques with real-world examples."
+                android:textColor="#4B5D7A"
+                android:textSize="13sp"
+                android:lineSpacingExtra="3dp" />
+        </LinearLayout>
+
+        <!-- Accept Offer button -->
+        <Button
+            android:id="@+id/btnAcceptOffer"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_button_gradient"
+            android:text="🎓  Accept Offer"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="@null"
+            app:cornerRadius="28dp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
