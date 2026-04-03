@@ -29,7 +29,7 @@
             android:name=".ui.LoginActivity"
             android:exported="false" />
 
-        <!-- Onboarding flow (User story 1 + User Story2) -->
+        <!-- Onboarding flow (US1 + US2) -->
         <activity
             android:name=".ui.ProfileActivity"
             android:exported="false" />
@@ -55,19 +55,39 @@
             android:label="Profile Settings"
             android:exported="false" />
 
-        <!-- Session Requests Activity -->
+        <!-- Session Requests Dashboard (US8 - Student) -->
         <activity
             android:name=".ui.SessionRequestsActivity"
             android:exported="false" />
 
-        <!-- New Session Request Activity -->
+        <!-- New Session Request Form (US8 - Student) -->
         <activity
             android:name=".ui.NewSessionRequestActivity"
             android:exported="false" />
 
-        <!-- Tutor Offers Activity -->
+        <!-- Tutor Offers screen (US8 - Student) -->
         <activity
             android:name=".ui.TutorOffersActivity"
+            android:exported="false" />
+
+        <!-- Tutor Requests Dashboard (US9 - Tutor) -->
+        <activity
+            android:name=".ui.TutorRequestsActivity"
+            android:exported="false" />
+
+        <!-- Request Detail: Accept / Counter / Decline (US9 - Tutor) -->
+        <activity
+            android:name=".ui.RequestDetailActivity"
+            android:exported="false" />
+
+        <!-- Counter Offer Form (US9 - Tutor) -->
+        <activity
+            android:name=".ui.CounterOfferActivity"
+            android:exported="false" />
+
+        <!-- Result screen: Accepted / Declined / Counter Sent (US9 - Tutor) -->
+        <activity
+            android:name=".ui.RequestResultActivity"
             android:exported="false" />
 
     </application>

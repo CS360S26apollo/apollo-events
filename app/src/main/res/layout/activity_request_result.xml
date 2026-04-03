@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F8"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="28dp"
+        android:paddingTop="80dp">
+
+        <!-- Result icon (green check / purple X / blue send) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardResultIcon"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            app:cardCornerRadius="48dp"
+            app:cardBackgroundColor="#00C853"
+            app:cardElevation="8dp"
+            android:layout_marginBottom="24dp">
+            <TextView
+                android:id="@+id/tvResultIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="✓"
+                android:textColor="#FFFFFF"
+                android:textSize="44sp"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvResultTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Request Accepted!"
+            android:textColor="#071A3D"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Subtitle -->
+        <TextView
+            android:id="@+id/tvResultSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="The student has been notified"
+            android:textColor="#8B97A8"
+            android:textSize="15sp"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Session summary card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Student row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="26dp"
+                        app:cardBackgroundColor="#D0C4F7"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:id="@+id/tvSummaryInitials"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="EC"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                        <TextView android:id="@+id/tvSummaryName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Emily Chen" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvSummarySubject" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mathematics" android:textColor="#8A2EFF" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginBottom="16dp" />
+
+                <!-- Session Date row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Session Date:" android:textColor="#8B97A8" android:textSize="14sp" />
+                    <TextView android:id="@+id/tvSummaryDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mar 12, 2026" android:textColor="#071A3D" android:textSize="14sp" android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Time row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Time:" android:textColor="#8B97A8" android:textSize="14sp" />
+                    <TextView android:id="@+id/tvSummaryTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="14:00" android:textColor="#071A3D" android:textSize="14sp" android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Duration row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Duration:" android:textColor="#8B97A8" android:textSize="14sp" />
+                    <TextView android:id="@+id/tvSummaryDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="60 minutes" android:textColor="#071A3D" android:textSize="14sp" android:textStyle="bold" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginBottom="16dp" />
+
+                <!-- Tokens row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Tokens:" android:textColor="#8B97A8" android:textSize="14sp" />
+                    <TextView android:id="@+id/tvSummaryTokens" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="150 tokens" android:textColor="#00C853" android:textSize="15sp" android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Counter offer section (shown only for counter offer result) -->
+                <LinearLayout
+                    android:id="@+id/layoutCounterOfferSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_marginTop="16dp">
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginBottom="16dp" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="YOUR COUNTER OFFER" android:textColor="#8A2EFF" android:textSize="11sp" android:letterSpacing="0.1" android:textStyle="bold" android:layout_marginBottom="12dp" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📅 " android:textSize="13sp" android:textColor="#0062FF" />
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Date" android:textColor="#8B97A8" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvCounterDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mar 10" android:textColor="#071A3D" android:textSize="14sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🕒 " android:textSize="13sp" android:textColor="#00C853" />
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Time" android:textColor="#8B97A8" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvCounterTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="16:30" android:textColor="#071A3D" android:textSize="14sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⏱️ " android:textSize="13sp" android:textColor="#8A2EFF" />
+                            <TextView android:id="@+id/tvCounterDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="90 min" android:textColor="#071A3D" android:textSize="14sp" android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="20dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:paddingVertical="6dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙 " android:textSize="12sp" />
+                                <TextView android:id="@+id/tvCounterTokens" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="225 tokens" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Back to Requests button -->
+        <Button
+            android:id="@+id/btnBackToRequests"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#00C853"
+            android:text="🏠  Back to Requests"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="28dp" />
+
+    </LinearLayout>
+</ScrollView>

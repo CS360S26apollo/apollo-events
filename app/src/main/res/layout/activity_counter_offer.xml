@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- ── GRADIENT HEADER ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_button_gradient"
+        android:paddingTop="48dp"
+        android:paddingBottom="28dp"
+        android:paddingHorizontal="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_circle_gradient"
+                android:src="@android:drawable/ic_media_previous"
+                android:contentDescription="Back"
+                app:tint="#FFFFFF"
+                android:layout_marginEnd="14dp" />
+
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Counter Offer" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Propose your terms" android:textColor="#CCFFFFFF" android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ── FORM ── -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Student summary card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginEnd="12dp"
+                            app:cardCornerRadius="24dp"
+                            app:cardBackgroundColor="#D0C4F7"
+                            app:cardElevation="0dp">
+                            <TextView
+                                android:id="@+id/tvStudentInitials"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="MJ"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                            <TextView android:id="@+id/tvStudentName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Marcus Johnson" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/tvSubject" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Physics" android:textColor="#4B5D7A" android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#F8F9FA"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:id="@+id/tvOriginalTerms"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="12dp"
+                            android:text="Original: Mar 10 at 16:30 • 90m • 225 tokens"
+                            android:textColor="#4B5D7A"
+                            android:textSize="13sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── SELECT DATE (tappable card → DatePickerDialog) ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDateSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="📅" android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select Date" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Tappable display area — opens DatePickerDialog -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#EEF2FF"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:id="@+id/etDate"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Tap to select date"
+                                android:textColor="#4B5D7A"
+                                android:textSize="15sp"
+                                android:clickable="true"
+                                android:focusable="true" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="›"
+                                android:textColor="#0062FF"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📌 Past dates are not selectable"
+                        android:textColor="#8B97A8"
+                        android:textSize="12sp"
+                        android:layout_marginTop="6dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── SELECT TIME (tappable card → TimePickerDialog) ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTimeSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🕒" android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select Time" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Tappable display area — opens TimePickerDialog -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#E6FAF0"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:id="@+id/etTime"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Tap to select time"
+                                android:textColor="#4B5D7A"
+                                android:textSize="15sp"
+                                android:clickable="true"
+                                android:focusable="true" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="›"
+                                android:textColor="#00C853"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🕐 24-hour format (e.g. 14:30)"
+                        android:textColor="#8B97A8"
+                        android:textSize="12sp"
+                        android:layout_marginTop="6dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Duration stepper -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#8A2EFF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="⏱️" android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Duration" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnDurationMinus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="−" android:textColor="#8A2EFF" android:textSize="22sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:paddingVertical="14dp">
+                                <TextView android:id="@+id/tvDurationValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="90" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="minutes" android:textColor="#8B97A8" android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnDurationPlus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="+" android:textColor="#8A2EFF" android:textSize="22sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Token Amount stepper -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🪙" android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Token Amount" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnTokenMinus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="−" android:textColor="#00C853" android:textSize="22sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:paddingVertical="14dp">
+                                <TextView android:id="@+id/tvTokenValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="225" android:textColor="#FFFFFF" android:textSize="28sp" android:textStyle="bold" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="tokens" android:textColor="#CCFFFFFF" android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnTokenPlus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="+" android:textColor="#00C853" android:textSize="22sp" android:textStyle="bold" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Optional message -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="💬" android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Add Message (Optional)" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
+                        <android.widget.EditText
+                            android:id="@+id/etMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp"
+                            android:hint="Explain your counter offer to the student..."
+                            android:textColorHint="#8B97A8"
+                            android:textColor="#071A3D"
+                            android:textSize="14sp"
+                            android:inputType="textMultiLine"
+                            android:minLines="4"
+                            android:gravity="top"
+                            android:background="@null" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Send button -->
+            <Button
+                android:id="@+id/btnSendCounterOffer"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/bg_button_gradient"
+                android:text="✈  Send Counter Offer"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null"
+                app:cornerRadius="28dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
