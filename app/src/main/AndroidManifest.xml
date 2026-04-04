@@ -14,7 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PeerTutoringApollo">
 
-        <!-- Entry point: Sign Up -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -24,71 +23,28 @@
             </intent-filter>
         </activity>
 
-        <!-- Login screen -->
-        <activity
-            android:name=".ui.LoginActivity"
-            android:exported="false" />
+        <activity android:name=".ui.ProfileActivity" android:exported="false" />
+        <activity android:name=".ui.HomeActivity" android:exported="false" />
+        <activity android:name=".ui.BrowseTutorsActivity" android:exported="false" />
+        <activity android:name=".ui.TutorDetailActivity" android:exported="false" />
+        <activity android:name=".ui.EditProfileActivity" android:label="Profile Settings" android:exported="false" />
+        <activity android:name=".ui.LoginActivity" android:exported="false" />
+        <activity android:name=".ui.NewSessionRequestActivity" android:exported="false" />
+        <activity android:name=".ui.TutorRequestsActivity" android:exported="false" />
+        <activity android:name=".ui.TutorOffersActivity" android:exported="false" />
+        <activity android:name=".ui.CounterOfferActivity" android:exported="false" />
+        <activity android:name=".ui.RequestResultActivity" android:exported="false" />
 
-        <!-- Onboarding flow (US1 + US2) -->
-        <activity
-            android:name=".ui.ProfileActivity"
-            android:exported="false" />
-
-        <!-- Home screen (dashboard) -->
-        <activity
-            android:name=".ui.HomeActivity"
-            android:exported="false" />
-
-        <!-- Browse Tutors screen -->
-        <activity
-            android:name=".ui.BrowseTutorsActivity"
-            android:exported="false" />
-
-        <!-- Tutor Detail screen -->
-        <activity
-            android:name=".ui.TutorDetailActivity"
-            android:exported="false" />
-
-        <!-- Edit Profile + Privacy (US3) -->
-        <activity
-            android:name=".ui.EditProfileActivity"
-            android:label="Profile Settings"
-            android:exported="false" />
-
-        <!-- Session Requests Dashboard (US8 - Student) -->
+        <!-- Fixed keyboard appearing on Messages/Dashboard -->
         <activity
             android:name=".ui.SessionRequestsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
-        <!-- New Session Request Form (US8 - Student) -->
-        <activity
-            android:name=".ui.NewSessionRequestActivity"
-            android:exported="false" />
-
-        <!-- Tutor Offers screen (US8 - Student) -->
-        <activity
-            android:name=".ui.TutorOffersActivity"
-            android:exported="false" />
-
-        <!-- Tutor Requests Dashboard (US9 - Tutor) -->
-        <activity
-            android:name=".ui.TutorRequestsActivity"
-            android:exported="false" />
-
-        <!-- Request Detail: Accept / Counter / Decline (US9 - Tutor) -->
         <activity
             android:name=".ui.RequestDetailActivity"
-            android:exported="false" />
-
-        <!-- Counter Offer Form (US9 - Tutor) -->
-        <activity
-            android:name=".ui.CounterOfferActivity"
-            android:exported="false" />
-
-        <!-- Result screen: Accepted / Declined / Counter Sent (US9 - Tutor) -->
-        <activity
-            android:name=".ui.RequestResultActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
     </application>
 
