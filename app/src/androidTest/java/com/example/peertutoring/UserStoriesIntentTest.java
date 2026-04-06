@@ -5,7 +5,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -14,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,9 +24,11 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.peertutoring.ui.BrowseTutorsActivity;
 import com.example.peertutoring.ui.EditProfileActivity;
 import com.example.peertutoring.ui.MainActivity;
 import com.example.peertutoring.ui.ProfileActivity;
+import com.example.peertutoring.ui.TutorDetailActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.junit.After;
@@ -35,16 +37,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Intent Tests for User Stories 1 through 4.
+ * Intent Tests for User Stories 1 through 5.
  * This class uses Espresso to simulate user interactions and verify that
  * the application navigates correctly and displays the expected UI components.
  * 
- * Deliverable Requirement #4: Intent tests for completed requirements.
- * Completed User Stories:
- * - US1: Student Account Creation
- * - US2: Tutor Account Creation
- * - US3: Profile Editing & Privacy
- * - US4: Identity Verification UI
+ * Deliverable: Robust intent tests for completed requirements and US 5.
+ * 
+ * Fixes for common failure reasons:
+ * 1. signOut() in setUp to prevent redirection from MainActivity.
+ * 2. scrollTo() for views inside ScrollViews.
+ * 3. replaceText() for better stability than typeText().
+ * 4. Increased wait times for async operations.
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -53,6 +56,8 @@ public class UserStoriesIntentTest {
     @Before
     public void setUp() {
         Intents.init();
+        // Clear session so MainActivity doesn't redirect to HomeActivity
+        FirebaseAuth.getInstance().signOut();
     }
 
     @After
@@ -67,13 +72,15 @@ public class UserStoriesIntentTest {
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             ActivityScenario.launch(MainActivity.class);
             String email = "test" + System.currentTimeMillis() + "@example.com";
-            onView(withId(R.id.editTextEmail)).perform(typeText(email), closeSoftKeyboard());
-            onView(withId(R.id.editTextPassword)).perform(typeText("Password123"), closeSoftKeyboard());
-            onView(withId(R.id.editTextConfirmPassword)).perform(typeText("Password123"), closeSoftKeyboard());
-            onView(withId(R.id.buttonContinue)).perform(click());
             
-            // Wait for registration and auto-login to complete
-            try { Thread.sleep(5000); } catch (InterruptedException e) {}
+            // Views are in a ScrollView in activity_main.xml
+            onView(withId(R.id.editTextEmail)).perform(scrollTo(), replaceText(email), closeSoftKeyboard());
+            onView(withId(R.id.editTextPassword)).perform(scrollTo(), replaceText("Password123"), closeSoftKeyboard());
+            onView(withId(R.id.editTextConfirmPassword)).perform(scrollTo(), replaceText("Password123"), closeSoftKeyboard());
+            onView(withId(R.id.buttonContinue)).perform(scrollTo(), click());
+            
+            // Wait for registration and auto-login to complete (Firebase is async)
+            try { Thread.sleep(8000); } catch (InterruptedException e) {}
         }
     }
 
@@ -84,18 +91,18 @@ public class UserStoriesIntentTest {
     public void testRegistrationIntentToProfileActivity() {
         ActivityScenario.launch(MainActivity.class);
         
-        String testEmail = "testuser" + System.currentTimeMillis() + "@example.com";
+        String testEmail = "reg_test_" + System.currentTimeMillis() + "@example.com";
         String testPassword = "Password123";
 
-        onView(withId(R.id.editTextEmail)).perform(typeText(testEmail), closeSoftKeyboard());
-        onView(withId(R.id.editTextPassword)).perform(typeText(testPassword), closeSoftKeyboard());
-        onView(withId(R.id.editTextConfirmPassword)).perform(typeText(testPassword), closeSoftKeyboard());
+        onView(withId(R.id.editTextEmail)).perform(scrollTo(), replaceText(testEmail), closeSoftKeyboard());
+        onView(withId(R.id.editTextPassword)).perform(scrollTo(), replaceText(testPassword), closeSoftKeyboard());
+        onView(withId(R.id.editTextConfirmPassword)).perform(scrollTo(), replaceText(testPassword), closeSoftKeyboard());
 
-        onView(withId(R.id.radioStudent)).perform(click());
-        onView(withId(R.id.buttonContinue)).perform(click());
+        onView(withId(R.id.radioStudent)).perform(scrollTo(), click());
+        onView(withId(R.id.buttonContinue)).perform(scrollTo(), click());
 
-        // Wait for Firebase Response
-        try { Thread.sleep(5000); } catch (InterruptedException e) {}
+        // Wait for Firebase Response and transition
+        try { Thread.sleep(8000); } catch (InterruptedException e) {}
 
         intended(allOf(
                 hasComponent(ProfileActivity.class.getName()),
@@ -115,13 +122,14 @@ public class UserStoriesIntentTest {
         Intent intent = new Intent(context, EditProfileActivity.class);
         ActivityScenario.launch(intent);
 
-        // Wait for profile to load
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        // Wait for profile data to load from Firestore
+        try { Thread.sleep(5000); } catch (InterruptedException e) {}
 
         onView(withId(R.id.tabPrivacy)).perform(click());
         onView(withId(R.id.panelPrivacy)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.switchShowInstitution)).perform(click());
+        // Perform scroll and click because views are inside a ScrollView
+        onView(withId(R.id.switchShowInstitution)).perform(scrollTo(), click());
         
         onView(withId(R.id.tabEditProfile)).perform(click());
         onView(withId(R.id.panelEditProfile)).check(matches(isDisplayed()));
@@ -139,15 +147,49 @@ public class UserStoriesIntentTest {
         ActivityScenario.launch(intent);
 
         // Wait for activity setup
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        try { Thread.sleep(5000); } catch (InterruptedException e) {}
 
         onView(withId(R.id.tabVerification)).perform(click());
         
-        // Brief wait for UI thread to update visibility
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
+        // Wait for UI panel visibility transition
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
 
         onView(withId(R.id.panelVerification)).check(matches(isDisplayed()));
         onView(withText("Verify Your Identity")).check(matches(isDisplayed()));
+    }
+
+    /**
+     * Tests US5: Tutor Recommendations & Browse.
+     */
+    @Test
+    public void testTutorRecommendationsAndSearch() {
+        ensureLoggedIn();
+
+        ActivityScenario.launch(BrowseTutorsActivity.class);
+
+        // Wait for tutors to load from Firestore (mocked or real)
+        try { Thread.sleep(7000); } catch (InterruptedException e) {}
+
+        // Check if the browse header is visible
+        onView(withText("Browse Tutors")).check(matches(isDisplayed()));
+
+        // Perform search - Sarah Johnson is a default tutor in the mock data/layout
+        onView(withId(R.id.etSearchTutor)).perform(replaceText("Sarah"), closeSoftKeyboard());
+        
+        // Brief wait for filtering logic
+        try { Thread.sleep(3000); } catch (InterruptedException e) {}
+        
+        // Verify result count text is updated
+        onView(withId(R.id.tvResultCount)).check(matches(withText(containsString("Found"))));
+        
+        // Click on the tutor card
+        onView(withText("Sarah Johnson")).perform(click());
+        
+        // Verify navigation to TutorDetailActivity
+        intended(allOf(
+                hasComponent(TutorDetailActivity.class.getName()),
+                hasExtra("name", "Sarah Johnson")
+        ));
     }
 
     /**
@@ -161,17 +203,22 @@ public class UserStoriesIntentTest {
         Intent intent = new Intent(context, EditProfileActivity.class);
         ActivityScenario.launch(intent);
 
-        // Wait for data
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        // Wait for Firestore data load
+        try { Thread.sleep(5000); } catch (InterruptedException e) {}
 
         onView(withId(R.id.tabEditProfile)).perform(click());
 
-        onView(withId(R.id.editTextFirstName)).perform(replaceText("John"), closeSoftKeyboard());
-        onView(withId(R.id.editTextLastName)).perform(replaceText("Doe"), closeSoftKeyboard());
+        onView(withId(R.id.editTextFirstName)).perform(scrollTo(), replaceText("John"), closeSoftKeyboard());
+        onView(withId(R.id.editTextLastName)).perform(scrollTo(), replaceText("Doe"), closeSoftKeyboard());
         
+        // Toggle to Tutor role to reveal additional fields
         onView(withId(R.id.btnRoleTutor)).perform(scrollTo(), click());
+        
+        // Wait for role-specific fields to appear
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
         onView(withId(R.id.layoutBio)).check(matches(isDisplayed()));
-        onView(withId(R.id.editTextBio)).perform(replaceText("I am a specialized Math and Physics tutor with 4 years of experience."), closeSoftKeyboard());
+        onView(withId(R.id.editTextBio)).perform(scrollTo(), replaceText("I am a specialized Math and Physics tutor with 4 years of experience."), closeSoftKeyboard());
         
         onView(withId(R.id.btnSaveProfile)).perform(scrollTo(), click());
     }

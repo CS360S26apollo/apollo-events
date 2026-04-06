@@ -2,6 +2,7 @@ package com.example.peertutoring;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.example.peertutoring.models.Student;
@@ -42,35 +43,64 @@ public class ModelUnitTest {
     }
 
     @Test
+    public void testStudentPreferences() {
+        List<String> subjects = Arrays.asList("Calculus", "Linear Algebra", "Data Structures");
+        List<String> goals = Arrays.asList("Improve grades", "Prepare for finals");
+        
+        Student student = new Student("S1", "student@lums.edu", "Ali", "Iqbal", 
+                                     "LUMS", subjects, goals);
+        
+        assertEquals(3, student.getSubjects().size());
+        assertTrue(student.getSubjects().contains("Calculus"));
+        assertEquals(2, student.getGoals().size());
+        assertEquals("LUMS", student.getInstitution());
+    }
+
+    @Test
     public void testTutorInitialization() {
         List<String> subjects = Arrays.asList("Math", "Physics");
-        Tutor tutor = new Tutor("T1", "tutor@lums.edu", "Ali", "Iqbal", "Experienced tutor", "Senior", 50, subjects);
+        Tutor tutor = new Tutor("T1", "tutor@lums.edu", "Sarah", "Johnson", 
+                                "Experienced tutor with focus on AP Physics", "Expert", 45, subjects);
         
-        assertEquals("Ali Iqbal", tutor.getFullName());
-        assertEquals(50, tutor.getRate());
+        assertEquals("Sarah Johnson", tutor.getFullName());
+        assertEquals(45, tutor.getRate());
         assertEquals(2, tutor.getSubjects().size());
-        assertEquals("Senior", tutor.getLevel());
+        assertEquals("Expert", tutor.getLevel());
+        assertEquals("Experienced tutor with focus on AP Physics", tutor.getBio());
+    }
+
+    @Test
+    public void testTutorSubjectMatching() {
+        List<String> tutorSubjects = Arrays.asList("Python", "Java", "C++");
+        Tutor tutor = new Tutor();
+        tutor.setSubjects(tutorSubjects);
+
+        List<String> studentInterests = Arrays.asList("Java", "Kotlin");
+        
+        boolean hasMatch = false;
+        for (String interest : studentInterests) {
+            if (tutor.getSubjects().contains(interest)) {
+                hasMatch = true;
+                break;
+            }
+        }
+        assertTrue("Tutor should match student interests", hasMatch);
     }
 
     @Test
     public void testValidationUtils() {
-        // Email validation
-        // Note: Patterns.EMAIL_ADDRESS is an Android framework class and might return null in local JVM tests
-        // unless using a mock library or Robolectric. For basic unit tests, we test the logic we can.
         assertTrue(ValidationUtils.isNonEmpty("Valid"));
         assertFalse(ValidationUtils.isNonEmpty("  "));
         assertFalse(ValidationUtils.isNonEmpty(null));
 
-        // Password matching
         assertTrue(ValidationUtils.passwordsMatch("pass123", "pass123"));
         assertFalse(ValidationUtils.passwordsMatch("pass123", "different"));
 
-        // Password length
         assertTrue(ValidationUtils.isValidPassword("123456"));
         assertFalse(ValidationUtils.isValidPassword("12345"));
         
-        // List check
         assertTrue(ValidationUtils.hasItems(Arrays.asList("Item")));
         assertFalse(ValidationUtils.hasItems(null));
+        assertFalse(ValidationUtils.hasItems(Arrays.asList()));
     }
 }
