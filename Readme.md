@@ -301,88 +301,12 @@ Sunday, April 05, 2026
 
 ## UML Diagrams <a name="uml-diagrams"></a>
 
-```mermaid
-classDiagram
-    class User {
-        #String uid
-        #String email
-        #String role
-        #boolean profileVisible
-        #boolean verified
-        #String idDocumentUrl
-        +getUid() String
-        +getEmail() String
-        +getRole() String
-        +isProfileVisible() boolean
-        +isVerified() boolean
-        +getIdDocumentUrl() String
-    }
-    class Student {
-        -String firstName
-        -String lastName
-        -String fullName
-        -String institution
-        -List~String~ subjects
-        -List~String~ goals
-        +getFirstName() String
-        +getLastName() String
-        +getFullName() String
-        +getInstitution() String
-        +getSubjects() List~String~
-        +getGoals() List~String~
-        -updateFullName()
-    }
-    class Tutor {
-        -String firstName
-        -String lastName
-        -String fullName
-        -String bio
-        -String level
-        -int rate
-        -List~String~ subjects
-        -double rating
-        -double responsivenessScore
-        -Map availability
-        +getRating() double
-        +getResponsivenessScore() double
-        +getAvailability() Map
-        -updateFullName()
-    }
-    class SessionRequest {
-        -String requestId
-        -String studentUid
-        -String studentName
-        -String tutorUid
-        -String tutorName
-        -String subject
-        -String topic
-        -String goals
-        -int durationMinutes
-        -String status
-        -int tokens
-        -Date scheduledDate
-        -Date createdAt
-        +isUpcoming() boolean
-        +getStatus() String
-    }
-    class UserRepository {
-        -FirebaseFirestore firestore
-        +saveStudentProfile(Student, SaveCallback)
-        +saveTutorProfile(Tutor, SaveCallback)
-        +updateProfile(String, Map, SaveCallback)
-        +getUserProfile(String, LoadCallback)
-        +getRecommendedTutors(List, LoadCallback)
-        +submitVerificationId(String, String, SaveCallback)
-    }
-
-    User <|-- Student
-    User <|-- Tutor
-    Student "1" -- "*" SessionRequest : initiates
-    Tutor "1" -- "*" SessionRequest : conducts
-    UserRepository ..> Student : manages
-    UserRepository ..> Tutor : ranks & recommendeds
-    UserRepository ..> SessionRequest : persists
-```
+![UML Class Diagram](doc/UML.png)
+### Class Rationales
+* **User (Base Class):** Acts as the primary identity entity, centralizing common authentication states, roles, and verification flags for the entire system.
+* **Student & Tutor (Inheritance):** Utilizes **Inheritance** to specialize user behavior. This allows for a clean separation between a student's learning goals and a tutor's professional credentials while sharing a common identity core.
+* **SessionRequest (State Machine):** Encapsulates the interaction logic between users. It functions as a **State Machine** to strictly manage the lifecycle of a session (e.g., preventing a 'Cancelled' session from being marked as 'Completed').
+* **UserRepository (Repository Pattern):** Implements the **Repository Pattern** to abstract Firestore complexity. This ensures the UI components remain decoupled from data persistence logic, making the codebase easier to test and maintain.
 
 ---
 
