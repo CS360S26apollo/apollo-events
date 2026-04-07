@@ -4,6 +4,7 @@
 > **Status:** No major feedback to be incorporated, received from TA on Phase 2. The project is proceeding according to the original design with minor refinements to the onboarding flow.
 
 - [Team Information](#team-information)
+- [Project Structure & Documentation](#project-structure)
 
 - [Meeting Minutes](#meeting-minutes)
   - [Meeting – Feb 23, 2026](#meeting--feb-23-2026)
@@ -43,7 +44,48 @@
 | M. Zain ul Abideen    | 27100180    | Zain100796           |
 
 ---
+## Project Structure & Documentation Strategy <a name="project-structure"></a>
 
+### **Directory Structure**
+The Apollo project follows a clean architecture pattern, separating data persistence, business logic, and UI components.
+
+```text
+PeerTutoring-Apollo/
+├── app/src/main/java/com/example/peertutoring/
+│   ├── data/           # DATA LAYER: Handles Firestore transactions and API calls.
+│   │   └── UserRepository.java      # Central repository for all user & tutor data ops.
+│   │
+│   ├── models/         # DOMAIN LAYER: Data models (POJOs) representing system entities.
+│   │   ├── User.java                # Base model for all authenticated users.
+│   │   ├── Student.java             # Extension for student-specific profiles (US 01).
+│   │   ├── Tutor.java               # Extension for tutor-specific professional data (US 02).
+│   │   └── SessionRequest.java      # State machine for the session lifecycle (US 16).
+│   │
+│   ├── ui/             # PRESENTATION LAYER: View Controllers (Activities & Fragments).
+│   │   ├── Onboarding/              # MainActivity, ProfileActivity, Fragments (US 01-04).
+│   │   ├── Discovery/               # BrowseTutorsActivity, TutorDetailActivity (US 05).
+│   │   ├── Availability/            # WeeklySchedule, BlockedDates, BufferPricing (US 13).
+│   │   └── SessionFlow/             # NewSessionRequest, TutorOffers, Tracking (US 08-10).
+│   │
+│   └── utils/          # HELPERS: Utility classes for validation and data formatting.
+│
+├── app/src/test/       # UNIT TESTS: Logic tests for models and control classes.
+│   ├── ModelUnitTest.java           # Ensures data integrity across model constructors.
+│   └── SessionLifecycleTest.java    # Validates status transitions (e.g., Requested -> Booked).
+│
+└── app/src/androidTest/ # INTENT TESTS: UI/Navigation tests using coordinate-based clicks.
+    ├── UserStoriesIntentTest.java   # Covers Onboarding, Search, and Privacy (US 01-06).
+    ├── TutorAvailabilityIntentTest.java # Covers Scheduling and Pricing settings (US 13).
+    └── SessionFlowIntentTest.java   # Covers request creation and response flow (US 08-10).
+```
+---
+### **Documentation Strategy**
+To satisfy the requirements of **Phase 3 Deliverable #3**, the Apollo team has implemented a multi-tier documentation approach:
+
+* **Source Documentation:** Every `.java` file in the repository begins with a standardized introductory block. This header describes the file's specific **role** (e.g., UI Controller, Data Repository) and any **design patterns** utilized (such as Singleton, Observer, or State).
+* **API Documentation:** All model classes located in `com.example.peertutoring.models` are fully documented using **Javadoc**. This includes comprehensive interface documentation for all public methods, constructors, `@param` tags, and `@return` values to ensure long-term maintainability.
+* **Test Documentation:** To ensure **100% requirement traceability**, all Intent Tests in the `androidTest` directory are explicitly mapped to their corresponding **User Story IDs** (e.g., US 01, US 04). This allows for a clear audit trail between the requirements and the functional verification.
+---
 ## Meeting Minutes
 
 ### Meeting – Feb 23, 2026
@@ -234,7 +276,7 @@ Sunday, April 05, 2026
 ---
 #### Key Takeaways
 - Successfully closed Sprint 2 and transitioned to Sprint 3.
-- Picked up User Stories 13 and 16 for Sprint 3 implementation.
+- Picked up User Stories 13 and 16 for Sprint 3 implementation and User Story  06 if time left
 - Planned Javadoc implementation and full Phase 3 documentation alongside development.
 - UML diagram update scheduled as part of Sprint 3 deliverables.
 - Sprint 3 is targeted to conclude by April 7, 2026.
@@ -252,6 +294,7 @@ Sunday, April 05, 2026
 - [x] Add Javadoc to all Phase 3 model and control classes
 - [x] Complete full documentation for Phase 3
 - [x] Update UML diagram to reflect Sprint 3 additions
+- [x] Implement US 06
 - [x] Close Sprint 3 by April 7, 2026
 ---
 
@@ -260,8 +303,7 @@ Sunday, April 05, 2026
 
 ```mermaid
 classDiagram
-    class User {
-        #String uid
+    class User {#String uid
         #String email
         #String role
         #boolean profileVisible
@@ -306,8 +348,41 @@ classDiagram
         +getSubjects() List~String~
         -updateFullName()
     }
+    class SessionRequest {
+        -String requestId
+        -String studentUid
+        -String studentName
+        -String tutorUid
+        -String tutorName
+        -String subject
+        -String topic
+        -String goals
+        -int durationMinutes
+        -String status
+        -int tokens
+        -Date scheduledDate
+        -Date createdAt
+        +isUpcoming() boolean
+        +getRequestId() String
+        +getStatus() String
+    }
+    class UserRepository {
+        -FirebaseFirestore firestore
+        +saveStudentProfile(Student, SaveCallback)
+        +saveTutorProfile(Tutor, SaveCallback)
+        +updateProfile(String, Map, SaveCallback)
+        +getUserProfile(String, LoadCallback)
+        +getRecommendedTutors(List, LoadCallback)
+        +submitVerificationId(String, String, SaveCallback)
+    }
+
     User <|-- Student
     User <|-- Tutor
+    Student "1" -- "*" SessionRequest : initiates
+    Tutor "1" -- "*" SessionRequest : conducts
+    UserRepository ..> Student : manages
+    UserRepository ..> Tutor : manages
+    UserRepository ..> SessionRequest : persists
 ```
 
 ---
@@ -342,7 +417,7 @@ classDiagram
 | **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half |
 | **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half |
 | **US 05** | Recommended Tutors: View tutors based on needs | High | **Done** | High | 8 | Final |
-| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final |
+| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | **Done(to be reviewed** | High | 13 | Final |
 | **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final |
 | **US 08** | Request a Session: Student sends request with goals | High | **Done** | Medium | 5 | Half |
 | **US 09** | Tutor Response: Accept, decline, or counter-offer | High | **Done** | Medium | 5 | Half |
@@ -371,7 +446,7 @@ classDiagram
 | **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half | ✅ Sprint 1 |
 | **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half | ✅ Sprint 1 |
 | **US 05** | Recommended Tutors: View tutors based on needs | High | **Done** | High | 8 | Final | ✅ Sprint 2 |
-| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final | — |
+| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final | ✅ Sprint 3 |
 | **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final | — |
 | **US 08** | Request a Session: Student sends request with goals | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
 | **US 09** | Tutor Response: Accept, decline, or counter-offer | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
@@ -392,6 +467,7 @@ classDiagram
 | **US 24** | Escrow Hold: Tokens held until session completion | High | Open | High | 13 | Final | — |
 | **US 25** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final | — |
 
+![Product Backlog - Phase 3](doc/Part3Backlog.png)
 ---
 
 ## Sprint Planning & Reviews <a name="sprint-planning-reviews"></a>
@@ -426,9 +502,10 @@ All four user stories were successfully implemented and closed within the sprint
 **Planned User Stories:**
 - US 13: Tutor Sets Availability Calendar
 - US 16: Session Lifecycle Tracking
+- US 06: Rank Tutors
 
 **Review:**  
-Both user stories were implemented and sprint closed on schedule. US 13 enables tutors to configure weekly availability including working hours, unavailable dates, and buffer time for accurate slot generation. US 16 introduces end-to-end session lifecycle tracking across all statuses (requested → booked → completed / cancelled / no-show). Javadoc was added to all Phase 3 classes, full Phase 3 documentation was completed, and the UML diagram was updated to reflect all sprint 3 additions.
+All three user stories were implemented and sprint closed on schedule. US 13 enables tutors to configure weekly availability including working hours, unavailable dates, and buffer time for accurate slot generation. US 16 introduces end-to-end session lifecycle tracking across all statuses (requested → booked → completed / cancelled / no-show). Javadoc was added to all Phase 3 classes, full Phase 3 documentation was completed, and the UML diagram was updated to reflect all sprint 3 additions. US 06 introduces Ranking Logic for tutors using subject match, tutor rating, responsiveness, and availability compatibility so that recommendations are relevant and fair.
 
 ## Wireframes
 
