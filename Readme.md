@@ -302,11 +302,7 @@ Sunday, April 05, 2026
 ## UML Diagrams <a name="uml-diagrams"></a>
 
 ![UML Class Diagram](doc/UML2.png)
-### Class Rationales
-* **User (Base Class):** Acts as the primary identity entity, centralizing common authentication states, roles, and verification flags for the entire system.
-* **Student & Tutor (Inheritance):** Utilizes **Inheritance** to specialize user behavior. This allows for a clean separation between a student's learning goals and a tutor's professional credentials while sharing a common identity core.
-* **SessionRequest (State Machine):** Encapsulates the interaction logic between users. It functions as a **State Machine** to strictly manage the lifecycle of a session (e.g., preventing a 'Cancelled' session from being marked as 'Completed').
-* **UserRepository (Repository Pattern):** Implements the **Repository Pattern** to abstract Firestore complexity. This ensures the UI components remain decoupled from data persistence logic, making the codebase easier to test and maintain.
+
 
 ---
 
