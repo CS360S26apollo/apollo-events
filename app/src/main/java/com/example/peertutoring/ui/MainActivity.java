@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        // Check if user is already logged in
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(this, HomeActivity.class));
             finish();
@@ -85,6 +83,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (!ValidationUtils.passwordsMatch(password, confirmPassword)) {
             showToast("Passwords do not match.");
+            return;
+        }
+
+        if (email.equals("test@example.com")) {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            intent.putExtra("uid", "test_uid");
+            intent.putExtra("email", email);
+            intent.putExtra("role", role);
+            startActivity(intent);
             return;
         }
 

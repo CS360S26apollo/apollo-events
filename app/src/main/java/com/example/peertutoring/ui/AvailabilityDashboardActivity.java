@@ -16,9 +16,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 /**
- * Tutor availability home screen.
- * Shows stats: weekly hours, active days, blocked dates, tokens/hour.
- * Navigates to Weekly Schedule, Blocked Dates, Buffer & Pricing.
+ * Activity that serves as the central management hub for a tutor's availability.
+ * Role: Controller/View for User Story 13 (Tutor Availability).
+ * Purpose: Provides a high-level summary of the tutor's schedule, blocked dates, 
+ * and pricing, serving as the entry point for detailed configuration screens.
+ * 
+ * Design Pattern: View (Activity) following the Dashboard pattern.
+ * 
+ * Outstanding Issues:
+ * - Stats are calculated on the client-side, which may be slow for large datasets.
+ * - Profile initials are not yet displayed in the header.
  */
 public class AvailabilityDashboardActivity extends AppCompatActivity {
 
@@ -65,6 +72,10 @@ public class AvailabilityDashboardActivity extends AppCompatActivity {
         loadStats(); // refresh after returning from sub-screens
     }
 
+    /**
+     * Fetches availability data from Firestore and calculates summary metrics.
+     * Implementation details for US 13.
+     */
     @SuppressWarnings("unchecked")
     private void loadStats() {
         if (currentUser == null) return;

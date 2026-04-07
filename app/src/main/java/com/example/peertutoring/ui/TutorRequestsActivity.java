@@ -25,8 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tutor-side dashboard showing incoming session requests from students.
- * Tutor can filter by priority, search, and tap to view request details.
+ * Activity for tutors to view and manage incoming tutoring session requests from students.
+ * Role: Request Management View for User Story 09 (Tutor Response).
+ * Purpose: Displays a list of pending student proposals, allowing tutors to filter 
+ * by priority (token amount) and search for specific topics or students.
+ * 
+ * Design Pattern: View-Controller with dynamic list rendering.
+ * 
+ * Outstanding Issues:
+ * - Real-time listener is not yet implemented (uses one-time get() with mock fallback).
  */
 public class TutorRequestsActivity extends AppCompatActivity {
 
@@ -35,7 +42,6 @@ public class TutorRequestsActivity extends AppCompatActivity {
     private LinearLayout layoutRequestList;
     private List<DocumentSnapshot> allRequests = new ArrayList<>();
 
-    // Avatar colors for initials
     private static final int[] AVATAR_COLORS = {
             0xFFD0C4F7, 0xFF4ECDC4, 0xFFFFB7B2, 0xFFB5EAD7, 0xFFC7CEEA
     };
@@ -56,8 +62,9 @@ public class TutorRequestsActivity extends AppCompatActivity {
         loadRequests();
     }
 
-    // ── Search ────────────────────────────────────────────────
-
+    /**
+     * Initializes the search input field with a listener to filter the list by student name or topic.
+     */
     private void setupSearch() {
         EditText etSearch = findViewById(R.id.etSearch);
         if (etSearch == null) return;
@@ -83,8 +90,9 @@ public class TutorRequestsActivity extends AppCompatActivity {
         displayRequests(filtered);
     }
 
-    // ── Filter chips ──────────────────────────────────────────
-
+    /**
+     * Sets up priority-based filter chips (High, Medium, Low) based on the session's token value.
+     */
     private void setupFilterChips() {
         View chipAll    = findViewById(R.id.chipAll);
         View chipHigh   = findViewById(R.id.chipHighPriority);
@@ -98,7 +106,6 @@ public class TutorRequestsActivity extends AppCompatActivity {
     }
 
     private void filterByPriority(String priority) {
-        // Simple: high = tokens > 200, medium = 100-200, low = < 100
         List<DocumentSnapshot> filtered = new ArrayList<>();
         for (DocumentSnapshot doc : allRequests) {
             Long tokens = doc.getLong("tokens");
@@ -112,8 +119,10 @@ public class TutorRequestsActivity extends AppCompatActivity {
         displayRequests(filtered);
     }
 
-    // ── Load ──────────────────────────────────────────────────
-
+    /**
+     * Fetches all pending session requests from Firestore where status is 'waiting'.
+     * Falls back to mock data if the collection is empty or if user is not logged in.
+     */
     private void loadRequests() {
         if (tutorUid.isEmpty()) { loadMockData(); return; }
 
@@ -130,8 +139,10 @@ public class TutorRequestsActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> loadMockData());
     }
 
-    // ── Display ───────────────────────────────────────────────
-
+    /**
+     * Renders the list of session request cards into the scrollable container.
+     * @param list The list of document snapshots to display.
+     */
     private void displayRequests(List<DocumentSnapshot> list) {
         layoutRequestList.removeAllViews();
         if (list.isEmpty()) { showEmpty(); return; }
@@ -160,7 +171,6 @@ public class TutorRequestsActivity extends AppCompatActivity {
                 + (duration != null ? " (" + duration + "m)" : ""));
         setText(card, R.id.tvTokens,      (tokens != null ? tokens : 0) + " Tokens");
 
-        // Avatar initials + color
         TextView tvInitials = card.findViewById(R.id.tvStudentInitials);
         if (tvInitials != null && studentName != null && !studentName.isEmpty()) {
             String[] parts = studentName.split(" ");
@@ -168,13 +178,11 @@ public class TutorRequestsActivity extends AppCompatActivity {
                     ? "" + parts[0].charAt(0) + parts[1].charAt(0)
                     : "" + parts[0].charAt(0);
             tvInitials.setText(initials.toUpperCase());
-            // Set avatar color
             MaterialCardView avatarCard = (MaterialCardView) tvInitials.getParent();
             avatarCard.setCardBackgroundColor(
                     AVATAR_COLORS[Math.abs(initials.hashCode()) % AVATAR_COLORS.length]);
         }
 
-        // Accent bar color by subject
         View accentBar = card.findViewById(R.id.viewAccentBar);
         if (accentBar != null && subject != null) {
             int color;
@@ -187,7 +195,6 @@ public class TutorRequestsActivity extends AppCompatActivity {
             accentBar.setBackgroundColor(color);
         }
 
-        // Navigate to details
         String requestId    = doc.getId();
         String goals        = doc.getString("goals");
         String studentMsg   = doc.getString("studentMessage");
@@ -220,10 +227,7 @@ public class TutorRequestsActivity extends AppCompatActivity {
         layoutRequestList.addView(tv);
     }
 
-    // ── Mock data ─────────────────────────────────────────────
-
     private void loadMockData() {
-        // Each row: studentName, subject, topic, date, time, duration, tokens, goals, message
         String[][] mocks = {
                 {"Emily Chen",       "Mathematics",       "Calculus II - Integration Techniques", "Mar 12", "14:00", "60",  "150",
                         "Exam Prep", "Hi! I need help understanding u-substitution and integration by parts. I have an exam next week."},

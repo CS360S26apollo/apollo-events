@@ -13,8 +13,12 @@ import com.example.peertutoring.R;
 import com.google.android.material.card.MaterialCardView;
 
 /**
- * Result confirmation screen for Accept / Counter Offer / Decline actions.
- * Reused for all 3 outcomes — appearance changes via resultType extra.
+ * Activity that displays a confirmation message after a tutor responds to a request.
+ * Role: Feedback View for User Story 09 (Tutor Response).
+ * Purpose: Provides visual confirmation to the tutor that their action (Accept, 
+ * Decline, or Counter Offer) has been processed and the student has been notified.
+ * 
+ * Design Pattern: Multi-state View (Context-sensitive UI based on resultType).
  */
 public class RequestResultActivity extends AppCompatActivity {
 
@@ -23,7 +27,7 @@ public class RequestResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_result);
 
-        String resultType    = getIntent().getStringExtra("resultType"); // "accepted", "declined", "counter"
+        String resultType    = getIntent().getStringExtra("resultType");
         String studentName   = getIntent().getStringExtra("studentName");
         String subject       = getIntent().getStringExtra("subject");
         String date          = getIntent().getStringExtra("date");
@@ -31,7 +35,6 @@ public class RequestResultActivity extends AppCompatActivity {
         int    duration      = getIntent().getIntExtra("duration", 60);
         int    tokens        = getIntent().getIntExtra("tokens", 150);
 
-        // Counter offer extras
         String counterDate     = getIntent().getStringExtra("counterDate");
         String counterTime     = getIntent().getStringExtra("counterTime");
         int    counterDuration = getIntent().getIntExtra("counterDuration", duration);
@@ -44,7 +47,6 @@ public class RequestResultActivity extends AppCompatActivity {
             showCounterSummary(counterDate, counterTime, counterDuration, counterTokens);
         }
 
-        // Back to Requests button
         Button btnBack = findViewById(R.id.btnBackToRequests);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
@@ -54,7 +56,6 @@ public class RequestResultActivity extends AppCompatActivity {
                 finish();
             });
 
-            // Button color by result
             if ("declined".equals(resultType)) {
                 btnBack.setBackgroundTintList(
                         android.content.res.ColorStateList.valueOf(0xFFAA00AA));
@@ -65,8 +66,10 @@ public class RequestResultActivity extends AppCompatActivity {
         }
     }
 
-    // ── Apply visual style based on result type ───────────────
-
+    /**
+     * Applies specific themes, icons, and messages based on the tutor's action.
+     * @param resultType The type of action performed ('accepted', 'declined', or 'counter').
+     */
     private void applyResultStyle(String resultType) {
         MaterialCardView iconCard = findViewById(R.id.cardResultIcon);
         TextView tvIcon           = findViewById(R.id.tvResultIcon);
@@ -99,11 +102,9 @@ public class RequestResultActivity extends AppCompatActivity {
         }
     }
 
-    // ── Populate summary card ─────────────────────────────────
-
+    /** Populates the main summary card with details of the student's original request. */
     private void populateSummary(String studentName, String subject,
                                  String date, String time, int duration, int tokens) {
-        // Avatar initials
         TextView tvInitials = findViewById(R.id.tvSummaryInitials);
         if (tvInitials != null && studentName != null) {
             String[] parts = studentName.split(" ");
@@ -121,8 +122,9 @@ public class RequestResultActivity extends AppCompatActivity {
         setText(R.id.tvSummaryTokens,   tokens   + " tokens");
     }
 
-    // ── Show counter offer section ────────────────────────────
-
+    /**
+     * Shows and populates the secondary summary card for counter-offers.
+     */
     private void showCounterSummary(String date, String time, int duration, int tokens) {
         LinearLayout layout = findViewById(R.id.layoutCounterOfferSummary);
         if (layout != null) layout.setVisibility(View.VISIBLE);

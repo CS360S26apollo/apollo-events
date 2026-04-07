@@ -23,8 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Activity for browsing and searching available tutors.
- * Implementation of User Story 5: Recommended tutors based on student preferences.
+ * Activity for browsing and searching available tutors in the marketplace.
+ * Role: Search and Discovery View for User Story 05 (Recommended Tutors).
+ * Purpose: Allows students to find tutors based on their learning preferences 
+ * and search queries. Displays tutor ratings, rates, and verification status.
+ * 
+ * Design Pattern: View-Controller with preference-based data fetching.
+ * 
+ * Implementation Details:
+ * - Automatically loads recommendations based on the student's saved subjects.
+ * - Provides real-time filtering of the tutor list as the user types in the search bar.
  */
 public class BrowseTutorsActivity extends AppCompatActivity {
 
@@ -51,13 +59,13 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         if (currentUser != null) {
             loadRecommendations();
         } else {
-            // Fallback for non-logged in or guest (if applicable)
             fetchTutors(new ArrayList<>());
         }
     }
 
     /**
-     * US5: Loads recommended tutors based on the current student's subjects/preferences.
+     * Fetches the current user's profile to retrieve their subject preferences.
+     * Implementation of US 05 personalized discovery.
      */
     private void loadRecommendations() {
         userRepository.getUserProfile(currentUser.getUid(), new UserRepository.LoadCallback<DocumentSnapshot>() {
@@ -70,11 +78,15 @@ public class BrowseTutorsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String error) {
-                fetchTutors(new ArrayList<>()); // Fallback to general list
+                fetchTutors(new ArrayList<>());
             }
         });
     }
 
+    /**
+     * Queries the repository for tutors that match the provided preferences.
+     * @param preferences List of subjects the student is interested in.
+     */
     private void fetchTutors(List<String> preferences) {
         userRepository.getRecommendedTutors(preferences, new UserRepository.LoadCallback<List<DocumentSnapshot>>() {
             @Override
@@ -90,6 +102,10 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Renders the tutor cards into the UI container.
+     * Includes handling for initials generation and verified badge visibility.
+     */
     private void displayTutors(List<DocumentSnapshot> tutors) {
         if (layoutTutorList == null) return;
         layoutTutorList.removeAllViews();
@@ -142,7 +158,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
                     subjects != null && !subjects.isEmpty() ? subjects.get(0) : "Tutor",
                     String.valueOf(rate != null ? rate : 0),
                     String.valueOf(rating != null ? rating : 0.0),
-                    "0", // Mock student count
+                    "0", 
                     Boolean.TRUE.equals(isVerified)
                 );
             });
@@ -151,6 +167,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         }
     }
 
+    /** Initializes the search bar with a text watcher for real-time filtering. */
     private void setupSearch() {
         EditText etSearch = findViewById(R.id.etSearchTutor);
         if (etSearch != null) {
@@ -164,6 +181,10 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Filters the local list of tutors based on a search query.
+     * @param query The string to match against tutor names or subjects.
+     */
     private void filterTutors(String query) {
         if (query.isEmpty()) {
             displayTutors(allTutors);

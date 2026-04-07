@@ -21,9 +21,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Tutor proposes a counter offer: new date, time, duration, token amount, optional message.
- * Date is selected via DatePickerDialog (no invalid dates possible).
- * Time is selected via TimePickerDialog (no invalid times possible).
+ * Activity for tutors to propose a counter offer to a student's session request.
+ * Role: Negotiation View for User Story 09 (Tutor Response).
+ * Purpose: Allows tutors to suggest alternative dates, times, durations, or token 
+ * amounts if they cannot fulfill the student's original request.
+ * 
+ * Design Pattern: Command pattern for submitting the offer to Firestore.
+ * 
+ * Outstanding Issues:
+ * - Does not check for tutor's own availability conflicts during selection.
+ * - Minimum duration and token steps are currently hardcoded constants.
  */
 public class CounterOfferActivity extends AppCompatActivity {
 
@@ -31,19 +38,17 @@ public class CounterOfferActivity extends AppCompatActivity {
     private String requestId, studentName, subject, originalDate, originalTime;
     private int originalDuration, originalTokens;
 
-    // Stepper state
     private int counterDuration;
     private int counterTokens;
 
-    // Picked date/time values (stored separately for validation)
     private int pickedYear  = -1;
-    private int pickedMonth = -1; // 0-based (Calendar.JANUARY = 0)
+    private int pickedMonth = -1; 
     private int pickedDay   = -1;
     private int pickedHour  = -1;
     private int pickedMinute = -1;
 
     private TextView tvDurationValue, tvTokenValue;
-    private TextView tvDateDisplay, tvTimeDisplay; // display labels on the picker buttons
+    private TextView tvDateDisplay, tvTimeDisplay;
 
     private static final int DURATION_STEP = 15;
     private static final int TOKEN_STEP    = 25;
@@ -52,7 +57,6 @@ public class CounterOfferActivity extends AppCompatActivity {
     private static final int MIN_TOKENS    = 25;
     private static final int MAX_TOKENS    = 2000;
 
-    // Month names for display
     private static final String[] MONTHS = {
             "Jan","Feb","Mar","Apr","May","Jun",
             "Jul","Aug","Sep","Oct","Nov","Dec"
@@ -76,7 +80,6 @@ public class CounterOfferActivity extends AppCompatActivity {
         counterDuration = originalDuration;
         counterTokens   = originalTokens;
 
-        // Pre-seed pickers to today so they open on a sensible default
         Calendar today = Calendar.getInstance();
         pickedYear   = today.get(Calendar.YEAR);
         pickedMonth  = today.get(Calendar.MONTH);
@@ -90,24 +93,18 @@ public class CounterOfferActivity extends AppCompatActivity {
         setupButtons();
     }
 
-    // ── Bind display TextViews ────────────────────────────────
-
     private void bindDisplayViews() {
-        // These are the TextViews inside the date/time picker cards that show chosen value
         tvDateDisplay = findViewById(R.id.etDate);
         tvTimeDisplay = findViewById(R.id.etTime);
         tvDurationValue = findViewById(R.id.tvDurationValue);
         tvTokenValue    = findViewById(R.id.tvTokenValue);
 
-        // Show "Tap to select" as hint until user picks
         if (tvDateDisplay != null) tvDateDisplay.setText("Tap to select date");
         if (tvTimeDisplay != null) tvTimeDisplay.setText("Tap to select time");
 
         updateDurationDisplay();
         updateTokenDisplay();
     }
-
-    // ── Header ────────────────────────────────────────────────
 
     private void populateHeader() {
         setText(R.id.tvStudentName, studentName);
@@ -119,7 +116,6 @@ public class CounterOfferActivity extends AppCompatActivity {
                 + " • " + originalDuration + "m • " + originalTokens + " tokens";
         setText(R.id.tvOriginalTerms, originalTerms);
 
-        // Initials
         TextView tvInitials = findViewById(R.id.tvStudentInitials);
         if (tvInitials != null && studentName != null) {
             String[] parts = studentName.split(" ");
@@ -130,8 +126,7 @@ public class CounterOfferActivity extends AppCompatActivity {
         }
     }
 
-    // ── Date Picker ───────────────────────────────────────────
-
+    /** Displays the system date picker dialog and updates state on selection. */
     private void showDatePicker() {
         DatePickerDialog dialog = new DatePickerDialog(
                 this,
@@ -139,39 +134,30 @@ public class CounterOfferActivity extends AppCompatActivity {
                     pickedYear  = year;
                     pickedMonth = month;
                     pickedDay   = dayOfMonth;
-
-                    // Display as "Mar 12, 2026"
                     String display = MONTHS[month] + " " + dayOfMonth + ", " + year;
                     if (tvDateDisplay != null) tvDateDisplay.setText(display);
                 },
                 pickedYear, pickedMonth, pickedDay
         );
-
-        // Prevent selecting past dates
         dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         dialog.show();
     }
 
-    // ── Time Picker ───────────────────────────────────────────
-
+    /** Displays the system time picker dialog and updates state on selection. */
     private void showTimePicker() {
         TimePickerDialog dialog = new TimePickerDialog(
                 this,
                 (view, hourOfDay, minute) -> {
                     pickedHour   = hourOfDay;
                     pickedMinute = minute;
-
-                    // Display as "14:30"
                     String display = String.format("%02d:%02d", hourOfDay, minute);
                     if (tvTimeDisplay != null) tvTimeDisplay.setText(display);
                 },
                 pickedHour, pickedMinute,
-                true // 24-hour format
+                true
         );
         dialog.show();
     }
-
-    // ── Steppers ──────────────────────────────────────────────
 
     private void bindSteppers() {
         MaterialCardView btnDurationMinus = findViewById(R.id.btnDurationMinus);
@@ -218,21 +204,16 @@ public class CounterOfferActivity extends AppCompatActivity {
             tvTokenValue.setText(String.valueOf(counterTokens));
     }
 
-    // ── Buttons ───────────────────────────────────────────────
-
     private void setupButtons() {
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
-        // Date card → open DatePickerDialog
         android.view.View dateCard = findViewById(R.id.etDate);
         if (dateCard != null) dateCard.setOnClickListener(v -> showDatePicker());
 
-        // Also make the whole date section card tappable
         android.view.View dateSection = findViewById(R.id.cardDateSection);
         if (dateSection != null) dateSection.setOnClickListener(v -> showDatePicker());
 
-        // Time card → open TimePickerDialog
         android.view.View timeCard = findViewById(R.id.etTime);
         if (timeCard != null) timeCard.setOnClickListener(v -> showTimePicker());
 
@@ -243,22 +224,20 @@ public class CounterOfferActivity extends AppCompatActivity {
         if (btnSend != null) btnSend.setOnClickListener(v -> sendCounterOffer());
     }
 
-    // ── Send ──────────────────────────────────────────────────
-
+    /**
+     * Validates input and submits the counter offer as a sub-collection in Firestore.
+     * Updates the status of the parent request to 'counter_offered'.
+     */
     private void sendCounterOffer() {
-        // Validate date was picked
         if (pickedDay == -1) {
             Toast.makeText(this, "Please select a date", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Validate time was picked
         if (pickedHour == -1) {
             Toast.makeText(this, "Please select a time", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Format final strings
         String newDate = MONTHS[pickedMonth] + " " + pickedDay + ", " + pickedYear;
         String newTime = String.format("%02d:%02d", pickedHour, pickedMinute);
 
@@ -266,7 +245,6 @@ public class CounterOfferActivity extends AppCompatActivity {
         String message = etMessage != null && etMessage.getText() != null
                 ? etMessage.getText().toString().trim() : "";
 
-        // Save to Firestore
         if (requestId != null && !requestId.isEmpty()) {
             String tutorUid = FirebaseAuth.getInstance().getCurrentUser() != null
                     ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
@@ -306,10 +284,6 @@ public class CounterOfferActivity extends AppCompatActivity {
         intent.putExtra("time",            newTime);
         intent.putExtra("duration",        counterDuration);
         intent.putExtra("tokens",          counterTokens);
-        intent.putExtra("counterDate",     newDate);
-        intent.putExtra("counterTime",     newTime);
-        intent.putExtra("counterDuration", counterDuration);
-        intent.putExtra("counterTokens",   counterTokens);
         startActivity(intent);
         finish();
     }

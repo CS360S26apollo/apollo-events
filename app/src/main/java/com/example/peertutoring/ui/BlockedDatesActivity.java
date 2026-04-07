@@ -26,9 +26,16 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Blocked Dates screen.
- * Renders a custom calendar; tapping a date toggles it blocked (red).
- * Blocked dates saved to Firestore as string list ("2026-04-22").
+ * Activity for tutors to manage specific calendar dates where they are unavailable.
+ * Role: Calendar Management View for User Story 13 (Tutor Availability).
+ * Purpose: Allows tutors to block off entire days (e.g., for holidays or personal breaks)
+ * by interacting with a custom-rendered calendar interface.
+ * 
+ * Design Pattern: Custom View Rendering / State Management.
+ * 
+ * Outstanding Issues:
+ * - Does not currently support recurring blocked dates (e.g., every Monday).
+ * - Performance may degrade if hundreds of dates are blocked over multiple years.
  */
 public class BlockedDatesActivity extends AppCompatActivity {
 
@@ -75,15 +82,19 @@ public class BlockedDatesActivity extends AppCompatActivity {
         loadBlockedDates();
     }
 
-    // ── Month navigation ──────────────────────────────────────
-
+    /**
+     * Changes the currently displayed month in the calendar.
+     * @param delta Number of months to add (positive) or subtract (negative).
+     */
     private void changeMonth(int delta) {
         displayedMonth.add(Calendar.MONTH, delta);
         buildCalendar();
     }
 
-    // ── Build calendar ────────────────────────────────────────
-
+    /**
+     * Dynamically constructs the calendar grid for the selected month.
+     * Logic maps the 1st of the month to its correct Day of Week.
+     */
     private void buildCalendar() {
         if (layoutCalendarGrid == null) return;
         layoutCalendarGrid.removeAllViews();
@@ -94,11 +105,9 @@ public class BlockedDatesActivity extends AppCompatActivity {
         if (tvMonthYear != null)
             tvMonthYear.setText(MONTHS[month] + " " + year);
 
-        // First day of month (0=Sun, 1=Mon … 6=Sat)
         Calendar first = Calendar.getInstance();
         first.set(year, month, 1);
         int startDow = first.get(Calendar.DAY_OF_WEEK); // 1=Sun
-        // Convert to Mon-start: Mon=0 … Sun=6
         int offset = (startDow - 2 + 7) % 7;
 
         int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -119,24 +128,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
             rp.setMargins(0, 0, 0, dp6);
             row.setLayoutParams(rp);
 
-            for (int col = 0; col < 7; col++) {
-                final int cellDay;
-                if ((col < offset && day == 1) || day > daysInMonth) {
-                    cellDay = -1; // empty cell
-                } else {
-                    if (day == 1 && col < offset) { cellDay = -1; }
-                    else {
-                        cellDay = day;
-                        day++;
-                    }
-                }
-
-                // Actually simplify:
-                // We'll redo this logic cleanly below
-                break; // break inner, redo properly
-            }
-
-            // Simpler approach: pad with empty cells
             for (int col = 0; col < 7; col++) {
                 boolean isEmpty = (day == 1 && col < offset) || day > daysInMonth;
                 final int thisDay;
@@ -191,8 +182,10 @@ public class BlockedDatesActivity extends AppCompatActivity {
         }
     }
 
-    // ── Toggle date ───────────────────────────────────────────
-
+    /**
+     * Toggles the blocked status of a specific date and persists the change.
+     * @param dateKey The date string in "yyyy-MM-dd" format.
+     */
     private void toggleDate(String dateKey) {
         if (blockedDates.contains(dateKey)) {
             blockedDates.remove(dateKey);
@@ -206,8 +199,9 @@ public class BlockedDatesActivity extends AppCompatActivity {
         saveBlockedDates();
     }
 
-    // ── Clear all ─────────────────────────────────────────────
-
+    /**
+     * Removes all blocked dates from the tutor's schedule.
+     */
     private void clearAll() {
         blockedDates.clear();
         updateBlockedCount();
@@ -217,8 +211,9 @@ public class BlockedDatesActivity extends AppCompatActivity {
         Toast.makeText(this, "All blocked dates cleared", Toast.LENGTH_SHORT).show();
     }
 
-    // ── Recent list ───────────────────────────────────────────
-
+    /**
+     * Generates a list of recently blocked dates for quick reference below the calendar.
+     */
     private void buildRecentList() {
         if (layoutRecentDates == null) return;
         layoutRecentDates.removeAllViews();
@@ -232,7 +227,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
             return;
         }
 
-        // Show last 5, most recent first
         List<String> recent = new ArrayList<>(blockedDates);
         java.util.Collections.sort(recent, java.util.Collections.reverseOrder());
         int limit = Math.min(5, recent.size());
@@ -259,7 +253,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
             rp.setMargins(0, 0, 0, dp(10));
             row.setLayoutParams(rp);
 
-            // Icon
             MaterialCardView icon = new MaterialCardView(this);
             LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(40), dp(40));
             ip.setMargins(0, 0, dp(12), 0);
@@ -276,7 +269,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
             icon.addView(tvIcon);
             row.addView(icon);
 
-            // Text
             LinearLayout textCol = new LinearLayout(this);
             textCol.setOrientation(LinearLayout.VERTICAL);
             textCol.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -296,7 +288,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
 
             row.addView(textCol);
 
-            // Delete button
             MaterialCardView del = new MaterialCardView(this);
             LinearLayout.LayoutParams dp2 = new LinearLayout.LayoutParams(dp(36), dp(36));
             del.setLayoutParams(dp2);
@@ -323,8 +314,7 @@ public class BlockedDatesActivity extends AppCompatActivity {
         if (tvBlockedCount != null) tvBlockedCount.setText(String.valueOf(blockedDates.size()));
     }
 
-    // ── Firestore ─────────────────────────────────────────────
-
+    /** Saves the current list of blocked dates to the Firestore availability collection. */
     private void saveBlockedDates() {
         if (currentUser == null) return;
         Map<String, Object> data = new HashMap<>();
@@ -334,6 +324,7 @@ public class BlockedDatesActivity extends AppCompatActivity {
                 .set(data, SetOptions.merge());
     }
 
+    /** Fetches the tutor's blocked dates from Firestore upon initialization. */
     @SuppressWarnings("unchecked")
     private void loadBlockedDates() {
         if (currentUser == null) {

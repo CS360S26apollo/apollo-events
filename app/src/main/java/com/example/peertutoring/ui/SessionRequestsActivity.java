@@ -27,8 +27,15 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Implementation of US 16: Session Tracking UI.
- * Aligned with Figma designs provided.
+ * Activity for students to view and track all their tutoring session requests.
+ * Role: Tracking View for User Story 10 (Track Request Status) 
+ * and User Story 16 (Session Lifecycle Tracking).
+ * 
+ * Purpose: Provides a comprehensive list of all requests (Requested, Booked, 
+ * Completed, Cancelled) with real-time updates from Firestore. Aligned 
+ * with the visual dashboard requirements from Figma.
+ * 
+ * Design Pattern: Observer pattern (Real-time Firestore snapshots).
  */
 public class SessionRequestsActivity extends AppCompatActivity {
 
@@ -52,8 +59,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
 
         layoutRequestList = findViewById(R.id.layoutRequestList);
 
-        // Header counts (Figma style)
-        tvCountUpcoming = findViewById(R.id.tvCountUpcoming); // Renamed from tvCountPending in layout or mapped
+        tvCountUpcoming = findViewById(R.id.tvCountUpcoming);
         tvCountCompleted = findViewById(R.id.tvCountCompleted);
         tvCountTotal = findViewById(R.id.tvCountTotal);
 
@@ -79,21 +85,29 @@ public class SessionRequestsActivity extends AppCompatActivity {
         });
     }
 
+    /** Initializes the horizontal filter bar for categorizing session requests. */
     private void setupFilterChips() {
-        // Aligned with Figma: All, Requested, Booked, Completed, Cancelled
         findViewById(R.id.chipAll).setOnClickListener(v -> applyFilter("all"));
         findViewById(R.id.chipPending).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_REQUESTED));
-        findViewById(R.id.chipCounter).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_BOOKED)); // Mapped to Booked for UI sync
+        findViewById(R.id.chipCounter).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_BOOKED));
         findViewById(R.id.chipAccepted).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_COMPLETED));
         findViewById(R.id.chipDeclined).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_CANCELLED));
     }
 
+    /**
+     * Filters the displayed list of sessions based on the selected status.
+     * @param filter The status string to filter by.
+     */
     private void applyFilter(String filter) {
         currentFilter = filter;
         updateListUI();
         updateTabStyles(filter);
     }
 
+    /**
+     * Establishes a real-time connection to the Firestore sessionRequests collection.
+     * Implementation of US 10 real-time tracking.
+     */
     private void startRealTimeListener() {
         if (currentUid.isEmpty()) { loadMockData(); return; }
 
@@ -114,6 +128,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
                 });
     }
 
+    /** Loads local mock data if the user is not authenticated (for demo purposes). */
     private void loadMockData() {
         allSessions.clear();
         Calendar cal = Calendar.getInstance();
@@ -131,6 +146,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         updateListUI();
     }
 
+    /** Recalculates the summary statistics displayed in the screen header. */
     private void updateCounts() {
         int upcoming = 0, completed = 0;
         Date now = new Date();
@@ -167,7 +183,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         TextView tvTokens = card.findViewById(R.id.tvTokens);
         TextView tvProvider = card.findViewById(R.id.tvProviderName);
         TextView tvCategory = card.findViewById(R.id.tvCategory);
-        TextView tvLocation = card.findViewById(R.id.tvLocation); // We'll use this for Date/Time as per Figma
+        TextView tvLocation = card.findViewById(R.id.tvLocation);
 
         if (tvTopic != null) tvTopic.setText(doc.topic);
         if (tvCategory != null) tvCategory.setText(doc.category);
@@ -204,6 +220,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         }
     }
 
+    /** Internal wrapper class to simplify document processing from both Firestore and Mock sources. */
     private static class SessionDoc {
         String id, topic, status, provider, category;
         int duration, tokens;
@@ -227,10 +244,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
     }
 
     private void updateTabStyles(String activeFilter) {
-        // Simplified tab styling logic
-        int inactiveBg = Color.parseColor("#F3F4F6");
-        int activeBg = Color.parseColor("#34C759"); // Green as per Figma "Requested" selection
-
+        int activeBg = Color.parseColor("#34C759");
         setTabStyle(R.id.chipAll, "all".equals(activeFilter) ? activeBg : Color.WHITE);
         setTabStyle(R.id.chipPending, SessionRequest.STATUS_REQUESTED.equals(activeFilter) ? activeBg : Color.WHITE);
         setTabStyle(R.id.chipCounter, SessionRequest.STATUS_BOOKED.equals(activeFilter) ? activeBg : Color.WHITE);
@@ -242,7 +256,6 @@ public class SessionRequestsActivity extends AppCompatActivity {
         MaterialCardView card = findViewById(id);
         if (card != null) {
             card.setCardBackgroundColor(bgColor);
-            // In a real app, you'd also flip text color here
         }
     }
 

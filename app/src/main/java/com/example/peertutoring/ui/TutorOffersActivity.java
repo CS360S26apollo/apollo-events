@@ -16,15 +16,19 @@ import com.example.peertutoring.R;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * US8: Displays tutor offers for a specific session request.
- * Student can view each tutor's pitch and accept an offer.
+ * Activity for students to view competing offers from multiple tutors for their session request.
+ * Role: Selection View for User Story 08 (Request a Session) and User Story 05 (Tutor Recommendations).
+ * 
+ * Purpose: Allows students to compare tutor profiles, ratings, and personalized messages 
+ * before committing tokens to accept a specific offer. Includes token balance validation.
+ * 
+ * Design Pattern: View-Controller with conditional mock data injection.
+ * 
+ * Outstanding Issues:
+ * - Token deduction logic is client-side; should be moved to a Cloud Function for security.
  */
 public class TutorOffersActivity extends AppCompatActivity {
 
@@ -43,13 +47,11 @@ public class TutorOffersActivity extends AppCompatActivity {
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
         layoutOfferList = findViewById(R.id.layoutOfferList);
 
-        // Receive request data from Intent
         requestId   = getIntent().getStringExtra("requestId");
         String topic    = getIntent().getStringExtra("topic");
         String goals    = getIntent().getStringExtra("goals");
         int    duration = getIntent().getIntExtra("duration", 60);
 
-        // Populate header summary
         TextView tvTopic    = findViewById(R.id.tvRequestTopic);
         TextView tvGoals    = findViewById(R.id.tvRequestGoals);
         TextView tvDuration = findViewById(R.id.tvRequestDuration);
@@ -58,11 +60,9 @@ public class TutorOffersActivity extends AppCompatActivity {
         if (tvGoals    != null && goals    != null) tvGoals.setText(goals);
         if (tvDuration != null) tvDuration.setText(duration + " minutes");
 
-        // Back button
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
-        // Load offers
         if (requestId != null && !requestId.isEmpty()) {
             loadOffersFromFirestore(requestId, topic);
         } else {
@@ -70,8 +70,10 @@ public class TutorOffersActivity extends AppCompatActivity {
         }
     }
 
-    // ── Load from Firestore ───────────────────────────────────
-
+    /**
+     * Fetches offer sub-collection from the specific session request document.
+     * Implementation details for US 08.
+     */
     private void loadOffersFromFirestore(String reqId, String topic) {
         db.collection("sessionRequests")
                 .document(reqId)
@@ -79,19 +81,20 @@ public class TutorOffersActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(snap -> {
                     if (snap.isEmpty()) {
-                        loadMockOffers(topic); // fallback
+                        loadMockOffers(topic);
                     } else {
                         for (DocumentSnapshot doc : snap.getDocuments()) {
                             String subjects = doc.getString("subjects");
-                            // Simple filtering: if topic contains keywords, check against tutor subjects
                             if (shouldShowOffer(topic, subjects)) {
+                                Long rateLong = doc.getLong("rate");
+                                int rate = (rateLong != null) ? rateLong.intValue() : 0;
+                                
                                 addOfferCard(
                                         doc.getString("tutorName"),
                                         doc.getString("tutorInitials"),
                                         doc.getString("rating"),
                                         doc.getString("reviewCount"),
-                                        doc.getLong("rate") != null
-                                                ? doc.getLong("rate").intValue() : 0,
+                                        rate,
                                         subjects,
                                         doc.getString("message"),
                                         Boolean.TRUE.equals(doc.getBoolean("verified")),
@@ -104,6 +107,12 @@ public class TutorOffersActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> loadMockOffers(topic));
     }
 
+    /**
+     * Basic logic to filter tutor offers based on keyword relevance to the requested topic.
+     * @param topic Student's requested topic.
+     * @param subjects Tutor's expertise subjects.
+     * @return True if the offer is relevant.
+     */
     private boolean shouldShowOffer(String topic, String subjects) {
         if (topic == null || subjects == null) return true;
         String t = topic.toLowerCase();
@@ -123,8 +132,6 @@ public class TutorOffersActivity extends AppCompatActivity {
         }
         return true;
     }
-
-    // ── Mock offer data for demo ──────────────────────────────
 
     private void loadMockOffers(String topic) {
         Object[][] allOffers = {
@@ -148,8 +155,10 @@ public class TutorOffersActivity extends AppCompatActivity {
         }
     }
 
-    // ── Build offer card ──────────────────────────────────────
-
+    /**
+     * Programmatically creates and adds an offer card to the UI.
+     * Implementation details for US 05/08 comparisons.
+     */
     private void addOfferCard(String name, String initials, String rating,
                               String reviewCount, int rate, String subjectsStr,
                               String message, boolean verified, String offerId) {
@@ -195,21 +204,26 @@ public class TutorOffersActivity extends AppCompatActivity {
         }
 
         View btnAccept = card.findViewById(R.id.btnAcceptOffer);
-        if (btnAccept != null) btnAccept.setOnClickListener(v -> acceptOffer(name, offerId, rate));
+        if (btnAccept != null) btnAccept.setOnClickListener(v -> acceptOffer(offerId, rate));
 
         layoutOfferList.addView(card);
     }
 
-    private void acceptOffer(String tutorName, String offerId, int rate) {
+    /**
+     * Finalizes the session by deducting tokens from the student and marking the request accepted.
+     * Implementation of US 08 transaction logic.
+     * @param offerId The ID of the offer to accept.
+     * @param rate The token rate to deduct.
+     */
+    private void acceptOffer(String offerId, int rate) {
         if (currentUid.isEmpty()) {
             Toast.makeText(this, "Please sign in", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Token subtraction logic
         db.collection("users").document(currentUid).get().addOnSuccessListener(doc -> {
             Long currentTokens = doc.getLong("tokens");
-            if (currentTokens == null) currentTokens = 1000L; // default fallback
+            if (currentTokens == null) currentTokens = 1000L;
 
             if (currentTokens < rate) {
                 Toast.makeText(this, "❌ Insufficient tokens! You need " + rate + " tokens.", Toast.LENGTH_LONG).show();
@@ -217,11 +231,8 @@ public class TutorOffersActivity extends AppCompatActivity {
             }
 
             final long newBalance = currentTokens - rate;
-            
-            // 1. Update User Tokens
             db.collection("users").document(currentUid).update("tokens", newBalance);
             
-            // 2. Update Request Status
             if (requestId != null && !requestId.isEmpty()) {
                 db.collection("sessionRequests").document(requestId)
                         .update("status", "accepted", "acceptedOfferId", offerId)
@@ -236,6 +247,12 @@ public class TutorOffersActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Helper to set text to a TextView within a parent view.
+     * @param parent The container view.
+     * @param viewId The resource ID of the TextView.
+     * @param text The text to set.
+     */
     private void setText(View parent, int viewId, String text) {
         TextView tv = parent.findViewById(viewId);
         if (tv != null && text != null) tv.setText(text);

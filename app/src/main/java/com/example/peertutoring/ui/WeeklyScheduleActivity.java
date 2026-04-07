@@ -25,26 +25,30 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Weekly schedule screen.
- * Tutor selects available hours per day (8AM–9PM, 3-column grid).
- * Supports Copy to All Days and Save to Firestore.
+ * Activity for tutors to define their recurring weekly availability.
+ * Role: Scheduling View for User Story 13 (Tutor Availability).
+ * Purpose: Provides an interactive grid where tutors select available time slots 
+ * for each day of the week, allowing students to book sessions accordingly.
+ * 
+ * Design Pattern: View-Controller managing complex state (Grid selection).
+ * 
+ * Outstanding Issues:
+ * - Currently only supports 1-hour increments.
+ * - No validation against existing booked sessions when clearing availability.
  */
 public class WeeklyScheduleActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
 
-    // Day names for display and Firestore keys
     private static final String[] DAY_KEYS   = {"mon","tue","wed","thu","fri","sat","sun"};
     private static final String[] DAY_LABELS = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
     private static final int[]    TAB_IDS    = {R.id.tabMon,R.id.tabTue,R.id.tabWed,R.id.tabThu,R.id.tabFri,R.id.tabSat,R.id.tabSun};
     private static final int[]    SUM_IDS    = {R.id.sumMon,R.id.sumTue,R.id.sumWed,R.id.sumThu,R.id.sumFri,R.id.sumSat,R.id.sumSun};
 
-    // Hours 8–21 (8AM to 9PM)
     private static final int HOUR_START = 8;
     private static final int HOUR_END   = 21;
 
-    // schedule[dayIndex] = list of selected hour integers
     private final List<List<Integer>> schedule = new ArrayList<>();
     private int selectedDay = 0;
 
@@ -59,7 +63,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         db          = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Initialize empty schedule for each day
         for (int i = 0; i < 7; i++) schedule.add(new ArrayList<>());
 
         layoutHourGrid      = findViewById(R.id.layoutHourGrid);
@@ -80,8 +83,7 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         loadSchedule();
     }
 
-    // ── Day tabs ──────────────────────────────────────────────
-
+    /** Initializes the day selection tabs and their click listeners. */
     private void setupDayTabs() {
         for (int i = 0; i < TAB_IDS.length; i++) {
             final int dayIndex = i;
@@ -90,13 +92,16 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
                 tab.setOnClickListener(v -> switchDay(dayIndex));
             }
         }
-        switchDay(0); // default to Monday
+        switchDay(0);
     }
 
+    /**
+     * Handles switching the view to a different day of the week.
+     * @param dayIndex Index of the day (0-6).
+     */
     private void switchDay(int dayIndex) {
         selectedDay = dayIndex;
 
-        // Reset all tabs
         for (int i = 0; i < TAB_IDS.length; i++) {
             LinearLayout tab = findViewById(TAB_IDS[i]);
             if (tab == null) continue;
@@ -124,8 +129,10 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         }
     }
 
-    // ── Hour grid ─────────────────────────────────────────────
-
+    /**
+     * Dynamically builds the hour selection grid for the selected day.
+     * Implementation of US 13 availability selection.
+     */
     private void buildHourGrid() {
         if (layoutHourGrid == null) return;
         layoutHourGrid.removeAllViews();
@@ -133,7 +140,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         List<Integer> dayHours = schedule.get(selectedDay);
         int dp8 = dp(8);
 
-        // Build rows of 3 cells
         int hour = HOUR_START;
         while (hour <= HOUR_END) {
             LinearLayout row = new LinearLayout(this);
@@ -166,7 +172,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT));
 
-                // Hour number
                 TextView tvHour = new TextView(this);
                 tvHour.setText(String.valueOf(h <= 12 ? h : h - 12));
                 tvHour.setTextSize(18);
@@ -174,14 +179,12 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
                 tvHour.setTypeface(null, android.graphics.Typeface.BOLD);
                 tvHour.setGravity(Gravity.CENTER);
 
-                // AM/PM
                 TextView tvAmPm = new TextView(this);
                 tvAmPm.setText(h < 12 ? "AM" : "PM");
                 tvAmPm.setTextSize(11);
                 tvAmPm.setTextColor(selected ? Color.parseColor("#CCFFFFFF") : Color.parseColor("#8B97A8"));
                 tvAmPm.setGravity(Gravity.CENTER);
 
-                // Checkmark if selected
                 if (selected) {
                     TextView tvCheck = new TextView(this);
                     tvCheck.setText("✓");
@@ -195,7 +198,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
                 inner.addView(tvAmPm);
                 cell.addView(inner);
 
-                // Toggle on click
                 cell.setOnClickListener(v -> {
                     List<Integer> hrs = schedule.get(selectedDay);
                     if (hrs.contains(h)) {
@@ -210,7 +212,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
 
                 row.addView(cell);
             }
-
             layoutHourGrid.addView(row);
         }
     }
@@ -221,8 +222,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
             tvHoursCount.setText(count + (count == 1 ? " hour" : " hours"));
     }
 
-    // ── Weekly summary ────────────────────────────────────────
-
     private void updateSummary() {
         for (int i = 0; i < SUM_IDS.length; i++) {
             TextView tv = findViewById(SUM_IDS[i]);
@@ -230,8 +229,7 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         }
     }
 
-    // ── Copy to all days ──────────────────────────────────────
-
+    /** Utility to replicate the current day's schedule across the entire week. */
     private void copyToAllDays() {
         List<Integer> source = new ArrayList<>(schedule.get(selectedDay));
         for (int i = 0; i < 7; i++) {
@@ -242,13 +240,9 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         Toast.makeText(this, "✅ Copied to all days!", Toast.LENGTH_SHORT).show();
     }
 
-    // ── Save to Firestore ─────────────────────────────────────
-
+    /** Persists the entire weekly schedule to the Firestore availability collection. */
     private void saveSchedule() {
-        if (currentUser == null) {
-            Toast.makeText(this, "Schedule saved successfully!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (currentUser == null) return;
 
         Map<String, Object> scheduleMap = new HashMap<>();
         for (int i = 0; i < 7; i++) {
@@ -264,8 +258,7 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
                         Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
-    // ── Load from Firestore ───────────────────────────────────
-
+    /** Loads the saved schedule from Firestore on initialization. */
     @SuppressWarnings("unchecked")
     private void loadSchedule() {
         if (currentUser == null) {

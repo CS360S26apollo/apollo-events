@@ -22,9 +22,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Buffer & Pricing screen.
- * Tutor configures: hourly rate, buffer time, default session length, booking notice.
- * All saved to Firestore under tutorAvailability/{uid}.
+ * Activity for tutors to configure their professional service parameters.
+ * Role: Configuration View for User Story 13 (Tutor Availability/Pricing).
+ * Purpose: Allows tutors to set hourly rates, buffer times between sessions, 
+ * default session lengths, and minimum booking notice periods.
+ * 
+ * Design Pattern: View (Activity) interacting with Firestore (Data Layer).
+ * 
+ * Outstanding Issues:
+ * - Local currency symbol is hardcoded to "Tokens".
+ * - Earnings calculation assumes a fixed number of hours per day/week/month.
  */
 public class BufferPricingActivity extends AppCompatActivity {
 

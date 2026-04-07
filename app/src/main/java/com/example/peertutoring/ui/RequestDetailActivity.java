@@ -22,8 +22,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * US 10: Request Detail Tracking
- * Handles both Student view (Tracking) and Tutor view (Responding).
+ * Activity that displays the full details of a specific session request.
+ * Role: Tracking/Management View for User Story 10 (Track Request Status) 
+ * and User Story 09 (Tutor Response).
+ * 
+ * Purpose: Provides a dual-purpose interface. Students use it to track the 
+ * progress of their pending requests, while tutors use it to review and 
+ * potentially accept or decline incoming session proposals.
+ * 
+ * Design Pattern: Dynamic View-Model populated by Intent or Firestore.
  */
 public class RequestDetailActivity extends AppCompatActivity {
 
@@ -39,7 +46,6 @@ public class RequestDetailActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         
-        // Receive full data from Intent
         requestId = getIntent().getStringExtra("requestId");
         String intentTopic = getIntent().getStringExtra("topic");
         String intentStatus = getIntent().getStringExtra("status");
@@ -51,12 +57,10 @@ public class RequestDetailActivity extends AppCompatActivity {
 
         layoutOfferContainer = findViewById(R.id.layoutOfferContainer);
 
-        // Populate views immediately with Intent data
         populateFromIntent(intentTopic, intentStatus, intentProvider, intentCategory, intentDuration, intentTokens);
         
         setupButtons();
         
-        // Sync with Firestore if not mock data
         if (requestId != null && !requestId.startsWith("mock_")) {
             loadRequestData();
             if (isStudentView) {
@@ -65,6 +69,9 @@ public class RequestDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Quickly populates the UI using data passed through the navigation Intent.
+     */
     private void populateFromIntent(String topic, String status, String provider, String category, int duration, int tokens) {
         setText(R.id.tvTopic, topic != null ? topic : "Request Detail");
         setText(R.id.tvProviderName, provider != null ? provider : "Tutor Pending");
@@ -74,6 +81,9 @@ public class RequestDetailActivity extends AppCompatActivity {
         updateStatusUI(status);
     }
 
+    /**
+     * Subscribes to real-time updates for the session request document in Firestore.
+     */
     private void loadRequestData() {
         db.collection("sessionRequests").document(requestId)
                 .addSnapshotListener((doc, e) -> {
@@ -85,6 +95,10 @@ public class RequestDetailActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Adjusts the visual badge (color and text) based on the current status of the request.
+     * @param status The current state string (e.g., 'waiting', 'accepted', 'cancelled').
+     */
     private void updateStatusUI(String status) {
         TextView tvStatusBadge = findViewById(R.id.tvStatusBadge);
         MaterialCardView cardStatusBadge = findViewById(R.id.cardStatusBadge);
@@ -106,6 +120,9 @@ public class RequestDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Fetches and displays any counter-offers or bids from tutors (for student view).
+     */
     private void loadProviderOffers() {
         db.collection("sessionRequests").document(requestId).collection("offers")
                 .addSnapshotListener((snap, e) -> {
@@ -148,6 +165,10 @@ public class RequestDetailActivity extends AppCompatActivity {
         findViewById(R.id.btnDeclineRequest).setOnClickListener(v -> updateFirestoreStatus("declined"));
     }
 
+    /**
+     * Updates the status field of the session request in Firestore.
+     * @param status The new status value to persist.
+     */
     private void updateFirestoreStatus(String status) {
         if (requestId == null || requestId.startsWith("mock_")) return;
         db.collection("sessionRequests").document(requestId).update("status", status);
