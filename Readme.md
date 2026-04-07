@@ -304,9 +304,7 @@ Sunday, April 05, 2026
 ![UML Class Diagram](doc/UML2.png)
 
 
-## StoryBoard Diagram <a name="uml-diagrams"></a>
 
-![Story Board Diagram](doc/Storyboard.png)
 ---
 
 ## Object-Oriented Analysis
@@ -517,6 +515,10 @@ _Add screenshots or links to wireframe images._
   * [US 25 - figma screen](https://grain-verify-90660343.figma.site/)
   * **Description:** Professional portal for tutors to request payouts and convert tokens to currency.
     
+## StoryBoard Diagram <a name="uml-diagrams"></a>
+
+![Story Board Diagram](doc/Storyboard.png)
+
 
 ### Wireframes – Project Part 3
 _Add screenshots or links to wireframe images._
