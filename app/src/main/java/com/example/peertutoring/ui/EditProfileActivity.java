@@ -1,5 +1,6 @@
 package com.example.peertutoring.ui;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -58,6 +59,7 @@ public class EditProfileActivity extends AppCompatActivity {
             etInstitution, etBio, etRate;
     private TextView tvCharCount;
     private LinearLayout layoutInstitution, layoutBio, layoutRate;
+    private Button btnManageAvailability;
 
     // -- Privacy switches
     private SwitchMaterial switchShowName, switchShowInstitution,
@@ -127,6 +129,7 @@ public class EditProfileActivity extends AppCompatActivity {
         layoutInstitution     = findViewById(R.id.layoutInstitution);
         layoutBio             = findViewById(R.id.layoutBio);
         layoutRate            = findViewById(R.id.layoutRate);
+        btnManageAvailability = findViewById(R.id.btnManageAvailability);
         switchShowName        = findViewById(R.id.switchShowName);
         switchShowInstitution = findViewById(R.id.switchShowInstitution);
         switchShowSubjects    = findViewById(R.id.switchShowSubjects);
@@ -184,6 +187,16 @@ public class EditProfileActivity extends AppCompatActivity {
             rowShowInstitution.setVisibility(role.equals("student") ? View.VISIBLE : View.GONE);
         if (rowShowRate != null)
             rowShowRate.setVisibility(role.equals("tutor") ? View.VISIBLE : View.GONE);
+
+        if (btnManageAvailability != null) {
+            if (role.equals("tutor")) {
+                btnManageAvailability.setVisibility(View.VISIBLE);
+                btnManageAvailability.setOnClickListener(v ->
+                        startActivity(new Intent(this, AvailabilityDashboardActivity.class)));
+            } else {
+                btnManageAvailability.setVisibility(View.GONE);
+            }
+        }
 
         if (btnRoleStudent != null) {
             if (role.equals("student")) {

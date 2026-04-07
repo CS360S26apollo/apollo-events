@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- ── GRADIENT HEADER ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_button_gradient"
+        android:paddingTop="48dp"
+        android:paddingBottom="32dp"
+        android:paddingHorizontal="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_previous"
+                android:contentDescription="Back"
+                app:tint="#FFFFFF"
+                android:layout_marginEnd="14dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Find Tutor"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manage Your Availability"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- ── 2x2 STATS GRID ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <!-- Weekly Hours -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="44dp" android:layout_height="44dp" android:layout_marginBottom="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🕐" android:textSize="20sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:id="@+id/tvWeeklyHours" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Weekly Hours" android:textColor="#8B97A8" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Active Days -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="44dp" android:layout_height="44dp" android:layout_marginBottom="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="📅" android:textSize="20sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:id="@+id/tvActiveDays" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Active Days" android:textColor="#8B97A8" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <!-- Blocked Dates count -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="44dp" android:layout_height="44dp" android:layout_marginBottom="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="📈" android:textSize="20sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:id="@+id/tvBlockedCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Blocked Dates" android:textColor="#8B97A8" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Tokens/Hour -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="44dp" android:layout_height="44dp" android:layout_marginBottom="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🪙" android:textSize="20sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <TextView android:id="@+id/tvTokensPerHour" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="100" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tokens/Hour" android:textColor="#8B97A8" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ── NAV CARD: Weekly Schedule ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardWeeklySchedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="18dp">
+                    <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="16dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="📅" android:textSize="22sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Weekly Schedule" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Set your working hours" android:textColor="#8B97A8" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="›" android:textColor="#C0C0C0" android:textSize="24sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── NAV CARD: Blocked Dates ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBlockedDates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="18dp">
+                    <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="16dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🚫" android:textSize="22sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Blocked Dates" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mark unavailable dates" android:textColor="#8B97A8" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="›" android:textColor="#C0C0C0" android:textSize="24sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── NAV CARD: Buffer & Pricing ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBufferPricing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="18dp">
+                    <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="16dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#8A2EFF" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="⚙️" android:textSize="22sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Buffer &amp; Pricing" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Configure settings" android:textColor="#8B97A8" android:textSize="13sp" android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="›" android:textColor="#C0C0C0" android:textSize="24sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── PRO TIP ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#EEF2FF"
+                app:cardElevation="0dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="top" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💡" android:textSize="20sp" android:layout_marginEnd="12dp" android:layout_marginTop="2dp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pro Tip" android:textColor="#071A3D" android:textSize="14sp" android:textStyle="bold" android:layout_marginBottom="4dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Keep your availability updated to maximize bookings. Students prefer tutors with consistent schedules!" android:textColor="#4B5D7A" android:textSize="13sp" android:lineSpacingExtra="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

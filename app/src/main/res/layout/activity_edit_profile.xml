@@ -148,6 +148,21 @@
                                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/editTextRate" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Rate (Tokens)" android:inputType="number" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
+
+                        <!-- MANAGE AVAILABILITY BUTTON -->
+                        <Button
+                            android:id="@+id/btnManageAvailability"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Manage Availability"
+                            android:textAllCaps="false"
+                            android:textColor="#8A2EFF"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            app:icon="@android:drawable/ic_menu_my_calendar"
+                            app:iconTint="#8A2EFF"
+                            android:visibility="gone" />
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Subjects" android:textStyle="bold" android:layout_marginBottom="8dp" />

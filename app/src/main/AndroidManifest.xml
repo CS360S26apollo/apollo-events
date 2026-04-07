@@ -35,6 +35,20 @@
         <activity android:name=".ui.CounterOfferActivity" android:exported="false" />
         <activity android:name=".ui.RequestResultActivity" android:exported="false" />
 
+        <!-- Availability Activities -->
+        <activity
+            android:name=".ui.AvailabilityDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.WeeklyScheduleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BlockedDatesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BufferPricingActivity"
+            android:exported="false" />
+
         <!-- Fixed keyboard appearing on Messages/Dashboard -->
         <activity
             android:name=".ui.SessionRequestsActivity"

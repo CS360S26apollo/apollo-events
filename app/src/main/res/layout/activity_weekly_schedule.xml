@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- ── BLUE HEADER ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#1565C0"
+        android:paddingTop="48dp"
+        android:paddingBottom="24dp"
+        android:paddingHorizontal="20dp">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageButton android:id="@+id/btnBack" android:layout_width="48dp" android:layout_height="48dp" android:background="@android:color/transparent" android:src="@android:drawable/ic_media_previous" app:tint="#FFFFFF" android:contentDescription="Back" android:layout_marginEnd="10dp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Weekly Schedule" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select your available hours" android:textColor="#CCFFFFFF" android:textSize="13sp" />
+            </LinearLayout>
+            <View android:layout_width="40dp" android:layout_height="1dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ── DAY TABS ── -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <LinearLayout android:id="@+id/tabMon" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="8dp" android:background="@drawable/bg_button_gradient">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mon" android:textColor="#FFFFFF" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="M" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/tabTue" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tue" android:textColor="#8B97A8" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/tabWed" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Wed" android:textColor="#8B97A8" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="W" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/tabThu" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thu" android:textColor="#8B97A8" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/tabFri" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fri" android:textColor="#8B97A8" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="F" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/tabSat" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sat" android:textColor="#8B97A8" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/tabSun" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sun" android:textColor="#8B97A8" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- Select Hours card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Header row: label + hours count -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+                        <TextView android:id="@+id/tvSelectHoursLabel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Select Hours - Monday" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvHoursCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 hours" android:textColor="#8A2EFF" android:textSize="14sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Hour grid — 3 columns, programmatically populated in Java -->
+                    <LinearLayout
+                        android:id="@+id/layoutHourGrid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/btnCopyToAllDays"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_button_gradient"
+                    android:text="Copy to All Days"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="28dp" />
+
+                <Button
+                    android:id="@+id/btnSaveSchedule"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#00C853"
+                    android:text="Save Schedule"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="28dp" />
+            </LinearLayout>
+
+            <!-- Weekly Summary card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#EEF2FF"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📊 " android:textSize="18sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Weekly Summary" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Summary grid — 2 columns -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mon" android:textColor="#8B97A8" android:textSize="12sp" />
+                                <TextView android:id="@+id/sumMon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0h" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tue" android:textColor="#8B97A8" android:textSize="12sp" />
+                                <TextView android:id="@+id/sumTue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0h" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Wed" android:textColor="#8B97A8" android:textSize="12sp" />
+                                <TextView android:id="@+id/sumWed" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0h" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thu" android:textColor="#8B97A8" android:textSize="12sp" />
+                                <TextView android:id="@+id/sumThu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0h" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fri" android:textColor="#8B97A8" android:textSize="12sp" />
+                                <TextView android:id="@+id/sumFri" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0h" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sat" android:textColor="#8B97A8" android:textSize="12sp" />
+                                <TextView android:id="@+id/sumSat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0h" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sun" android:textColor="#8B97A8" android:textSize="12sp" />
+                                <TextView android:id="@+id/sumSun" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0h" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
