@@ -304,6 +304,9 @@ Sunday, April 05, 2026
 ![UML Class Diagram](doc/UML2.png)
 
 
+## StoryBoard Diagram <a name="uml-diagrams"></a>
+
+![Story Board Diagram](doc/Storyboard.png)
 ---
 
 ## Object-Oriented Analysis
