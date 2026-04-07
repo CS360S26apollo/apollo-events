@@ -9,7 +9,9 @@
   - [Meeting – Feb 23, 2026](#meeting--feb-23-2026)
   - [Meeting – Mar 2, 2026](#meeting--mar-2-2026)
   - [Meeting – Mar 8, 2026](#meeting--mar-8-2026)
-  - [Meeting – Mar 27, 2026](#meeting--mar-27-2026)
+  - [Meeting – Mar 26, 2026](#meeting--mar-26-2026)
+  - [Meeting – Apr 01, 2026](#meeting--apr-01-2026)
+  - [Meeting – Apr 05, 2026](#meeting--apr-05-2026)
 
 - [UML Diagrams](#uml-diagrams)
 
@@ -156,10 +158,10 @@ Sunday, March 8, 2026
 
 ---
 
-### Meeting – Mar 27, 2026
+### Meeting – Mar 26, 2026
 
 #### Date
-Friday, March 27, 2026
+Thursday, March 26, 2026
 
 #### Attendance
 - Ali Iqbal  
@@ -189,6 +191,68 @@ Friday, March 27, 2026
 - [x] Write Intent tests for US 1, 2, 3, and 4.
 - [x] Ensure Firestore connectivity for profile saving.
 
+---
+### Meeting – Apr 01, 2026
+#### Date
+Wednesday, Apr 01, 2026
+#### Attendance
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
+---
+#### Key Takeaways
+- Successfully closed Sprint 1 and transitioned to Sprint 2.
+- Picked up User Stories 5, 8, 9, and 10 for Sprint 2 implementation.
+- Add test cases for all four user stories to support testing efforts.
+- Sprint 2 is targeted to conclude by April 5, 2026.
+---
+#### Discussion Points
+- Review and closure of Sprint 1 deliverables
+- Planning and scope definition for Sprint 2
+- Breakdown of US 05 (Recommended Tutors), US 08 (Request a Session), US 09 (Tutor Responds to Request), and US 10 (Track Request Status)
+- Test case design and coverage for the four new user stories
+---
+#### Action Items
+- [x] Implement US 05 – Recommended tutor listings based on subject/course and student preferences
+- [x] Implement US 08 – Session request flow with topic, goals, and duration fields
+- [x] Implement US 09 – Tutor response flow (accept / decline / counter-offer)
+- [x] Implement US 10 – Request status tracking view (pending / accepted / declined / counter-offer / expired)
+- [x] Write and integrate test cases for US 05, 08, 09, and 10
+- [x] Close Sprint 2 by April 5, 2026
+---
+### Meeting – Apr 05, 2026
+#### Date
+Sunday, April 05, 2026
+#### Attendance
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
+---
+#### Key Takeaways
+- Successfully closed Sprint 2 and transitioned to Sprint 3.
+- Picked up User Stories 13 and 16 for Sprint 3 implementation.
+- Planned Javadoc implementation and full Phase 3 documentation alongside development.
+- UML diagram update scheduled as part of Sprint 3 deliverables.
+- Sprint 3 is targeted to conclude by April 7, 2026.
+---
+#### Discussion Points
+- Review and closure of Sprint 2 deliverables
+- Planning and scope definition for Sprint 3
+- Breakdown of US 13 (Tutor Sets Availability Calendar) and US 16 (Session Lifecycle Tracking)
+- Strategy for Javadoc coverage across all Phase 3 classes
+- Documentation structure and UML diagram update requirements
+---
+#### Action Items
+- [x] Implement US 13 – Tutor weekly availability setup (working hours, unavailable dates, buffer time) for accurate slot generation
+- [x] Implement US 16 – Session lifecycle status tracking (requested → booked → completed / cancelled / no-show)
+- [x] Add Javadoc to all Phase 3 model and control classes
+- [x] Complete full documentation for Phase 3
+- [x] Update UML diagram to reflect Sprint 3 additions
+- [x] Close Sprint 3 by April 7, 2026
 ---
 
 
@@ -270,25 +334,25 @@ classDiagram
 | ID | User Story | Priority | Status |
 |----|------------|----------|--------|
 
-### Product Backlog – Project Part 2 (Half-Way Checkpoint Updates)
+### Product Backlog – Project Part 2
 | ID | User Story | Priority | Status | Risk | Points | Checkpoint |
 |:---|:---|:---|:---|:---|:---|:---|
 | **US 01** | Student Signup: Create account with goals/subjects | High | **Done** | Low | 3 | Half |
 | **US 02** | Tutor Signup: Create profile with bio/rates | High | **Done** | Low | 3 | Half |
 | **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half |
 | **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half |
-| **US 08** | Request a Session: Student sends request with goals | High | Open | Medium | 5 | Half |
-| **US 09** | Tutor Response: Accept, decline, or counter-offer | High | Open | Medium | 5 | Half |
-| **US 10** | Track Request Status: View pending/accepted status | Medium | Open | Low | 3 | Half |
-| **US 13** | Tutor Availability: Set weekly hours/breaks | High | Open | Medium | 5 | Half |
-| **US 16** | Session Lifecycle: Track from request to completion | High | Open | Medium | 5 | Half |
-| **US 05** | Recommended Tutors: View tutors based on needs | High | Open | High | 8 | Final |
+| **US 05** | Recommended Tutors: View tutors based on needs | High | **Done** | High | 8 | Final |
 | **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final |
 | **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final |
+| **US 08** | Request a Session: Student sends request with goals | High | **Done** | Medium | 5 | Half |
+| **US 09** | Tutor Response: Accept, decline, or counter-offer | High | **Done** | Medium | 5 | Half |
+| **US 10** | Track Request Status: View pending/accepted status | Medium | **Done** | Low | 3 | Half |
 | **US 11** | Auto-Expire: System clears old pending requests | Low | Open | Medium | 3 | Final |
 | **US 12** | Instant Book: Book slots without tutor approval | Medium | Open | Medium | 5 | Final |
+| **US 13** | Tutor Availability: Set weekly hours/breaks | High | **Done** | Medium | 5 | Half |
 | **US 14** | Prevent Double-Booking: Detect scheduling conflicts | High | Open | High | 8 | Final |
 | **US 15** | Reschedule/Cancel: Change bookings within rules | Medium | Open | Medium | 5 | Final |
+| **US 16** | Session Lifecycle: Track from request to completion | High | **Done** | Medium | 5 | Half |
 | **US 17** | Session Notes: Tutor adds outcomes/action items | Low | Open | Low | 3 | Final |
 | **US 18** | Progress Tracking: View milestones/feedback trends | Medium | Open | Medium | 5 | Final |
 | **US 19** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final |
@@ -300,15 +364,40 @@ classDiagram
 | **US 25** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final |
 
 ### Product Backlog – Project Part 3
-| ID | User Story | Priority | Status |
-|----|------------|----------|--------|
+| ID | User Story | Priority | Status | Risk | Points | Checkpoint | Completed |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| **US 01** | Student Signup: Create account with goals/subjects | High | **Done** | Low | 3 | Half | ✅ Sprint 1 |
+| **US 02** | Tutor Signup: Create profile with bio/rates | High | **Done** | Low | 3 | Half | ✅ Sprint 1 |
+| **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half | ✅ Sprint 1 |
+| **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half | ✅ Sprint 1 |
+| **US 05** | Recommended Tutors: View tutors based on needs | High | **Done** | High | 8 | Final | ✅ Sprint 2 |
+| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final | — |
+| **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final | — |
+| **US 08** | Request a Session: Student sends request with goals | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
+| **US 09** | Tutor Response: Accept, decline, or counter-offer | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
+| **US 10** | Track Request Status: View pending/accepted status | Medium | **Done** | Low | 3 | Half | ✅ Sprint 2 |
+| **US 11** | Auto-Expire: System clears old pending requests | Low | Open | Medium | 3 | Final | — |
+| **US 12** | Instant Book: Book slots without tutor approval | Medium | Open | Medium | 5 | Final | — |
+| **US 13** | Tutor Availability: Set weekly hours/breaks | High | **Done** | Medium | 5 | Half | ✅ Sprint 3 |
+| **US 14** | Prevent Double-Booking: Detect scheduling conflicts | High | Open | High | 8 | Final | — |
+| **US 15** | Reschedule/Cancel: Change bookings within rules | Medium | Open | Medium | 5 | Final | — |
+| **US 16** | Session Lifecycle: Track from request to completion | High | **Done** | Medium | 5 | Half | ✅ Sprint 3 |
+| **US 17** | Session Notes: Tutor adds outcomes/action items | Low | Open | Low | 3 | Final | — |
+| **US 18** | Progress Tracking: View milestones/feedback trends | Medium | Open | Medium | 5 | Final | — |
+| **US 19** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final | — |
+| **US 20** | Verified Reviews: One review per completed session | Medium | Open | Medium | 5 | Final | — |
+| **US 21** | Report Reviews: Flag inappropriate/suspicious content | Low | Open | Low | 3 | Final | — |
+| **US 22** | Review Sorting: Sort by helpfulness/quality | Low | Open | Low | 3 | Final | — |
+| **US 23** | Buy Tokens: Purchase and load in-app wallet | High | Open | High | 8 | Final | — |
+| **US 24** | Escrow Hold: Tokens held until session completion | High | Open | High | 13 | Final | — |
+| **US 25** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final | — |
 
 ---
 
 ## Sprint Planning & Reviews <a name="sprint-planning-reviews"></a>
 
 ### Sprint 1 (Half-Way Checkpoint)
-**Dates:** Mar 15, 2026 – Mar 28, 2026
+**Dates:** Mar 27, 2026 – Apr 01, 2026
 
 **Planned User Stories:**
 - US 01: Student Signup
@@ -320,6 +409,26 @@ classDiagram
 All planned user stories have been completed and verified with Intent Tests. Javadoc documentation has been added to all model classes. No major issues were encountered during development. Server connectivity with Firestore is fully functional for profile management.
 
 ---
+### Sprint 2
+**Dates:** Apr 01, 2026 – Apr 05, 2026  
+**Planned User Stories:**
+- US 05: Recommended Tutors
+- US 08: Request a Session
+- US 09: Tutor Responds to Request
+- US 10: Track Request Status
+
+**Review:**  
+All four user stories were successfully implemented and closed within the sprint. Test cases were written and integrated for each user story to ensure correctness of the session request and response flows. The recommended tutor listing, session request submission, tutor response handling, and request status tracking are all fully functional.
+
+---
+### Sprint 3
+**Dates:** Apr 05, 2026 – Apr 07, 2026  
+**Planned User Stories:**
+- US 13: Tutor Sets Availability Calendar
+- US 16: Session Lifecycle Tracking
+
+**Review:**  
+Both user stories were implemented and sprint closed on schedule. US 13 enables tutors to configure weekly availability including working hours, unavailable dates, and buffer time for accurate slot generation. US 16 introduces end-to-end session lifecycle tracking across all statuses (requested → booked → completed / cancelled / no-show). Javadoc was added to all Phase 3 classes, full Phase 3 documentation was completed, and the UML diagram was updated to reflect all sprint 3 additions.
 
 ## Wireframes
 
