@@ -303,7 +303,8 @@ Sunday, April 05, 2026
 
 ```mermaid
 classDiagram
-    class User {#String uid
+    class User {
+        #String uid
         #String email
         #String role
         #boolean profileVisible
@@ -339,13 +340,12 @@ classDiagram
         -String level
         -int rate
         -List~String~ subjects
-        +getFirstName() String
-        +getLastName() String
-        +getFullName() String
-        +getBio() String
-        +getLevel() String
-        +getRate() int
-        +getSubjects() List~String~
+        -double rating
+        -double responsivenessScore
+        -Map availability
+        +getRating() double
+        +getResponsivenessScore() double
+        +getAvailability() Map
         -updateFullName()
     }
     class SessionRequest {
@@ -363,7 +363,6 @@ classDiagram
         -Date scheduledDate
         -Date createdAt
         +isUpcoming() boolean
-        +getRequestId() String
         +getStatus() String
     }
     class UserRepository {
@@ -381,7 +380,7 @@ classDiagram
     Student "1" -- "*" SessionRequest : initiates
     Tutor "1" -- "*" SessionRequest : conducts
     UserRepository ..> Student : manages
-    UserRepository ..> Tutor : manages
+    UserRepository ..> Tutor : ranks & recommendeds
     UserRepository ..> SessionRequest : persists
 ```
 
