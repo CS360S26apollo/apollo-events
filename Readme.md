@@ -412,22 +412,22 @@ classDiagram
 ### Product Backlog – Project Part 2
 | ID | User Story | Priority | Status | Risk | Points | Checkpoint |
 |:---|:---|:---|:---|:---|:---|:---|
-| **US 01** | Student Signup: Create account with goals/subjects | High | **Done** | Low | 3 | Half |
-| **US 02** | Tutor Signup: Create profile with bio/rates | High | **Done** | Low | 3 | Half |
-| **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half |
-| **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half |
-| **US 05** | Recommended Tutors: View tutors based on needs | High | **Done** | High | 8 | Final |
-| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | **Done(to be reviewed** | High | 13 | Final |
+| **US 01** | Student Signup: Create account with goals/subjects | High | Open | Low | 3 | Half |
+| **US 02** | Tutor Signup: Create profile with bio/rates | High | Open | Low | 3 | Half |
+| **US 03** | Edit Profile: Manage visibility and accuracy | Medium | Open | Low | 2 | Half |
+| **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | Open | Medium | 5 | Half |
+| **US 05** | Recommended Tutors: View tutors based on needs | High | Open | High | 8 | Final |
+| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final |
 | **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final |
-| **US 08** | Request a Session: Student sends request with goals | High | **Done** | Medium | 5 | Half |
-| **US 09** | Tutor Response: Accept, decline, or counter-offer | High | **Done** | Medium | 5 | Half |
-| **US 10** | Track Request Status: View pending/accepted status | Medium | **Done** | Low | 3 | Half |
+| **US 08** | Request a Session: Student sends request with goals | High | Open | Medium | 5 | Half |
+| **US 09** | Tutor Response: Accept, decline, or counter-offer | High | Open | Medium | 5 | Half |
+| **US 10** | Track Request Status: View pending/accepted status | Medium | Open | Low | 3 | Half |
 | **US 11** | Auto-Expire: System clears old pending requests | Low | Open | Medium | 3 | Final |
 | **US 12** | Instant Book: Book slots without tutor approval | Medium | Open | Medium | 5 | Final |
-| **US 13** | Tutor Availability: Set weekly hours/breaks | High | **Done** | Medium | 5 | Half |
+| **US 13** | Tutor Availability: Set weekly hours/breaks | High | Open | Medium | 5 | Half |
 | **US 14** | Prevent Double-Booking: Detect scheduling conflicts | High | Open | High | 8 | Final |
 | **US 15** | Reschedule/Cancel: Change bookings within rules | Medium | Open | Medium | 5 | Final |
-| **US 16** | Session Lifecycle: Track from request to completion | High | **Done** | Medium | 5 | Half |
+| **US 16** | Session Lifecycle: Track from request to completion | High | Open | Medium | 5 | Half |
 | **US 17** | Session Notes: Tutor adds outcomes/action items | Low | Open | Low | 3 | Final |
 | **US 18** | Progress Tracking: View milestones/feedback trends | Medium | Open | Medium | 5 | Final |
 | **US 19** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final |
@@ -446,7 +446,7 @@ classDiagram
 | **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half | ✅ Sprint 1 |
 | **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half | ✅ Sprint 1 |
 | **US 05** | Recommended Tutors: View tutors based on needs | High | **Done** | High | 8 | Final | ✅ Sprint 2 |
-| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | Open | High | 13 | Final | ✅ Sprint 3 |
+| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | **Done** | High | 13 | Final | ✅ Sprint 3 |
 | **US 07** | Matching Preferences: Filter by budget/level/type | Medium | Open | Medium | 5 | Final | — |
 | **US 08** | Request a Session: Student sends request with goals | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
 | **US 09** | Tutor Response: Accept, decline, or counter-offer | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
