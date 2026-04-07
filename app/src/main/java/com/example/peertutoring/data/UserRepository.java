@@ -15,33 +15,18 @@ import java.util.Map;
 
 /**
  * Handles all Firestore operations for user profiles.
- * This class serves as the Data Access Object (DAO) for the application,
- * centralizing all interactions with the Firebase Firestore database.
- * 
- * Role: Controller/Data Repository for User Profiles.
- * Implementation of User Stories 1, 2, 3, 4, and 5.
+ * Implementation of User Stories 1, 2, 3, 4, 5, and 6.
  */
 public class UserRepository {
 
     private final FirebaseFirestore firestore;
 
-    /**
-     * Initializes the repository with the default Firestore instance.
-     */
     public UserRepository() {
         firestore = FirebaseFirestore.getInstance();
     }
 
-    /**
-     * Callback interface for asynchronous Firestore operations.
-     */
     public interface SaveCallback {
-        /** Called when the operation completes successfully. */
         void onSuccess();
-        /** 
-         * Called when the operation fails.
-         * @param error Descriptive error message.
-         */
         void onFailure(String error);
     }
 
@@ -50,11 +35,7 @@ public class UserRepository {
         void onFailure(String error);
     }
 
-    /**
-     * US1: Saves a new student profile to Firestore.
-     * @param student The student model to persist.
-     * @param callback Result listener.
-     */
+    /** US1: Saves a new student profile. */
     public void saveStudentProfile(@NonNull Student student, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(student.getUid())
@@ -63,11 +44,7 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /**
-     * US2: Saves a new tutor profile to Firestore.
-     * @param tutor The tutor model to persist.
-     * @param callback Result listener.
-     */
+    /** US2: Saves a new tutor profile. */
     public void saveTutorProfile(@NonNull Tutor tutor, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(tutor.getUid())
@@ -76,15 +53,8 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /**
-     * US3: Updates specific fields in a user's profile.
-     * @param uid The unique identifier of the user.
-     * @param updates A map containing the fields and their new values.
-     * @param callback Result listener.
-     */
-    public void updateProfile(@NonNull String uid,
-                              @NonNull Map<String, Object> updates,
-                              @NonNull SaveCallback callback) {
+    /** US3: Updates profile fields. */
+    public void updateProfile(@NonNull String uid, @NonNull Map<String, Object> updates, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(uid)
                 .update(updates)
@@ -92,90 +62,25 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /**
-     * US3: Updates privacy and visibility settings for a user.
-     * @param uid The unique identifier of the user.
-     * @param privacySettings Map of privacy-related fields (e.g., profileVisible).
-     * @param callback Result listener.
-     */
-    public void updatePrivacy(@NonNull String uid,
-                              @NonNull Map<String, Object> privacySettings,
-                              @NonNull SaveCallback callback) {
-        firestore.collection("users")
-                .document(uid)
-                .update(privacySettings)
-                .addOnSuccessListener(unused -> callback.onSuccess())
-                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-    }
-
-    /**
-     * US4: Submits an identification document for tutor verification.
-     * Updates the user's document URL and sets verification status to false (pending).
-     * 
-     * @param uid The unique identifier of the user.
-     * @param idDocumentUrl The URL of the uploaded document.
-     * @param callback Result listener.
-     */
-    public void submitVerificationId(@NonNull String uid,
-                                   @NonNull String idDocumentUrl,
-                                   @NonNull SaveCallback callback) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("idDocumentUrl", idDocumentUrl);
-        updates.put("verified", false); // Reset or set to false while pending
-
-        firestore.collection("users")
-                .document(uid)
-                .update(updates)
-                .addOnSuccessListener(unused -> callback.onSuccess())
-                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-    }
-
-    /**
-     * Admin method (mocked for now) to verify a user.
-     * Transitions a user from pending to verified status.
-     * 
-     * @param uid The unique identifier of the user.
-     * @param callback Result listener.
-     */
-    public void verifyUser(@NonNull String uid, @NonNull SaveCallback callback) {
-        firestore.collection("users")
-                .document(uid)
-                .update("verified", true)
-                .addOnSuccessListener(unused -> callback.onSuccess())
-                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-    }
-
-    /**
-     * US5: Fetches tutors based on student preferences (subjects).
-     *
-     * @param studentSubjects List of subjects the student is interested in.
-     * @param callback Result listener returning a list of Tutor models.
+    /** US5 & 6: Fetches potential tutors for ranking.
+     * Note: We removed client-side sorting via Query to avoid "Missing Index" errors
+     * and to allow for more complex ranking logic in memory.
      */
     public void getRecommendedTutors(@NonNull List<String> studentSubjects, @NonNull LoadCallback<List<DocumentSnapshot>> callback) {
-        if (studentSubjects.isEmpty()) {
-            // Fallback: Fetch featured tutors if no preferences set
-            firestore.collection("users")
-                    .whereEqualTo("role", "tutor")
-                    .orderBy("rating", Query.Direction.DESCENDING)
-                    .limit(5)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> callback.onSuccess(queryDocumentSnapshots.getDocuments()))
-                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-            return;
+        Query query = firestore.collection("users")
+                .whereEqualTo("role", "tutor")
+                .limit(20);
+
+        if (!studentSubjects.isEmpty()) {
+            query = query.whereArrayContainsAny("subjects", studentSubjects);
         }
 
-        firestore.collection("users")
-                .whereEqualTo("role", "tutor")
-                .whereArrayContainsAny("subjects", studentSubjects)
-                .limit(10)
-                .get()
+        query.get()
                 .addOnSuccessListener(queryDocumentSnapshots -> callback.onSuccess(queryDocumentSnapshots.getDocuments()))
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /**
-     * Fetches a user document by UID.
-     */
+    /** Fetches a user document by UID. */
     public void getUserProfile(@NonNull String uid, @NonNull LoadCallback<DocumentSnapshot> callback) {
         firestore.collection("users")
                 .document(uid)

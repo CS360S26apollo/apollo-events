@@ -21,15 +21,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Activity for browsing and searching available tutors in the marketplace.
  * Role: Search and Discovery View for User Story 05 (Recommended Tutors).
- * Purpose: Allows students to find tutors based on their learning preferences 
+ * Purpose: Allows students to find tutors based on their learning preferences
  * and search queries. Displays tutor ratings, rates, and verification status.
- * 
+ *
  * Design Pattern: View-Controller with preference-based data fetching.
- * 
+ *
  * Implementation Details:
  * - Automatically loads recommendations based on the student's saved subjects.
  * - Provides real-time filtering of the tutor list as the user types in the search bar.
@@ -59,13 +60,14 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         if (currentUser != null) {
             loadRecommendations();
         } else {
+            // Fallback for non-logged in or guest (if applicable)
             fetchTutors(new ArrayList<>());
         }
     }
 
     /**
-     * Fetches the current user's profile to retrieve their subject preferences.
-     * Implementation of US 05 personalized discovery.
+     * US 5 & 6: Loads recommended tutors based on student's subjects and preferences,
+     * then ranks them using the RankingEngine.
      */
     private void loadRecommendations() {
         userRepository.getUserProfile(currentUser.getUid(), new UserRepository.LoadCallback<DocumentSnapshot>() {
@@ -78,15 +80,11 @@ public class BrowseTutorsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String error) {
-                fetchTutors(new ArrayList<>());
+                fetchTutors(new ArrayList<>()); // Fallback to general list
             }
         });
     }
 
-    /**
-     * Queries the repository for tutors that match the provided preferences.
-     * @param preferences List of subjects the student is interested in.
-     */
     private void fetchTutors(List<String> preferences) {
         userRepository.getRecommendedTutors(preferences, new UserRepository.LoadCallback<List<DocumentSnapshot>>() {
             @Override
@@ -158,7 +156,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
                     subjects != null && !subjects.isEmpty() ? subjects.get(0) : "Tutor",
                     String.valueOf(rate != null ? rate : 0),
                     String.valueOf(rating != null ? rating : 0.0),
-                    "0", 
+                    "0",
                     Boolean.TRUE.equals(isVerified)
                 );
             });
