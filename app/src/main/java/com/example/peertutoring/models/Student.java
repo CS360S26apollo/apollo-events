@@ -1,6 +1,7 @@
 package com.example.peertutoring.models;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a Student user in the Peer Tutoring system.
@@ -15,6 +16,7 @@ public class Student extends User {
     private String institution;
     private List<String> subjects;
     private List<String> goals;
+    private Map<String, List<Integer>> preferredHours; // Preferred times for tutoring
 
     /**
      * Default constructor required for Firestore serialization.
@@ -74,6 +76,11 @@ public class Student extends User {
         return goals;
     }
 
+    /** @return Preferred hours map. */
+    public Map<String, List<Integer>> getPreferredHours() {
+        return preferredHours;
+    }
+
     /** @param firstName The first name to set. */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -99,6 +106,11 @@ public class Student extends User {
     /** @param goals The list of goals to set. */
     public void setGoals(List<String> goals) {
         this.goals = goals;
+    }
+
+    /** @param preferredHours The preferred hours map to set. */
+    public void setPreferredHours(Map<String, List<Integer>> preferredHours) {
+        this.preferredHours = preferredHours;
     }
 
     /**

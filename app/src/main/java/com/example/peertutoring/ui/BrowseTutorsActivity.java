@@ -15,16 +15,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.peertutoring.R;
 import com.example.peertutoring.data.UserRepository;
+import com.example.peertutoring.models.Tutor;
+import com.example.peertutoring.utils.RankingEngine;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Activity for browsing and searching available tutors.
- * Implementation of User Story 5: Recommended tutors based on student preferences.
+ * Implementation of User Story 5 & 6: Recommended and Ranked tutors.
  */
 public class BrowseTutorsActivity extends AppCompatActivity {
 
@@ -32,7 +35,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private LinearLayout layoutTutorList;
     private TextView tvResultCount;
-    private List<DocumentSnapshot> allTutors = new ArrayList<>();
+    private List<Tutor> allRankedTutors = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,36 +54,48 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         if (currentUser != null) {
             loadRecommendations();
         } else {
-            // Fallback for non-logged in or guest (if applicable)
-            fetchTutors(new ArrayList<>());
+            fetchTutors(new ArrayList<>(), null);
         }
     }
 
     /**
-     * US5: Loads recommended tutors based on the current student's subjects/preferences.
+     * US 5 & 6: Loads recommended tutors based on student's subjects and preferences,
+     * then ranks them using the RankingEngine.
      */
     private void loadRecommendations() {
         userRepository.getUserProfile(currentUser.getUid(), new UserRepository.LoadCallback<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot doc) {
-                List<String> preferences = (List<String>) doc.get("subjects");
-                if (preferences == null) preferences = new ArrayList<>();
-                fetchTutors(preferences);
+                List<String> subjects = (List<String>) doc.get("subjects");
+                Map<String, List<Integer>> preferredHours = (Map<String, List<Integer>>) doc.get("preferredHours");
+                
+                if (subjects == null) subjects = new ArrayList<>();
+                fetchTutors(subjects, preferredHours);
             }
 
             @Override
             public void onFailure(String error) {
-                fetchTutors(new ArrayList<>()); // Fallback to general list
+                fetchTutors(new ArrayList<>(), null); 
             }
         });
     }
 
-    private void fetchTutors(List<String> preferences) {
-        userRepository.getRecommendedTutors(preferences, new UserRepository.LoadCallback<List<DocumentSnapshot>>() {
+    private void fetchTutors(List<String> studentSubjects, Map<String, List<Integer>> preferredHours) {
+        userRepository.getRecommendedTutors(studentSubjects, new UserRepository.LoadCallback<List<DocumentSnapshot>>() {
             @Override
-            public void onSuccess(List<DocumentSnapshot> tutors) {
-                allTutors = tutors;
-                displayTutors(tutors);
+            public void onSuccess(List<DocumentSnapshot> snapshots) {
+                List<Tutor> tutors = new ArrayList<>();
+                for (DocumentSnapshot doc : snapshots) {
+                    Tutor t = doc.toObject(Tutor.class);
+                    if (t != null) {
+                        t.setUid(doc.getId());
+                        tutors.add(t);
+                    }
+                }
+
+                // US 06: Apply Ranking Logic
+                allRankedTutors = RankingEngine.rankTutors(tutors, studentSubjects, preferredHours);
+                displayTutors(allRankedTutors);
             }
 
             @Override
@@ -90,7 +105,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         });
     }
 
-    private void displayTutors(List<DocumentSnapshot> tutors) {
+    private void displayTutors(List<Tutor> tutors) {
         if (layoutTutorList == null) return;
         layoutTutorList.removeAllViews();
         
@@ -100,7 +115,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
 
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (DocumentSnapshot doc : tutors) {
+        for (Tutor tutor : tutors) {
             View itemView = inflater.inflate(R.layout.item_tutor, layoutTutorList, false);
             
             TextView tvName = itemView.findViewById(R.id.tvTutorName);
@@ -110,40 +125,32 @@ public class BrowseTutorsActivity extends AppCompatActivity {
             TextView tvInitials = itemView.findViewById(R.id.tvTutorInitials);
             View badgeVerified = itemView.findViewById(R.id.badgeVerified);
 
-            String firstName = doc.getString("firstName");
-            String lastName = doc.getString("lastName");
-            String fullName = doc.getString("fullName");
-            List<String> subjects = (List<String>) doc.get("subjects");
-            Long rate = doc.getLong("rate");
-            Double rating = doc.getDouble("rating");
-            Boolean isVerified = doc.getBoolean("verified");
-
-            if (tvName != null) tvName.setText(fullName);
-            if (tvSubjects != null && subjects != null) {
-                tvSubjects.setText(String.join(", ", subjects));
+            if (tvName != null) tvName.setText(tutor.getFullName());
+            if (tvSubjects != null && tutor.getSubjects() != null) {
+                tvSubjects.setText(String.join(", ", tutor.getSubjects()));
             }
-            if (tvRate != null && rate != null) tvRate.setText(String.valueOf(rate));
-            if (tvRating != null) tvRating.setText("⭐ " + (rating != null ? rating : "0.0"));
+            if (tvRate != null) tvRate.setText(String.valueOf(tutor.getRate()));
+            if (tvRating != null) tvRating.setText(String.format("⭐ %.1f", tutor.getRating()));
             
             if (tvInitials != null) {
                 String initials = "";
-                if (firstName != null && !firstName.isEmpty()) initials += firstName.charAt(0);
-                if (lastName != null && !lastName.isEmpty()) initials += lastName.charAt(0);
+                if (tutor.getFirstName() != null && !tutor.getFirstName().isEmpty()) initials += tutor.getFirstName().charAt(0);
+                if (tutor.getLastName() != null && !tutor.getLastName().isEmpty()) initials += tutor.getLastName().charAt(0);
                 tvInitials.setText(initials.toUpperCase());
             }
 
             if (badgeVerified != null) {
-                badgeVerified.setVisibility(Boolean.TRUE.equals(isVerified) ? View.VISIBLE : View.GONE);
+                badgeVerified.setVisibility(tutor.isVerified() ? View.VISIBLE : View.GONE);
             }
 
             itemView.setOnClickListener(v -> {
                 openTutorDetail(
-                    fullName, 
-                    subjects != null && !subjects.isEmpty() ? subjects.get(0) : "Tutor",
-                    String.valueOf(rate != null ? rate : 0),
-                    String.valueOf(rating != null ? rating : 0.0),
-                    "0", // Mock student count
-                    Boolean.TRUE.equals(isVerified)
+                    tutor.getFullName(), 
+                    tutor.getSubjects() != null && !tutor.getSubjects().isEmpty() ? tutor.getSubjects().get(0) : "Tutor",
+                    String.valueOf(tutor.getRate()),
+                    String.valueOf(tutor.getRating()),
+                    "0",
+                    tutor.isVerified()
                 );
             });
 
@@ -166,19 +173,16 @@ public class BrowseTutorsActivity extends AppCompatActivity {
 
     private void filterTutors(String query) {
         if (query.isEmpty()) {
-            displayTutors(allTutors);
+            displayTutors(allRankedTutors);
             return;
         }
         
-        List<DocumentSnapshot> filtered = new ArrayList<>();
-        for (DocumentSnapshot doc : allTutors) {
-            String name = doc.getString("fullName");
-            List<String> subjects = (List<String>) doc.get("subjects");
-            
-            boolean matchesName = name != null && name.toLowerCase().contains(query.toLowerCase());
+        List<Tutor> filtered = new ArrayList<>();
+        for (Tutor tutor : allRankedTutors) {
+            boolean matchesName = tutor.getFullName() != null && tutor.getFullName().toLowerCase().contains(query.toLowerCase());
             boolean matchesSubject = false;
-            if (subjects != null) {
-                for (String s : subjects) {
+            if (tutor.getSubjects() != null) {
+                for (String s : tutor.getSubjects()) {
                     if (s.toLowerCase().contains(query.toLowerCase())) {
                         matchesSubject = true;
                         break;
@@ -187,7 +191,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
             }
             
             if (matchesName || matchesSubject) {
-                filtered.add(doc);
+                filtered.add(tutor);
             }
         }
         displayTutors(filtered);
@@ -195,7 +199,6 @@ public class BrowseTutorsActivity extends AppCompatActivity {
 
     private void setupBottomNav() {
         View navHome = findViewById(R.id.navHome);
-        View navBrowse = findViewById(R.id.navBrowse);
         View navMessages = findViewById(R.id.navMessages);
         View navProfile = findViewById(R.id.navProfile);
 
