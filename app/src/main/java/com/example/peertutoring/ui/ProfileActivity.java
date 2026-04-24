@@ -1,5 +1,6 @@
 package com.example.peertutoring.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -14,23 +15,17 @@ import com.example.peertutoring.models.Tutor;
 import java.util.ArrayList;
 
 /**
- * ProfileActivity serves as the main host for the multi-step onboarding process.
- * It manages the navigation between different fragments (Name, Academic, Goals, etc.)
- * based on the user's selected role (Student or Tutor).
- * 
- * Role: Navigation Controller / Step Orchestrator for US1 and US2.
- * Design Pattern: Fragment Container.
+ * ProfileActivity — multi-step onboarding host.
+ *
+ * Change: after finishStudentRegistration() saves to Firestore successfully,
+ * we now launch StudentPreferencesActivity instead of showing ProfileCompleteFragment,
+ * so students can set their tutor preferences immediately after signup.
  */
 public class ProfileActivity extends AppCompatActivity {
 
-    private String uid;
-    private String email;
-    private String role;
+    private String uid, email, role;
 
-    // Common fields
-    private String firstName;
-    private String lastName;
-    private String fullName;
+    private String firstName, lastName, fullName;
     private ArrayList<String> subjects = new ArrayList<>();
 
     // Student specific
@@ -38,18 +33,17 @@ public class ProfileActivity extends AppCompatActivity {
     private ArrayList<String> goals = new ArrayList<>();
 
     // Tutor specific
-    private String bio;
-    private String level;
-    private int rate = 20; // Default rate
+    private String bio, level;
+    private int rate = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        uid = getIntent().getStringExtra("uid");
+        uid   = getIntent().getStringExtra("uid");
         email = getIntent().getStringExtra("email");
-        role = getIntent().getStringExtra("role");
+        role  = getIntent().getStringExtra("role");
 
         if (savedInstanceState == null) {
             if ("tutor".equals(role)) {
@@ -60,20 +54,12 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    /** Navigates to the Name collection step. */
-    public void goToNameStep() {
-        loadFragment(new NameFragment());
-    }
+    public void goToNameStep() { loadFragment(new NameFragment()); }
 
-    /** 
-     * Navigates to the next step after names are provided.
-     * Routes to TutorDetails for tutors or Academic info for students.
-     */
     public void goToNextStepAfterName(String firstName, String lastName) {
         this.firstName = firstName;
-        this.lastName = lastName;
-        this.fullName = firstName + " " + lastName;
-        
+        this.lastName  = lastName;
+        this.fullName  = firstName + " " + lastName;
         if ("tutor".equals(role)) {
             loadFragment(new TutorDetailsFragment());
         } else {
@@ -81,79 +67,63 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    /** Routes the Tutor flow to the detailed information step. */
     public void goToTutorDetails(String fullName, String bio) {
         this.fullName = fullName;
         this.bio = bio;
-        
         String[] parts = fullName.split(" ", 2);
         this.firstName = parts.length > 0 ? parts[0] : "";
-        this.lastName = parts.length > 1 ? parts[1] : "";
-        
+        this.lastName  = parts.length > 1 ? parts[1] : "";
         loadFragment(new TutorDetailsFragment());
     }
 
-    // --- Student Flow Methods ---
-    
-    /** Routes the Student flow to the learning goals step. */
     public void goToGoals(String institution, ArrayList<String> subjects) {
         this.institution = institution;
-        this.subjects = subjects;
+        this.subjects    = subjects;
         loadFragment(new GoalsFragment());
     }
 
-    /** Finalizes student registration by persisting the profile to Firestore. */
+    /**
+     * Saves the student profile to Firestore, then launches
+     * StudentPreferencesActivity so the student can set their tutor preferences.
+     */
     public void finishStudentRegistration(ArrayList<String> goals) {
         this.goals = goals;
 
-        Student student = new Student(
-                uid,
-                email,
-                firstName,
-                lastName,
-                institution,
-                subjects,
-                goals
-        );
+        Student student = new Student(uid, email, firstName, lastName,
+                institution, subjects, goals);
 
         UserRepository repository = new UserRepository();
         repository.saveStudentProfile(student, new UserRepository.SaveCallback() {
             @Override
             public void onSuccess() {
-                loadFragment(new ProfileCompleteFragment());
+                // Go to preferences wizard instead of just showing "complete"
+                Intent intent = new Intent(ProfileActivity.this,
+                        StudentPreferencesActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
             }
 
             @Override
             public void onFailure(String error) {
-                Toast.makeText(ProfileActivity.this, "Save failed: " + error, Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this,
+                        "Save failed: " + error, Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    // --- Tutor Flow Methods ---
-
-    /** Routes the Tutor flow to the subject selection step. */
     public void goToTutorSubjects(String bio, String level, int rate) {
         if (bio != null) this.bio = bio;
         this.level = level;
-        this.rate = rate;
+        this.rate  = rate;
         loadFragment(new AcademicFragment());
     }
 
-    /** Finalizes tutor registration by persisting the profile to Firestore. */
     public void finishTutorRegistration(ArrayList<String> subjects) {
         this.subjects = subjects;
 
-        Tutor tutor = new Tutor(
-                uid,
-                email,
-                firstName,
-                lastName,
-                this.bio,
-                level,
-                rate,
-                subjects
-        );
+        Tutor tutor = new Tutor(uid, email, firstName, lastName,
+                this.bio, level, rate, subjects);
 
         UserRepository repository = new UserRepository();
         repository.saveTutorProfile(tutor, new UserRepository.SaveCallback() {
@@ -161,44 +131,26 @@ public class ProfileActivity extends AppCompatActivity {
             public void onSuccess() {
                 Toast.makeText(ProfileActivity.this,
                         "Tutor profile created successfully.", Toast.LENGTH_LONG).show();
-                finishAffinity();
+                Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             }
 
             @Override
             public void onFailure(String error) {
-                Toast.makeText(ProfileActivity.this, "Save failed: " + error, Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this,
+                        "Save failed: " + error, Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    // --- Navigation Helpers ---
+    public String getRole() { return role; }
 
-    /** @return The current user role (student/tutor). */
-    public String getRole() {
-        return role;
-    }
-
-    /** Navigates back to the Tutor introduction screen. */
-    public void goBackToIntro() {
-        if ("tutor".equals(role)) {
-            loadFragment(new TutorIntroFragment());
-        }
-    }
-
-    /** Navigates back to the Name entry screen. */
-    public void goBackToName() {
-        loadFragment(new NameFragment());
-    }
-
-    /** Navigates back to the Tutor details screen. */
-    public void goBackToTutorDetails() {
-        loadFragment(new TutorDetailsFragment());
-    }
-
-    /** Navigates back to the Academic info screen. */
-    public void goBackToAcademic() {
-        loadFragment(new AcademicFragment());
-    }
+    public void goBackToIntro()        { if ("tutor".equals(role)) loadFragment(new TutorIntroFragment()); }
+    public void goBackToName()         { loadFragment(new NameFragment()); }
+    public void goBackToTutorDetails() { loadFragment(new TutorDetailsFragment()); }
+    public void goBackToAcademic()     { loadFragment(new AcademicFragment()); }
 
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()

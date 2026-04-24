@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- ── GRADIENT HEADER ── -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp"
+        app:cardBackgroundColor="@null"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_button_gradient"
+            android:paddingTop="48dp"
+            android:paddingBottom="28dp"
+            android:paddingHorizontal="20dp">
+
+            <!-- Back + title row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="← Back"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:background="@android:color/transparent"
+                    app:backgroundTint="@null" />
+
+                <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+            </LinearLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvPrefTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set Your Preferences"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPrefSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Help us find the perfect tutor for you"
+                android:textColor="#CCFFFFFF"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Progress -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Completion"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvCompletion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="25%"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progressCompletion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progress="25"
+                app:trackColor="#33FFFFFF"
+                app:indicatorColor="#FFFFFF"
+                app:trackCornerRadius="4dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- ── SCROLLABLE CONTENT ── -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- ══ STEP 1: TOKEN BUDGET ══ -->
+            <LinearLayout
+                android:id="@+id/layoutStep1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="22dp"
+                        app:cardBackgroundColor="#00C853"
+                        app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:text="🪙" android:textSize="20sp"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Token Budget" android:textColor="#071A3D"
+                        android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp"
+                        android:gravity="center_horizontal">
+
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="🪙 " android:textSize="24sp"/>
+                            <TextView android:id="@+id/tvBudgetValue" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="500"
+                                android:textColor="#00C853" android:textSize="48sp" android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="tokens per session" android:textColor="#8B97A8"
+                            android:textSize="14sp" android:layout_marginBottom="20dp"/>
+
+                        <SeekBar android:id="@+id/seekBarBudget" android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:max="1900"
+                            android:progress="400" android:progressTint="#071A3D"
+                            android:thumbTint="#071A3D"/>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:text="100" android:textColor="#8B97A8" android:textSize="12sp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="2000" android:textColor="#8B97A8" android:textSize="12sp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ══ STEP 2: TUTOR LEVEL ══ -->
+            <LinearLayout
+                android:id="@+id/layoutStep2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp" android:layout_height="44dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="22dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:text="🎓" android:textSize="20sp"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Tutor Level" android:textColor="#071A3D"
+                        android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Grid built programmatically -->
+                <LinearLayout android:id="@+id/layoutLevelGrid" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical"/>
+            </LinearLayout>
+
+            <!-- ══ STEP 3: LANGUAGES ══ -->
+            <LinearLayout
+                android:id="@+id/layoutStep3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp" android:layout_height="44dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="22dp" app:cardBackgroundColor="#8A2EFF" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:text="🌐" android:textSize="20sp"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Languages" android:textColor="#071A3D"
+                        android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+
+                    <LinearLayout android:id="@+id/layoutLanguageChips"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="16dp"/>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ══ STEP 4: SESSION TYPE ══ -->
+            <LinearLayout
+                android:id="@+id/layoutStep4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp" android:layout_height="44dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="22dp" app:cardBackgroundColor="#FF6B00" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:text="📅" android:textSize="20sp"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Session Type" android:textColor="#071A3D"
+                        android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Session type cards built programmatically -->
+                <LinearLayout android:id="@+id/layoutSessionType" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical"/>
+            </LinearLayout>
+
+            <!-- ══ RESULTS ══ -->
+            <LinearLayout
+                android:id="@+id/layoutResults"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView android:id="@+id/tvResultCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="" android:textColor="#8B97A8"
+                    android:textSize="14sp" android:layout_marginBottom="16dp"/>
+
+                <!-- Sort chips -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="⚙️ " android:textSize="16sp"/>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp" app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="#8A2EFF" app:cardElevation="0dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Rating" android:textColor="#FFFFFF" android:textSize="13sp"
+                            android:paddingHorizontal="14dp" android:paddingVertical="6dp"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp" app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="#F3F4F6" app:cardElevation="0dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Tokens" android:textColor="#4B5D7A" android:textSize="13sp"
+                            android:paddingHorizontal="14dp" android:paddingVertical="6dp"/>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Results built programmatically -->
+                <LinearLayout android:id="@+id/layoutResultList"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ── BOTTOM BUTTON ── -->
+    <LinearLayout
+        android:id="@+id/layoutBtnRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/btnFindTutor"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Find My Perfect Tutor →"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_gradient"
+            app:backgroundTint="@null"
+            android:enabled="false"
+            android:alpha="0.4"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Complete all preferences to continue"
+            android:textColor="#8B97A8"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+</LinearLayout>

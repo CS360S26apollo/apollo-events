@@ -34,6 +34,7 @@
         <activity android:name=".ui.TutorOffersActivity" android:exported="false" />
         <activity android:name=".ui.CounterOfferActivity" android:exported="false" />
         <activity android:name=".ui.RequestResultActivity" android:exported="false" />
+        <activity android:name=".ui.StudentPreferencesActivity" android:exported="false" />
 
         <activity
             android:name=".ui.MessagingActivity"
