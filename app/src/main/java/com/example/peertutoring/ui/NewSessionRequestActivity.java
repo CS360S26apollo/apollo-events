@@ -17,7 +17,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.example.peertutoring.R;
 import com.example.peertutoring.models.SessionRequest;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -25,13 +24,12 @@ import java.util.Map;
 
 /**
  * Activity for students to create and submit a new request for a tutoring session.
- * Role: Request Creation View for User Story 08 (Request a Session) and 
+ * Role: Request Creation View for User Story 08 (Request a Session) and
  * User Story 16 (Track Session Status).
- * 
- * Purpose: Allows students to select a subject, specify a topic and learning goals, 
- * and define the desired duration for a potential tutoring session.
- * 
- * Design Pattern: View-Controller managing form input and Firestore persistence.
+ *
+ * Fix: Tokens are now deducted from the student's balance at the time of posting
+ * the request, not just when accepting an offer. The token cost is calculated as
+ * (durationMinutes / 60) * tutor's default rate (100 tokens/hr if unknown).
  */
 public class NewSessionRequestActivity extends AppCompatActivity {
 
@@ -44,7 +42,8 @@ public class NewSessionRequestActivity extends AppCompatActivity {
     private String currentUid;
     private String currentUserName;
 
-    /** Pre-defined subjects for the session request dropdown. */
+    private static final int DEFAULT_RATE_PER_HOUR = 100; // tokens per hour
+
     private static final String[] SUBJECTS = {
             "Mathematics", "Physics", "Chemistry", "Biology",
             "Computer Science", "English", "History", "Economics"
@@ -81,12 +80,9 @@ public class NewSessionRequestActivity extends AppCompatActivity {
 
         setupSubjectDropdown();
         setupDurationButtons();
-        btnSubmit.setOnClickListener(v -> postRequest());
+        btnSubmit.setOnClickListener(v -> checkTokensAndPost());
     }
 
-    /**
-     * Configures the subject selection dropdown with an adapter and click listener.
-     */
     private void setupSubjectDropdown() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -97,9 +93,6 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         spinnerSubject.setOnClickListener(v -> spinnerSubject.showDropDown());
     }
 
-    /**
-     * Initializes duration selection buttons with click listeners to toggle state.
-     */
     private void setupDurationButtons() {
         View.OnClickListener listener = v -> {
             resetDurationButtons();
@@ -114,7 +107,7 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         btn45.setOnClickListener(listener);
         btn60.setOnClickListener(listener);
         btn90.setOnClickListener(listener);
-        
+
         selectBtn(btn60);
     }
 
@@ -133,15 +126,15 @@ public class NewSessionRequestActivity extends AppCompatActivity {
     }
 
     /**
-     * Validates the form data and saves the new session request to Firestore.
-     * Implementation of US 08.
+     * Validates form input, then checks the student's token balance before posting.
+     * Tokens are deducted upfront to reserve the session cost.
      */
-    private void postRequest() {
+    private void checkTokensAndPost() {
         String topic = etTopic.getText().toString().trim();
         String goals = etGoals.getText().toString().trim();
         String subject = spinnerSubject.getText().toString().trim();
         String customDur = etCustomDuration.getText().toString().trim();
-        
+
         int finalDuration = selectedDuration;
         if (!TextUtils.isEmpty(customDur)) {
             try {
@@ -153,32 +146,90 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             spinnerSubject.setError("Please select a subject");
             return;
         }
-
         if (TextUtils.isEmpty(topic)) {
             etTopic.setError("Topic is required");
             return;
         }
-
         if (currentUid.isEmpty()) {
             Toast.makeText(this, "Please sign in first", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        SessionRequest newReq = new SessionRequest(currentUid, currentUserName, subject, topic, goals, finalDuration);
-        newReq.setStatus(SessionRequest.STATUS_REQUESTED);
+        // Calculate token cost: (duration / 60) * rate, minimum 1 token
+        final int tokenCost = Math.max(1, (int) Math.ceil(finalDuration / 60.0) * DEFAULT_RATE_PER_HOUR);
+        final int dur = finalDuration;
+        final String subjectFinal = subject;
+        final String topicFinal = topic;
+        final String goalsFinal = goals;
 
         btnSubmit.setEnabled(false);
-        btnSubmit.setText("Posting...");
+        btnSubmit.setText("Checking balance...");
 
-        db.collection("sessionRequests")
-                .add(newReq)
-                .addOnSuccessListener(docRef -> {
-                    docRef.update("requestId", docRef.getId());
-                    Toast.makeText(this, "✅ Request posted!", Toast.LENGTH_SHORT).show();
-                    finish();
+        // Check student's current token balance
+        db.collection("users").document(currentUid).get()
+                .addOnSuccessListener(doc -> {
+                    Long currentTokens = doc.getLong("tokens");
+                    if (currentTokens == null) currentTokens = 1000L; // default starting balance
+
+                    if (currentTokens < tokenCost) {
+                        Toast.makeText(this,
+                                "❌ Insufficient tokens! You need " + tokenCost
+                                        + " tokens but have " + currentTokens + ".",
+                                Toast.LENGTH_LONG).show();
+                        btnSubmit.setEnabled(true);
+                        btnSubmit.setText("Post Session Request");
+                        return;
+                    }
+
+                    // Deduct tokens and post the request atomically
+                    final long newBalance = currentTokens - tokenCost;
+                    deductAndPost(newBalance, tokenCost, subjectFinal, topicFinal, goalsFinal, dur);
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error checking balance: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    btnSubmit.setEnabled(true);
+                    btnSubmit.setText("Post Session Request");
+                });
+    }
+
+    /**
+     * Deducts tokens from the student's account and posts the session request.
+     * Both operations are performed sequentially to keep state consistent.
+     */
+    private void deductAndPost(long newBalance, int tokenCost, String subject,
+                               String topic, String goals, int duration) {
+        btnSubmit.setText("Posting...");
+
+        // Step 1: Deduct tokens
+        db.collection("users").document(currentUid)
+                .update("tokens", newBalance)
+                .addOnSuccessListener(unused -> {
+                    // Step 2: Post the session request
+                    SessionRequest newReq = new SessionRequest(
+                            currentUid, currentUserName, subject, topic, goals, duration);
+                    newReq.setStatus(SessionRequest.STATUS_REQUESTED);
+                    newReq.setTokens(tokenCost);
+
+                    db.collection("sessionRequests")
+                            .add(newReq)
+                            .addOnSuccessListener(docRef -> {
+                                docRef.update("requestId", docRef.getId());
+                                Toast.makeText(this,
+                                        "✅ Request posted! " + tokenCost + " tokens reserved.",
+                                        Toast.LENGTH_LONG).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                // Refund tokens if request posting fails
+                                db.collection("users").document(currentUid)
+                                        .update("tokens", newBalance + tokenCost);
+                                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                btnSubmit.setEnabled(true);
+                                btnSubmit.setText("Post Session Request");
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to reserve tokens: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     btnSubmit.setEnabled(true);
                     btnSubmit.setText("Post Session Request");
                 });

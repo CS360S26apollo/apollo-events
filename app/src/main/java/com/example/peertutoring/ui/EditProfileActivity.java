@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -92,6 +93,7 @@ public class EditProfileActivity extends AppCompatActivity {
         setupChips();
         setupBioCharCount();
         setupSaveButtons();
+        setupLogoutButton();
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) {
@@ -276,6 +278,37 @@ public class EditProfileActivity extends AppCompatActivity {
         if (btnSavePrivacy != null) btnSavePrivacy.setOnClickListener(v -> savePrivacy());
     }
 
+    /**
+     * Sets up the
+     * logout button with a confirmation dialog.
+     * Clears the back stack and returns to LoginActivity on confirm.
+     */
+    private void setupLogoutButton() {
+        View btnLogout = findViewById(R.id.btnLogout);
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> showLogoutConfirmation());
+        }
+    }
+
+    /** Shows a confirmation dialog before logging the user out. */
+    private void showLogoutConfirmation() {
+        new AlertDialog.Builder(this)
+                .setTitle("Log Out")
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("Log Out", (dialog, which) -> performLogout())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /** Signs out from Firebase and navigates back to LoginActivity. */
+    private void performLogout() {
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     /** Fetches the user's profile document from Firestore. */
     private void loadUserProfile(String uid) {
         db.collection("users").document(uid).get()
@@ -396,7 +429,7 @@ public class EditProfileActivity extends AppCompatActivity {
         if (switchProfileVisible  != null) privacy.put("profileVisible",  switchProfileVisible.isChecked());
 
         db.collection("users").document(currentUser.getUid()).set(privacy, SetOptions.merge())
-                .addOnSuccessListener(unused -> Toast.makeText(EditProfileActivity.this, " Privacy settings saved!", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(unused -> Toast.makeText(EditProfileActivity.this, "✅ Privacy settings saved!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 }
