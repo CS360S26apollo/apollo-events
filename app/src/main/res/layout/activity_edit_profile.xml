@@ -50,12 +50,12 @@
                 android:gravity="center_vertical"
                 android:padding="16dp">
 
-                <FrameLayout android:layout_width="64dp" android:layout_height="64dp">
+                <FrameLayout android:id="@+id/avatarContainer" android:layout_width="64dp" android:layout_height="64dp" android:foreground="?attr/selectableItemBackgroundBorderless" android:clickable="true" android:focusable="true">
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="64dp" android:layout_height="64dp"
                         app:cardCornerRadius="32dp" app:cardBackgroundColor="#B54CFF"
                         app:cardElevation="0dp">
-                        <TextView android:id="@+id/tvAvatarInitials" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="AJ" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" />
+                        <ImageView android:id="@+id/ivProfilePicture" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" android:visibility="gone" /><TextView android:id="@+id/tvAvatarInitials" android:tag="initials" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="AJ" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
                     <!-- US 04 Badge -->
                     <com.google.android.material.card.MaterialCardView
@@ -67,6 +67,16 @@
                         android:visibility="gone">
                         <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Camera tap hint -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:layout_gravity="bottom"
+                        android:gravity="center"
+                        android:text="📷"
+                        android:textSize="12sp"
+                        android:background="#66000000" />
                 </FrameLayout>
 
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
@@ -79,8 +89,7 @@
 
     <!-- ── TABS ── -->
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp" android:layout_marginTop="20dp"
         app:cardCornerRadius="24dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:padding="4dp">
@@ -264,29 +273,30 @@
                 <Button android:id="@+id/btnSubmitVerification" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="20dp" android:layout_marginBottom="40dp" android:text="Submit for Review" android:textAllCaps="false" android:enabled="false" android:background="@drawable/bg_button_gradient" app:backgroundTint="@null" android:textColor="#FFFFFF" />
             </LinearLayout>
 
-            <!-- LOGOUT SECTION -->
+
+            <!-- LOGOUT BUTTON -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="40dp"
-                app:cardCornerRadius="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
                 app:cardBackgroundColor="#FFF0F0"
-                app:strokeColor="#FFD5D5"
+                app:strokeColor="#FFD6D6"
                 app:strokeWidth="1dp"
                 app:cardElevation="0dp">
                 <Button
                     android:id="@+id/btnLogout"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="Log Out"
+                    android:text="🚪  Log Out"
                     android:textAllCaps="false"
-                    android:textColor="#E53935"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    app:icon="@android:drawable/ic_lock_power_off"
-                    app:iconTint="#E53935" />
+                    android:textColor="#D32F2F"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    app:backgroundTint="@null" />
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

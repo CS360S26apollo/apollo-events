@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.peertutoring.R;
+import com.example.peertutoring.utils.SoundManager;
 import com.example.peertutoring.utils.ValidationUtils;
 
 /**
@@ -40,12 +41,12 @@ public class LoginActivity extends AppCompatActivity {
         signUpTextView = findViewById(R.id.textViewSignUp);
         forgotPasswordTextView = findViewById(R.id.textViewForgotPassword);
 
-        signInButton.setOnClickListener(v -> loginUser());
+        signInButton.setOnClickListener(v -> { SoundManager.playClick(this); loginUser(); });
         signUpTextView.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         });
-        
+
         forgotPasswordTextView.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             if (TextUtils.isEmpty(email)) {
@@ -74,9 +75,10 @@ public class LoginActivity extends AppCompatActivity {
 
         auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
+                    SoundManager.playSuccess(LoginActivity.this);
                     startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     finish();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnFailureListener(e -> { SoundManager.playError(LoginActivity.this); Toast.makeText(LoginActivity.this, "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show(); });
     }
 }
