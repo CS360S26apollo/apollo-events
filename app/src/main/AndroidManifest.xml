@@ -35,6 +35,11 @@
         <activity android:name=".ui.CounterOfferActivity" android:exported="false" />
         <activity android:name=".ui.RequestResultActivity" android:exported="false" />
 
+        <activity
+            android:name=".ui.MessagingActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Availability Activities -->
         <activity
             android:name=".ui.AvailabilityDashboardActivity"

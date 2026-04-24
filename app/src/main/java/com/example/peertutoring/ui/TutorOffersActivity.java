@@ -21,12 +21,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 /**
  * Activity for students to view competing offers from multiple tutors for their session request.
  * Role: Selection View for User Story 08 (Request a Session) and User Story 05 (Tutor Recommendations).
- * 
- * Purpose: Allows students to compare tutor profiles, ratings, and personalized messages 
+ *
+ * Purpose: Allows students to compare tutor profiles, ratings, and personalized messages
  * before committing tokens to accept a specific offer. Includes token balance validation.
- * 
+ *
  * Design Pattern: View-Controller with conditional mock data injection.
- * 
+ *
  * Outstanding Issues:
  * - Token deduction logic is client-side; should be moved to a Cloud Function for security.
  */
@@ -43,7 +43,7 @@ public class TutorOffersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tutor_offers);
 
         db             = FirebaseFirestore.getInstance();
-        currentUid     = FirebaseAuth.getInstance().getCurrentUser() != null 
+        currentUid     = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
         layoutOfferList = findViewById(R.id.layoutOfferList);
 
@@ -88,7 +88,7 @@ public class TutorOffersActivity extends AppCompatActivity {
                             if (shouldShowOffer(topic, subjects)) {
                                 Long rateLong = doc.getLong("rate");
                                 int rate = (rateLong != null) ? rateLong.intValue() : 0;
-                                
+
                                 addOfferCard(
                                         doc.getString("tutorName"),
                                         doc.getString("tutorInitials"),
@@ -117,7 +117,7 @@ public class TutorOffersActivity extends AppCompatActivity {
         if (topic == null || subjects == null) return true;
         String t = topic.toLowerCase();
         String s = subjects.toLowerCase();
-        
+
         if (t.contains("math") || t.contains("calculus") || t.contains("integration")) {
             return s.contains("math") || s.contains("calculus");
         }
@@ -223,7 +223,7 @@ public class TutorOffersActivity extends AppCompatActivity {
 
         db.collection("users").document(currentUid).get().addOnSuccessListener(doc -> {
             Long currentTokens = doc.getLong("tokens");
-            if (currentTokens == null) currentTokens = 1000L;
+            if (currentTokens == null) currentTokens = 100L;
 
             if (currentTokens < rate) {
                 Toast.makeText(this, "❌ Insufficient tokens! You need " + rate + " tokens.", Toast.LENGTH_LONG).show();
@@ -232,7 +232,7 @@ public class TutorOffersActivity extends AppCompatActivity {
 
             final long newBalance = currentTokens - rate;
             db.collection("users").document(currentUid).update("tokens", newBalance);
-            
+
             if (requestId != null && !requestId.isEmpty()) {
                 db.collection("sessionRequests").document(requestId)
                         .update("status", "accepted", "acceptedOfferId", offerId)

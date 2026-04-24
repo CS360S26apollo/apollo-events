@@ -35,6 +35,7 @@
 
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
                 <TextView
+                    android:id="@+id/tvScreenTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="New Session Request"
@@ -335,6 +336,18 @@
                             android:inputType="number"
                             android:padding="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Token cost preview -->
+                    <TextView
+                        android:id="@+id/tvTokenCost"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Cost: 0 tokens"
+                        android:textColor="#089A3C"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

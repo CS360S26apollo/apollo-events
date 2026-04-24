@@ -3,6 +3,7 @@ package com.example.peertutoring.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,37 +11,97 @@ import com.example.peertutoring.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Main landing screen after successful login or onboarding.
- * Reloads user role from Firestore on every resume so that
- * role changes made in EditProfileActivity take effect immediately.
+ *
+ * Fix: tvTokenBalance is now loaded from Firestore in real-time using a snapshot
+ * listener, so whenever tokens are deducted (session request posted, offer accepted),
+ * the balance on this screen updates automatically without needing a manual refresh.
  */
 public class HomeActivity extends AppCompatActivity {
 
-    private String userRole = "student"; // cached role
+    private String userRole = "student";
+    private TextView tvTokenBalance;
+    private ListenerRegistration tokenListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        tvTokenBalance = findViewById(R.id.tvTokenBalance);
+
         setupTutorCards();
         setupSubjectCards();
-        // Nav is wired in onResume so it always reflects the latest role
     }
-
-    // ── Re-check role every time we return to this screen ────
-    // This fires after EditProfileActivity finishes, so the
-    // role saved there is immediately picked up here.
 
     @Override
     protected void onResume() {
         super.onResume();
         loadUserRoleThenSetupNav();
+        startTokenListener();   // attach real-time token balance listener
     }
 
-    // ── Load role from Firestore ──────────────────────────────
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Detach listener when screen is not visible to avoid unnecessary reads
+        if (tokenListener != null) {
+            tokenListener.remove();
+            tokenListener = null;
+        }
+    }
+
+    // ── Real-time token balance ───────────────────────────────
+
+    /**
+     * Attaches a Firestore snapshot listener to the current user's document.
+     * Every time the "tokens" field changes (deduction or top-up), the UI updates instantly.
+     */
+    private void startTokenListener() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            updateTokenDisplay(100); // default for demo
+            return;
+        }
+
+        tokenListener = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(currentUser.getUid())
+                .addSnapshotListener((doc, e) -> {
+                    if (e != null || doc == null) return;
+
+                    Long tokens = doc.getLong("tokens");
+                    if (tokens == null) {
+                        // First-time user: initialise balance to 100 tokens
+                        FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(currentUser.getUid())
+                                .update("tokens", 100L);
+                        updateTokenDisplay(100);
+                    } else {
+                        updateTokenDisplay(tokens.intValue());
+                    }
+                });
+    }
+
+    /**
+     * Updates the token balance TextView with comma-formatted number.
+     * e.g. 1250 → "1,250"
+     */
+    private void updateTokenDisplay(int tokens) {
+        if (tvTokenBalance != null) {
+            String formatted = NumberFormat.getNumberInstance(Locale.getDefault()).format(tokens);
+            tvTokenBalance.setText(formatted);
+        }
+    }
+
+    // ── Role loading ──────────────────────────────────────────
 
     private void loadUserRoleThenSetupNav() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
