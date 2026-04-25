@@ -91,7 +91,7 @@ public class AvailabilityDashboardActivity extends AppCompatActivity {
                     int activeDays = 0;
                     String[] days = {"mon","tue","wed","thu","fri","sat","sun"};
                     for (String day : days) {
-                        List<Integer> hours = (List<Integer>) doc.get("schedule." + day);
+                        List<Long> hours = (List<Long>) doc.get("schedule." + day);
                         if (hours != null && !hours.isEmpty()) {
                             totalHours += hours.size();
                             activeDays++;

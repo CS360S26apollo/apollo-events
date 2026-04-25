@@ -188,10 +188,12 @@ public class UserStoriesIntentTest {
         
         // This should now find Sarah Johnson because of seedTestData()
         onView(withText("Sarah Johnson")).perform(click());
-        
+
+        // Verify both name AND tutorUid are passed (tutorUid was missing before the fix)
         intended(allOf(
                 hasComponent(TutorDetailActivity.class.getName()),
-                hasExtra("name", "Sarah Johnson")
+                hasExtra("name",     "Sarah Johnson"),
+                hasExtra("tutorUid", "tutor_sarah")
         ));
     }
 

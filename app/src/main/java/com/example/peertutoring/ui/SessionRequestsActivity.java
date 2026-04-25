@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.peertutoring.R;
 import com.example.peertutoring.models.SessionRequest;
+import com.example.peertutoring.utils.ExpirationUtils;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -68,6 +69,12 @@ public class SessionRequestsActivity extends AppCompatActivity {
         startRealTimeListener();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ExpirationUtils.expireStaleRequestsForStudent(currentUid, db);
+    }
+
     private void setupBottomNav() {
         View navHome = findViewById(R.id.navHome);
         if (navHome != null) navHome.setOnClickListener(v -> {
@@ -92,6 +99,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         findViewById(R.id.chipCounter).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_BOOKED));
         findViewById(R.id.chipAccepted).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_COMPLETED));
         findViewById(R.id.chipDeclined).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_CANCELLED));
+        findViewById(R.id.chipExpired).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_EXPIRED));
     }
 
     /**
@@ -216,6 +224,10 @@ public class SessionRequestsActivity extends AppCompatActivity {
                 tvStatusBadge.setTextColor(Color.parseColor("#FF3B30"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#FFECEB"));
                 tvStatusBadge.setText("Cancelled");
+            } else if (SessionRequest.STATUS_EXPIRED.equals(doc.status)) {
+                tvStatusBadge.setTextColor(Color.parseColor("#8E8E93"));
+                cardStatusBadge.setCardBackgroundColor(Color.parseColor("#F2F2F7"));
+                tvStatusBadge.setText("Expired");
             }
         }
     }
@@ -250,6 +262,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         setTabStyle(R.id.chipCounter, SessionRequest.STATUS_BOOKED.equals(activeFilter) ? activeBg : Color.WHITE);
         setTabStyle(R.id.chipAccepted, SessionRequest.STATUS_COMPLETED.equals(activeFilter) ? activeBg : Color.WHITE);
         setTabStyle(R.id.chipDeclined, SessionRequest.STATUS_CANCELLED.equals(activeFilter) ? activeBg : Color.WHITE);
+        setTabStyle(R.id.chipExpired, SessionRequest.STATUS_EXPIRED.equals(activeFilter) ? activeBg : Color.WHITE);
     }
 
     private void setTabStyle(int id, int bgColor) {

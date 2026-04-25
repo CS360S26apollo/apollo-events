@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.peertutoring.R;
+import com.example.peertutoring.utils.ExpirationUtils;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -60,6 +61,12 @@ public class TutorRequestsActivity extends AppCompatActivity {
         setupSearch();
         setupFilterChips();
         loadRequests();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ExpirationUtils.expireStaleRequestsForTutor(tutorUid, db);
     }
 
     /**
@@ -127,7 +134,8 @@ public class TutorRequestsActivity extends AppCompatActivity {
         if (tutorUid.isEmpty()) { loadMockData(); return; }
 
         db.collection("sessionRequests")
-                .whereEqualTo("status", "waiting")
+                .whereEqualTo("tutorUid", tutorUid)
+                .whereEqualTo("status", "requested")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .limit(20)
                 .get()

@@ -1,9 +1,13 @@
 package com.example.peertutoring.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +58,7 @@ public class TutorDetailActivity extends AppCompatActivity {
 
         populateViews(tutorName, subject, rateStr, rating, students, isVerified);
         checkRoleAndSetupButtons();
+        if (tutorUid != null && !tutorUid.isEmpty()) loadReviews();
     }
 
     private void populateViews(String name, String subject, String rate,
@@ -98,6 +103,7 @@ public class TutorDetailActivity extends AppCompatActivity {
         if (currentUser == null) {
             setupMessageButton("");
             setupBookButton(false);
+            setupInstantBookButton(false);
             return;
         }
 
@@ -112,10 +118,12 @@ public class TutorDetailActivity extends AppCompatActivity {
                     boolean isTutor = "tutor".equals(role);
                     setupMessageButton(currentUid);
                     setupBookButton(isTutor);
+                    setupInstantBookButton(isTutor);
                 })
                 .addOnFailureListener(e -> {
                     setupMessageButton(currentUid);
                     setupBookButton(false);
+                    setupInstantBookButton(false);
                 });
     }
 
@@ -191,6 +199,129 @@ public class TutorDetailActivity extends AppCompatActivity {
             intent.putExtra("tutorRate", tutorRate); // actual tokens/hr — key fix
             startActivity(intent);
         });
+    }
+
+    private void setupInstantBookButton(boolean isTutor) {
+        View btnInstant = findViewById(R.id.btnInstantBook);
+        if (btnInstant == null) return;
+
+        if (isTutor) {
+            btnInstant.setVisibility(View.GONE);
+            return;
+        }
+
+        btnInstant.setVisibility(View.VISIBLE);
+        btnInstant.setOnClickListener(v -> {
+            Intent intent = new Intent(TutorDetailActivity.this, InstantBookActivity.class);
+            intent.putExtra("tutorUid",  tutorUid  != null ? tutorUid  : "");
+            intent.putExtra("tutorName", tutorName != null ? tutorName : "");
+            intent.putExtra("tutorRate", tutorRate);
+            startActivity(intent);
+        });
+    }
+
+    // ── US 19: Load and display public reviews ────────────────
+
+    private void loadReviews() {
+        FirebaseFirestore.getInstance()
+                .collection("reviews")
+                .whereEqualTo("tutorUid", tutorUid)
+                .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .limit(5)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    LinearLayout container = findViewById(R.id.layoutReviews);
+                    TextView tvCount = findViewById(R.id.tvReviewCount);
+                    TextView tvNone  = findViewById(R.id.tvNoReviews);
+                    if (container == null) return;
+
+                    container.removeAllViews();
+
+                    if (snap == null || snap.isEmpty()) {
+                        if (tvNone  != null) tvNone.setVisibility(View.VISIBLE);
+                        if (tvCount != null) tvCount.setText("No reviews yet");
+                        return;
+                    }
+
+                    if (tvNone  != null) tvNone.setVisibility(View.GONE);
+                    int total = snap.size();
+                    if (tvCount != null)
+                        tvCount.setText(total + " review" + (total != 1 ? "s" : ""));
+
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : snap) {
+                        Double r    = doc.getDouble("rating");
+                        String name = doc.getString("studentName");
+                        String text = doc.getString("reviewText");
+                        if (r == null) continue;
+
+                        int stars = (int) Math.round(r);
+                        String starStr = "⭐".repeat(Math.max(0, Math.min(5, stars)));
+
+                        // Review item view
+                        LinearLayout item = new LinearLayout(this);
+                        item.setOrientation(LinearLayout.VERTICAL);
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        lp.setMargins(0, 0, 0, dpToPx(16));
+                        item.setLayoutParams(lp);
+
+                        // Stars + name row
+                        LinearLayout row = new LinearLayout(this);
+                        row.setOrientation(LinearLayout.HORIZONTAL);
+                        row.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                        TextView tvStars = new TextView(this);
+                        tvStars.setText(starStr);
+                        tvStars.setTextSize(14f);
+                        tvStars.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        row.addView(tvStars);
+
+                        if (name != null && !name.isEmpty()) {
+                            TextView tvName = new TextView(this);
+                            tvName.setText("  " + name);
+                            tvName.setTextColor(Color.parseColor("#8B97A8"));
+                            tvName.setTextSize(12f);
+                            tvName.setTypeface(null, Typeface.BOLD);
+                            tvName.setLayoutParams(new LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            row.addView(tvName);
+                        }
+                        item.addView(row);
+
+                        // Review text
+                        if (text != null && !text.isEmpty()) {
+                            TextView tvText = new TextView(this);
+                            tvText.setText(text);
+                            tvText.setTextColor(Color.parseColor("#4B5D7A"));
+                            tvText.setTextSize(13f);
+                            LinearLayout.LayoutParams textLp = new LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            textLp.setMargins(0, dpToPx(4), 0, 0);
+                            tvText.setLayoutParams(textLp);
+                            item.addView(tvText);
+                        }
+
+                        // Divider (except last)
+                        if (!doc.getId().equals(snap.getDocuments()
+                                .get(snap.size() - 1).getId())) {
+                            View divider = new View(this);
+                            divider.setBackgroundColor(Color.parseColor("#F0F0F0"));
+                            LinearLayout.LayoutParams divLp = new LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(1));
+                            divLp.setMargins(0, dpToPx(8), 0, dpToPx(8));
+                            divider.setLayoutParams(divLp);
+                            item.addView(divider);
+                        }
+
+                        container.addView(item);
+                    }
+                });
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
     private void setText(int viewId, String text) {

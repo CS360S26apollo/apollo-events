@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.peertutoring.R;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -83,16 +84,97 @@ public class RequestDetailActivity extends AppCompatActivity {
 
     /**
      * Subscribes to real-time updates for the session request document in Firestore.
+     * Also drives the post-completion action buttons for US 17 and US 19.
      */
     private void loadRequestData() {
+        String currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
+
         db.collection("sessionRequests").document(requestId)
                 .addSnapshotListener((doc, e) -> {
                     if (e != null || doc == null || !doc.exists()) return;
-                    String status = doc.getString("status");
-                    String provider = doc.getString("tutorName");
+
+                    String status      = doc.getString("status");
+                    String provider    = doc.getString("tutorName");
+                    String docTutorUid = doc.getString("tutorUid");
+                    String docStudentUid = doc.getString("studentUid");
+
                     setText(R.id.tvProviderName, provider != null ? provider : "Searching...");
                     updateStatusUI(status);
+
+                    // Post-completion actions — only for completed sessions
+                    if ("completed".equals(status)) {
+                        boolean isTutor   = currentUid.equals(docTutorUid);
+                        boolean isStudent = currentUid.equals(docStudentUid);
+
+                        if (isTutor) {
+                            boolean notesAdded = Boolean.TRUE.equals(doc.getBoolean("notesAdded"));
+                            setupAddNotesButton(
+                                    docStudentUid,
+                                    docTutorUid,
+                                    doc.getString("tutorName"),
+                                    doc.getString("studentName"),
+                                    doc.getString("subject"),
+                                    notesAdded);
+                        } else if (isStudent) {
+                            boolean reviewed = Boolean.TRUE.equals(doc.getBoolean("reviewSubmitted"));
+                            setupRateReviewButton(docTutorUid, doc.getString("tutorName"), reviewed);
+                        }
+                    }
                 });
+    }
+
+    // ── US 17: Add Session Notes (tutor only, completed sessions) ────────────
+
+    private void setupAddNotesButton(String studentUid, String tutorUid,
+                                     String tutorName, String studentName,
+                                     String subject, boolean alreadySent) {
+        Button btn = findViewById(R.id.btnAddNotes);
+        if (btn == null) return;
+
+        btn.setVisibility(View.VISIBLE);
+
+        if (alreadySent) {
+            btn.setText("📝  Notes Sent ✓");
+            btn.setEnabled(false);
+            btn.setAlpha(0.6f);
+            return;
+        }
+
+        btn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SessionNotesActivity.class);
+            intent.putExtra("requestId",   requestId);
+            intent.putExtra("tutorUid",    tutorUid);
+            intent.putExtra("studentUid",  studentUid);
+            intent.putExtra("tutorName",   tutorName);
+            intent.putExtra("studentName", studentName);
+            intent.putExtra("subject",     subject);
+            startActivity(intent);
+        });
+    }
+
+    // ── US 19: Rate & Review (student only, completed sessions) ──────────────
+
+    private void setupRateReviewButton(String tutorUid, String tutorName, boolean alreadyReviewed) {
+        Button btn = findViewById(R.id.btnRateReview);
+        if (btn == null) return;
+
+        btn.setVisibility(View.VISIBLE);
+
+        if (alreadyReviewed) {
+            btn.setText("⭐  Reviewed ✓");
+            btn.setEnabled(false);
+            btn.setAlpha(0.6f);
+            return;
+        }
+
+        btn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RateReviewActivity.class);
+            intent.putExtra("requestId", requestId);
+            intent.putExtra("tutorUid",  tutorUid);
+            intent.putExtra("tutorName", tutorName);
+            startActivity(intent);
+        });
     }
 
     /**
@@ -103,19 +185,28 @@ public class RequestDetailActivity extends AppCompatActivity {
         TextView tvStatusBadge = findViewById(R.id.tvStatusBadge);
         MaterialCardView cardStatusBadge = findViewById(R.id.cardStatusBadge);
         if (tvStatusBadge != null && cardStatusBadge != null) {
-            String displayStatus = status != null ? status.toUpperCase() : "PENDING";
-            if ("waiting".equals(status)) displayStatus = "PENDING";
-            tvStatusBadge.setText(displayStatus);
-            
-            if ("waiting".equals(status) || "pending".equals(status)) {
+            if ("requested".equals(status)) {
+                tvStatusBadge.setText("PENDING");
                 tvStatusBadge.setTextColor(Color.parseColor("#007AFF"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#E6F2FF"));
-            } else if ("accepted".equals(status)) {
+            } else if ("booked".equals(status)) {
+                tvStatusBadge.setText("BOOKED");
                 tvStatusBadge.setTextColor(Color.parseColor("#34C759"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#EAF9EE"));
-            } else if ("cancelled".equals(status) || "declined".equals(status)) {
+            } else if ("completed".equals(status)) {
+                tvStatusBadge.setText("COMPLETED");
+                tvStatusBadge.setTextColor(Color.parseColor("#AF52DE"));
+                cardStatusBadge.setCardBackgroundColor(Color.parseColor("#F3EEFF"));
+            } else if ("cancelled".equals(status)) {
+                tvStatusBadge.setText("CANCELLED");
                 tvStatusBadge.setTextColor(Color.parseColor("#FF3B30"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#FFECEB"));
+            } else if ("expired".equals(status)) {
+                tvStatusBadge.setText("EXPIRED");
+                tvStatusBadge.setTextColor(Color.parseColor("#8E8E93"));
+                cardStatusBadge.setCardBackgroundColor(Color.parseColor("#F2F2F7"));
+            } else if (status != null) {
+                tvStatusBadge.setText(status.toUpperCase());
             }
         }
     }
@@ -154,15 +245,13 @@ public class RequestDetailActivity extends AppCompatActivity {
             if (requestId != null && requestId.startsWith("mock_")) {
                 updateStatusUI("cancelled");
                 Toast.makeText(this, "Request Cancelled", Toast.LENGTH_SHORT).show();
-                v.postDelayed(this::finish, 500);
             } else {
-                updateFirestoreStatus("cancelled");
-                finish();
+                cancelAndRefund();
             }
         });
 
-        findViewById(R.id.btnAcceptRequest).setOnClickListener(v -> updateFirestoreStatus("accepted"));
-        findViewById(R.id.btnDeclineRequest).setOnClickListener(v -> updateFirestoreStatus("declined"));
+        findViewById(R.id.btnAcceptRequest).setOnClickListener(v -> updateFirestoreStatus("booked"));
+        findViewById(R.id.btnDeclineRequest).setOnClickListener(v -> cancelAndRefund());
     }
 
     /**
@@ -171,7 +260,67 @@ public class RequestDetailActivity extends AppCompatActivity {
      */
     private void updateFirestoreStatus(String status) {
         if (requestId == null || requestId.startsWith("mock_")) return;
-        db.collection("sessionRequests").document(requestId).update("status", status);
+        db.collection("sessionRequests").document(requestId)
+                .update("status", status)
+                .addOnSuccessListener(u -> {
+                    updateStatusUI(status);
+                    Toast.makeText(this,
+                            "booked".equals(status) ? "Session accepted!" : "Request updated.",
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Cancels the request and refunds the tokens to the student who paid.
+     */
+    private void cancelAndRefund() {
+        if (requestId == null || requestId.startsWith("mock_")) return;
+
+        db.collection("sessionRequests").document(requestId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) return;
+
+                    String studentUid = doc.getString("studentUid");
+                    Long tokensToRefund = doc.getLong("tokens");
+
+                    db.collection("sessionRequests").document(requestId)
+                            .update("status", "cancelled")
+                            .addOnSuccessListener(u -> {
+                                updateStatusUI("cancelled");
+                                Toast.makeText(this, "Request cancelled.", Toast.LENGTH_SHORT).show();
+
+                                if (studentUid != null && tokensToRefund != null && tokensToRefund > 0) {
+                                    refundTokens(studentUid, tokensToRefund);
+                                } else {
+                                    finish();
+                                }
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Error: " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show());
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void refundTokens(String studentUid, long amount) {
+        db.collection("users").document(studentUid).get()
+                .addOnSuccessListener(doc -> {
+                    Long current = doc.getLong("tokens");
+                    long newBalance = (current != null ? current : 0) + amount;
+                    db.collection("users").document(studentUid)
+                            .update("tokens", newBalance)
+                            .addOnSuccessListener(u -> {
+                                Toast.makeText(this,
+                                        amount + " tokens refunded to student.",
+                                        Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> finish());
+                })
+                .addOnFailureListener(e -> finish());
     }
 
     private void setText(int viewId, String text) {

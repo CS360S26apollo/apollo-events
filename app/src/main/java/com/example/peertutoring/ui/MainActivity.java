@@ -86,15 +86,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (email.equals("test@example.com")) {
-            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-            intent.putExtra("uid", "test_uid");
-            intent.putExtra("email", email);
-            intent.putExtra("role", role);
-            startActivity(intent);
-            return;
-        }
-
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
                     if (authResult.getUser() != null) {

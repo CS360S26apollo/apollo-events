@@ -112,10 +112,6 @@ public class StudentPreferencesActivity extends AppCompatActivity {
                 finish();
             }
         });
-        if (btnFindTutor != null) {
-            btnFindTutor.setEnabled(false);
-            btnFindTutor.setOnClickListener(v -> saveAndShowResults());
-        }
     }
 
     private void bindViews() {
@@ -460,6 +456,8 @@ public class StudentPreferencesActivity extends AppCompatActivity {
 
     /**
      * Saves preferences to Firestore then queries matching tutors.
+     * Persists to both the preferences subcollection AND the main user document
+     * so BrowseTutorsActivity can read budget/level filters without an extra query.
      */
     private void saveAndShowResults() {
         if (currentUid == null) {
@@ -473,9 +471,14 @@ public class StudentPreferencesActivity extends AppCompatActivity {
         prefs.put("languages",     selectedLanguages);
         prefs.put("sessionType",   selectedSessionType);
 
+        // Write to subcollection (canonical store)
         db.collection("users").document(currentUid)
                 .collection("preferences").document("tutorPrefs")
-                .set(prefs, SetOptions.merge())
+                .set(prefs, SetOptions.merge());
+
+        // Mirror key fields to the main user doc for use by BrowseTutorsActivity
+        db.collection("users").document(currentUid)
+                .update(prefs)
                 .addOnSuccessListener(u -> showResults())
                 .addOnFailureListener(e -> showResults()); // proceed anyway
     }
@@ -523,16 +526,28 @@ public class StudentPreferencesActivity extends AppCompatActivity {
                         // Budget filter
                         if (rate != null && rate > selectedBudget) continue;
 
-                        // Level filter (loose match)
+                        // Level filter (loose match on tutor's level field)
                         if (selectedLevel != null && level != null) {
-                            boolean levelMatch =
-                                    (selectedLevel.equals("Beginner Friendly") &&
-                                            (level.contains("Freshman") || level.contains("Sophomore"))) ||
-                                            (selectedLevel.equals("Intermediate") &&
-                                                    (level.contains("Junior") || level.contains("Senior"))) ||
-                                            (selectedLevel.equals("Expert") &&
-                                                    (level.contains("Graduate") || level.contains("PhD") || level.contains("Professional"))) ||
-                                            selectedLevel.equals("Native Speaker"); // show all for native
+                            String lv = level.toLowerCase();
+                            boolean levelMatch;
+                            switch (selectedLevel) {
+                                case "Beginner Friendly":
+                                    levelMatch = lv.contains("beginner") || lv.contains("freshman")
+                                            || lv.contains("sophomore") || lv.contains("intro");
+                                    break;
+                                case "Intermediate":
+                                    levelMatch = lv.contains("intermediate") || lv.contains("junior")
+                                            || lv.contains("senior");
+                                    break;
+                                case "Expert":
+                                    levelMatch = lv.contains("expert") || lv.contains("graduate")
+                                            || lv.contains("phd") || lv.contains("professional")
+                                            || lv.contains("advanced");
+                                    break;
+                                default: // "Native Speaker" — no expertise restriction
+                                    levelMatch = true;
+                                    break;
+                            }
                             if (!levelMatch) continue;
                         }
 

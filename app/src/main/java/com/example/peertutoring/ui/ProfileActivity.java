@@ -96,10 +96,8 @@ public class ProfileActivity extends AppCompatActivity {
         repository.saveStudentProfile(student, new UserRepository.SaveCallback() {
             @Override
             public void onSuccess() {
-                // Go to preferences wizard instead of just showing "complete"
-                Intent intent = new Intent(ProfileActivity.this,
-                        StudentPreferencesActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
             }

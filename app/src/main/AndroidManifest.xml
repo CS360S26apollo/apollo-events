@@ -30,6 +30,10 @@
         <activity android:name=".ui.EditProfileActivity" android:label="Profile Settings" android:exported="false" />
         <activity android:name=".ui.LoginActivity" android:exported="false" />
         <activity android:name=".ui.NewSessionRequestActivity" android:exported="false" />
+        <activity android:name=".ui.InstantBookActivity" android:exported="false" />
+        <activity android:name=".ui.SeedDataActivity" android:exported="false" />
+        <activity android:name=".ui.SessionNotesActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.RateReviewActivity" android:exported="false" />
         <activity android:name=".ui.TutorRequestsActivity" android:exported="false" />
         <activity android:name=".ui.TutorOffersActivity" android:exported="false" />
         <activity android:name=".ui.CounterOfferActivity" android:exported="false" />

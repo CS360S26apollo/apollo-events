@@ -54,7 +54,7 @@ public class RankingEngine {
         
         // 1. Subject Match Score (0.0 - 1.0)
         double subjectScore = 0;
-        if (studentSubjects != null && tutor.getSubjects() != null) {
+        if (studentSubjects != null && !studentSubjects.isEmpty() && tutor.getSubjects() != null) {
             int matches = 0;
             for (String sub : studentSubjects) {
                 if (tutor.getSubjects().contains(sub)) matches++;

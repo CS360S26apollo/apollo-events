@@ -62,6 +62,14 @@ public class HomeActivity extends AppCompatActivity {
         setupSubjectCards();
         setupTutorCards();
         setupSeeAll();
+        setupSeedDataButton();
+    }
+
+    private void setupSeedDataButton() {
+        View btnSeed = findViewById(R.id.btnSeedData);
+        if (btnSeed != null)
+            btnSeed.setOnClickListener(v ->
+                    startActivity(new Intent(this, SeedDataActivity.class)));
     }
 
     @Override
@@ -70,12 +78,42 @@ public class HomeActivity extends AppCompatActivity {
         loadUserRoleThenSetupNav();
         startTokenListener();
         prefetchTutors(); // cache tutors for instant search
+        setupFindTutorBanner();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         if (tokenListener != null) { tokenListener.remove(); tokenListener = null; }
+    }
+
+    // ── Preferences Banner ────────────────────────────────────
+
+    /**
+     * Shows the "Find My Perfect Tutor" banner only for students.
+     * Tapping it opens the StudentPreferencesActivity wizard.
+     */
+    private void setupFindTutorBanner() {
+        View banner = findViewById(R.id.cardFindTutor);
+        if (banner == null) return;
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) { banner.setVisibility(View.GONE); return; }
+
+        db.collection("users").document(currentUser.getUid()).get()
+                .addOnSuccessListener(doc -> {
+                    String role = doc.exists() ? doc.getString("role") : null;
+                    if ("student".equals(role)) {
+                        banner.setVisibility(View.VISIBLE);
+                        SoundManager.attachClick(this, banner);
+                        banner.setOnClickListener(v -> {
+                            SoundManager.playClick(this);
+                            startActivity(new Intent(this, StudentPreferencesActivity.class));
+                        });
+                    } else {
+                        banner.setVisibility(View.GONE);
+                    }
+                })
+                .addOnFailureListener(e -> banner.setVisibility(View.GONE));
     }
 
     // ── Search ────────────────────────────────────────────────
@@ -360,23 +398,56 @@ public class HomeActivity extends AppCompatActivity {
     // ── Featured Tutor Cards ──────────────────────────────────
 
     private void setupTutorCards() {
-        View cardTutor1 = findViewById(R.id.cardTutor1);
-        View cardTutor2 = findViewById(R.id.cardTutor2);
+        db.collection("users")
+                .whereEqualTo("role", "tutor")
+                .limit(2)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    List<com.google.firebase.firestore.DocumentSnapshot> docs = snap.getDocuments();
+                    int[] cardIds = {R.id.cardTutor1, R.id.cardTutor2};
+                    for (int i = 0; i < cardIds.length && i < docs.size(); i++) {
+                        com.google.firebase.firestore.DocumentSnapshot doc = docs.get(i);
+                        View card = findViewById(cardIds[i]);
+                        if (card == null) continue;
 
-        if (cardTutor1 != null) {
-            SoundManager.attachClick(this, cardTutor1);
-            cardTutor1.setOnClickListener(v -> {
-                SoundManager.playClick(this);
-                openTutorDetail("Sarah Johnson", "Mathematics", "45", "4.9", "127");
-            });
-        }
-        if (cardTutor2 != null) {
-            SoundManager.attachClick(this, cardTutor2);
-            cardTutor2.setOnClickListener(v -> {
-                SoundManager.playClick(this);
-                openTutorDetail("Emily Chen", "Physics", "50", "5.0", "98");
-            });
-        }
+                        String tutorUid  = doc.getId();
+                        String fullName  = doc.getString("fullName");
+                        Long   rateLong  = doc.getLong("rate");
+                        Double rating    = doc.getDouble("rating");
+                        Boolean verified = doc.getBoolean("verified");
+                        @SuppressWarnings("unchecked")
+                        List<String> subs = (List<String>) doc.get("subjects");
+                        String subject   = (subs != null && !subs.isEmpty()) ? subs.get(0) : "";
+                        String rate      = rateLong != null ? String.valueOf(rateLong) : "100";
+                        String ratingStr = rating != null ? String.valueOf(rating) : "0.0";
+
+                        // Update card text views if present
+                        TextView tvName = card.findViewById(R.id.tvTutorName);
+                        TextView tvSub  = card.findViewById(R.id.tvTutorSubject);
+                        TextView tvRate = card.findViewById(R.id.tvTutorRate);
+                        TextView tvRat  = card.findViewById(R.id.tvRating);
+                        if (tvName != null) tvName.setText(fullName);
+                        if (tvSub  != null) tvSub.setText(subject);
+                        if (tvRate != null) tvRate.setText(rate + " tokens/hr");
+                        if (tvRat  != null) tvRat.setText("⭐ " + ratingStr);
+
+                        SoundManager.attachClick(this, card);
+                        final String fUid = tutorUid, fName = fullName, fSubj = subject,
+                                fRate = rate, fRating = ratingStr;
+                        final boolean fVer = Boolean.TRUE.equals(verified);
+                        card.setOnClickListener(v -> {
+                            SoundManager.playClick(this);
+                            Intent intent = new Intent(this, TutorDetailActivity.class);
+                            intent.putExtra("tutorUid",   fUid);
+                            intent.putExtra("name",       fName);
+                            intent.putExtra("subject",    fSubj);
+                            intent.putExtra("rate",       fRate);
+                            intent.putExtra("rating",     fRating);
+                            intent.putExtra("isVerified", fVer);
+                            startActivity(intent);
+                        });
+                    }
+                });
     }
 
     // ── Token Balance ─────────────────────────────────────────
@@ -461,17 +532,6 @@ public class HomeActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0);
             });
         }
-    }
-
-    private void openTutorDetail(String name, String subject, String rate,
-                                 String rating, String students) {
-        Intent intent = new Intent(this, TutorDetailActivity.class);
-        intent.putExtra("name",     name);
-        intent.putExtra("subject",  subject);
-        intent.putExtra("rate",     rate);
-        intent.putExtra("rating",   rating);
-        intent.putExtra("students", students);
-        startActivity(intent);
     }
 
     private int dp(int dp) {

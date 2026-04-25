@@ -33,21 +33,37 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <!-- Filter icon -->
+            <!-- Preferences button -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnFilter"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:cardCornerRadius="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                app:cardCornerRadius="18dp"
                 app:cardBackgroundColor="#33FFFFFF"
                 app:cardElevation="0dp">
 
-                <ImageView
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:padding="10dp"
-                    android:src="@android:drawable/ic_menu_sort_by_size"
-                    app:tint="#FFFFFF" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚙️"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" Preferences"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 

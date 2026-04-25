@@ -23,6 +23,8 @@ public class SessionRequest {
     public static final String STATUS_CANCELLED = "cancelled";
     /** Status for when a student or tutor fails to appear. */
     public static final String STATUS_NO_SHOW = "no_show";
+    /** Status for when a request was not accepted within the allowed window. */
+    public static final String STATUS_EXPIRED = "expired";
 
     private String requestId;
     private String studentUid;
@@ -103,6 +105,15 @@ public class SessionRequest {
     public void setTokens(int tokens)                    { this.tokens = tokens; }
     public void setScheduledDate(Date scheduledDate)     { this.scheduledDate = scheduledDate; }
     public void setCreatedAt(Date createdAt)             { this.createdAt = createdAt; }
+
+    /**
+     * Returns true if this request is still "requested" and older than windowMs milliseconds.
+     * Used by ExpirationUtils to identify stale requests client-side.
+     */
+    public boolean isExpiredRequest(long windowMs) {
+        if (!STATUS_REQUESTED.equals(status) || createdAt == null) return false;
+        return (System.currentTimeMillis() - createdAt.getTime()) > windowMs;
+    }
 
     /**
      * Determines if the session is currently booked for a future time.

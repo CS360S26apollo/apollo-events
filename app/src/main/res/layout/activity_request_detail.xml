@@ -299,6 +299,36 @@
                 <Button android:id="@+id/btnDeclineRequest" android:layout_width="match_parent" android:layout_height="56dp" android:text="Decline" />
             </LinearLayout>
 
+            <!-- US 17: Tutor adds session notes after completion -->
+            <Button
+                android:id="@+id/btnAddNotes"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"
+                android:text="📝  Add Session Notes"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_button_gradient"
+                android:visibility="gone"
+                app:backgroundTint="@null"
+                app:cornerRadius="28dp" />
+
+            <!-- US 19: Student rates and reviews tutor after completion -->
+            <Button
+                android:id="@+id/btnRateReview"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="40dp"
+                android:text="⭐  Rate &amp; Review Tutor"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:backgroundTint="#FFB300"
+                android:visibility="gone"
+                app:cornerRadius="28dp" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
