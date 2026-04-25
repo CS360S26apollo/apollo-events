@@ -257,14 +257,30 @@
                 android:id="@+id/btnCancelRequest"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="12dp"
                 android:backgroundTint="#FF3B30"
                 android:text="✕  Cancel Request"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:cornerRadius="32dp" />
+                app:cornerRadius="32dp"
+                android:visibility="gone" />
+
+            <!-- US-15: Reschedule — shown for student when session is booked -->
+            <Button
+                android:id="@+id/btnReschedule"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="40dp"
+                android:backgroundTint="#8A2EFF"
+                android:text="Reschedule Session"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="28dp"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/layoutProviderList"

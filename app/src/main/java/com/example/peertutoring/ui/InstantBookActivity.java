@@ -22,6 +22,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.example.peertutoring.R;
 import com.example.peertutoring.models.SessionRequest;
+import com.example.peertutoring.utils.ConflictChecker;
 import com.example.peertutoring.utils.SoundManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -305,15 +306,33 @@ public class InstantBookActivity extends AppCompatActivity {
             return;
         }
 
-        final int    tokenCost  = calculateTokenCost(selectedDuration);
-        final String subFinal   = subject;
-        final String topFinal   = topic;
-        final String goalFinal  = goals;
+        final int    tokenCost = calculateTokenCost(selectedDuration);
+        final String subFinal  = subject;
+        final String topFinal  = topic;
+        final String goalFinal = goals;
+        final Date   slotDate  = nextOccurrenceOf(selectedSlotDay, selectedSlotHour);
 
         if (btnBookNow != null) {
             btnBookNow.setEnabled(false);
-            btnBookNow.setText("Checking balance...");
+            btnBookNow.setText("Checking conflicts...");
         }
+
+        // US-14: conflict check before deducting any tokens
+        ConflictChecker.checkConflict(db, tutorUid, currentUid, slotDate, selectedDuration, null,
+                (hasConflict, reason) -> {
+                    if (hasConflict) {
+                        SoundManager.playError(this);
+                        Toast.makeText(this, "Scheduling conflict: " + reason, Toast.LENGTH_LONG).show();
+                        resetBookButton();
+                        return;
+                    }
+                    checkBalanceAndBook(tokenCost, subFinal, topFinal, goalFinal, slotDate);
+                });
+    }
+
+    private void checkBalanceAndBook(int tokenCost, String subject, String topic,
+                                     String goals, Date slotDate) {
+        if (btnBookNow != null) btnBookNow.setText("Checking balance...");
 
         db.collection("users").document(currentUid).get()
                 .addOnSuccessListener(doc -> {
@@ -329,8 +348,7 @@ public class InstantBookActivity extends AppCompatActivity {
                         return;
                     }
 
-                    deductAndBook(currentTokens - tokenCost, tokenCost,
-                            subFinal, topFinal, goalFinal);
+                    deductAndBook(currentTokens - tokenCost, tokenCost, subject, topic, goals, slotDate);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -339,13 +357,12 @@ public class InstantBookActivity extends AppCompatActivity {
     }
 
     private void deductAndBook(long newBalance, int tokenCost,
-                               String subject, String topic, String goals) {
+                               String subject, String topic, String goals, Date scheduledDate) {
         if (btnBookNow != null) btnBookNow.setText("Booking...");
 
         db.collection("users").document(currentUid)
                 .update("tokens", newBalance)
                 .addOnSuccessListener(unused -> {
-                    Date scheduledDate = nextOccurrenceOf(selectedSlotDay, selectedSlotHour);
 
                     SessionRequest req = new SessionRequest(
                             currentUid, currentUserName, subject, topic, goals, selectedDuration);

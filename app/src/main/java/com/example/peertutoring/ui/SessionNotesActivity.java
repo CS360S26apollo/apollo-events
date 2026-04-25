@@ -133,7 +133,7 @@ public class SessionNotesActivity extends AppCompatActivity {
         }
     }
 
-    static String buildNoteMessage(String topics, String takeaways, String actionItems) {
+    public static String buildNoteMessage(String topics, String takeaways, String actionItems) {
         StringBuilder sb = new StringBuilder();
         sb.append("📝 SESSION NOTES\n");
         sb.append("─────────────────────────\n");
@@ -150,7 +150,7 @@ public class SessionNotesActivity extends AppCompatActivity {
         return sb.toString().trim();
     }
 
-    static String buildConvId(String tutorUid, String studentUid) {
+    public static String buildConvId(String tutorUid, String studentUid) {
         return tutorUid.compareTo(studentUid) < 0
                 ? tutorUid + "_" + studentUid
                 : studentUid + "_" + tutorUid;

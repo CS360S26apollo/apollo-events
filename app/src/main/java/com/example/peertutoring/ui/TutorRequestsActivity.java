@@ -204,6 +204,7 @@ public class TutorRequestsActivity extends AppCompatActivity {
         }
 
         String requestId    = doc.getId();
+        String studentUid   = doc.getString("studentUid");
         String goals        = doc.getString("goals");
         String studentMsg   = doc.getString("studentMessage");
         int    dur          = duration != null ? duration.intValue() : 60;
@@ -212,6 +213,7 @@ public class TutorRequestsActivity extends AppCompatActivity {
         card.setOnClickListener(v -> {
             Intent intent = new Intent(this, RequestDetailActivity.class);
             intent.putExtra("requestId",      requestId);
+            intent.putExtra("studentUid",     studentUid);
             intent.putExtra("studentName",    studentName);
             intent.putExtra("subject",        subject);
             intent.putExtra("topic",          topic);

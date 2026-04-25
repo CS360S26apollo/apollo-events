@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.peertutoring.R;
+import com.example.peertutoring.utils.ConflictChecker;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,6 +37,7 @@ public class CounterOfferActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private String requestId, studentName, subject, originalDate, originalTime;
+    private String studentUid;
     private int originalDuration, originalTokens;
 
     private int counterDuration;
@@ -76,6 +78,7 @@ public class CounterOfferActivity extends AppCompatActivity {
         originalTime     = getIntent().getStringExtra("time");
         originalDuration = getIntent().getIntExtra("duration", 60);
         originalTokens   = getIntent().getIntExtra("tokens", 150);
+        studentUid       = getIntent().getStringExtra("studentUid");
 
         counterDuration = originalDuration;
         counterTokens   = originalTokens;
@@ -225,8 +228,8 @@ public class CounterOfferActivity extends AppCompatActivity {
     }
 
     /**
-     * Validates input and submits the counter offer as a sub-collection in Firestore.
-     * Updates the status of the parent request to 'counter_offered'.
+     * Validates input, checks for scheduling conflicts (US-14), then submits
+     * the counter-offer as a Firestore sub-collection document.
      */
     private void sendCounterOffer() {
         if (pickedDay == -1) {
@@ -245,34 +248,59 @@ public class CounterOfferActivity extends AppCompatActivity {
         String message = etMessage != null && etMessage.getText() != null
                 ? etMessage.getText().toString().trim() : "";
 
-        if (requestId != null && !requestId.isEmpty()) {
-            String tutorUid = FirebaseAuth.getInstance().getCurrentUser() != null
-                    ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
+        String tutorUid = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
 
-            Map<String, Object> counterOffer = new HashMap<>();
-            counterOffer.put("tutorUid",          tutorUid);
-            counterOffer.put("proposedDate",       newDate);
-            counterOffer.put("proposedTime",       newTime);
-            counterOffer.put("proposedDuration",   counterDuration);
-            counterOffer.put("proposedTokens",     counterTokens);
-            counterOffer.put("message",            message);
-            counterOffer.put("status",             "pending");
-
-            db.collection("sessionRequests")
-                    .document(requestId)
-                    .collection("counterOffers")
-                    .add(counterOffer)
-                    .addOnSuccessListener(ref ->
-                            db.collection("sessionRequests")
-                                    .document(requestId)
-                                    .update("status", "counter_offered")
-                                    .addOnSuccessListener(u -> navigateToResult(newDate, newTime)))
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Failed: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show());
-        } else {
+        if (requestId == null || requestId.isEmpty()) {
             navigateToResult(newDate, newTime);
+            return;
         }
+
+        // Build proposed date for conflict check
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(pickedYear, pickedMonth, pickedDay, pickedHour, pickedMinute, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        java.util.Date proposedDate = cal.getTime();
+
+        android.widget.Button btnSend = findViewById(R.id.btnSendCounterOffer);
+        if (btnSend != null) { btnSend.setEnabled(false); btnSend.setText("Checking conflicts..."); }
+
+        // US-14: exclude the current request from the conflict check (it will be updated, not new)
+        ConflictChecker.checkConflict(db, tutorUid,
+                studentUid != null ? studentUid : "",
+                proposedDate, counterDuration, requestId,
+                (hasConflict, reason) -> {
+                    if (hasConflict) {
+                        Toast.makeText(this, "Scheduling conflict: " + reason, Toast.LENGTH_LONG).show();
+                        if (btnSend != null) { btnSend.setEnabled(true); btnSend.setText("✈  Send Counter Offer"); }
+                        return;
+                    }
+                    saveCounterOffer(tutorUid, newDate, newTime, message, btnSend);
+                });
+    }
+
+    private void saveCounterOffer(String tutorUid, String newDate, String newTime,
+                                  String message, android.widget.Button btnSend) {
+        Map<String, Object> counterOffer = new HashMap<>();
+        counterOffer.put("tutorUid",        tutorUid);
+        counterOffer.put("proposedDate",    newDate);
+        counterOffer.put("proposedTime",    newTime);
+        counterOffer.put("proposedDuration", counterDuration);
+        counterOffer.put("proposedTokens",  counterTokens);
+        counterOffer.put("message",         message);
+        counterOffer.put("status",          "pending");
+
+        db.collection("sessionRequests").document(requestId)
+                .collection("counterOffers")
+                .add(counterOffer)
+                .addOnSuccessListener(ref ->
+                        db.collection("sessionRequests").document(requestId)
+                                .update("status", "counter_offered")
+                                .addOnSuccessListener(u -> navigateToResult(newDate, newTime)))
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    if (btnSend != null) { btnSend.setEnabled(true); btnSend.setText("✈  Send Counter Offer"); }
+                });
     }
 
     private void navigateToResult(String newDate, String newTime) {

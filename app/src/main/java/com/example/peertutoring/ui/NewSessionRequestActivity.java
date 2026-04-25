@@ -1,5 +1,7 @@
 package com.example.peertutoring.ui;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,22 +18,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.example.peertutoring.R;
+import com.example.peertutoring.utils.ConflictChecker;
 import com.example.peertutoring.utils.SoundManager;
 import com.example.peertutoring.models.SessionRequest;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Activity for students to book a session with a specific tutor.
- *
- * Fixes:
- * 1. Subject dropdown only shows subjects the tutor actually teaches
- *    (fetched from their Firestore profile). Falls back to full list if unavailable.
- * 2. Token cost = ceil(duration / 60) × tutorRatePerHour (tutor's real rate).
- * 3. Live token cost preview shown before submission.
+ * US-14: Student proposes a date/time which is conflict-checked (tutor + student)
+ * before the request is submitted.
  */
 public class NewSessionRequestActivity extends AppCompatActivity {
 
@@ -39,18 +40,29 @@ public class NewSessionRequestActivity extends AppCompatActivity {
     private EditText etTopic, etGoals, etCustomDuration;
     private Button btn30, btn45, btn60, btn90, btnSubmit;
     private TextView tvCostPreview, tvTutorSubjectsLabel;
+    private TextView tvProposedDate, tvProposedTime;
     private int selectedDuration = 60;
+
+    // Proposed date/time state (mirrors CounterOfferActivity pattern)
+    private int pickedYear   = -1;
+    private int pickedMonth  = -1;
+    private int pickedDay    = -1;
+    private int pickedHour   = -1;
+    private int pickedMinute = -1;
+
+    private static final String[] MONTHS = {
+            "Jan","Feb","Mar","Apr","May","Jun",
+            "Jul","Aug","Sep","Oct","Nov","Dec"
+    };
 
     private FirebaseFirestore db;
     private String currentUid;
     private String currentUserName;
 
-    // Tutor info passed from TutorDetailActivity
     private String tutorUid;
     private String tutorName;
-    private int tutorRatePerHour = 100; // default, overridden by Intent
+    private int tutorRatePerHour = 100;
 
-    // Fallback full subject list (used only if tutor profile unavailable)
     private static final String[] ALL_SUBJECTS = {
             "Mathematics", "Physics", "Chemistry", "Biology",
             "Computer Science", "English", "History", "Economics"
@@ -63,7 +75,6 @@ public class NewSessionRequestActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             currentUid      = FirebaseAuth.getInstance().getCurrentUser().getUid();
             currentUserName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
@@ -72,7 +83,6 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             currentUid = "";
         }
 
-        // Read tutor info from Intent
         tutorUid         = getIntent().getStringExtra("tutorUid");
         tutorName        = getIntent().getStringExtra("tutorName");
         tutorRatePerHour = getIntent().getIntExtra("tutorRate", 100);
@@ -88,6 +98,8 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         btnSubmit           = findViewById(R.id.btnSubmitRequest);
         tvCostPreview       = findViewById(R.id.tvTokenCost);
         tvTutorSubjectsLabel = findViewById(R.id.tvScreenTitle);
+        tvProposedDate      = findViewById(R.id.tvProposedDate);
+        tvProposedTime      = findViewById(R.id.tvProposedTime);
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
@@ -96,35 +108,79 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             tvTutorSubjectsLabel.setText("Book with " + tutorName);
         }
 
+        setupDateTimePickers();
         setupDurationButtons();
 
-        if (btnSubmit != null) btnSubmit.setOnClickListener(v -> { SoundManager.playClick(this); checkTokensAndPost(); });
+        if (btnSubmit != null) btnSubmit.setOnClickListener(v -> { SoundManager.playClick(this); checkAndPost(); });
 
-        // Load tutor's actual subjects from Firestore
         loadTutorSubjects();
     }
 
-    /**
-     * Fetches the tutor's subjects from Firestore and populates the spinner
-     * with ONLY those subjects. This prevents students from requesting a subject
-     * the tutor doesn't teach.
-     */
+    // ── Date / time pickers ──────────────────────────────────────────────────
+
+    private void setupDateTimePickers() {
+        View dateCard = findViewById(R.id.cardProposedDate);
+        if (dateCard != null) dateCard.setOnClickListener(v -> showDatePicker());
+        if (tvProposedDate != null) tvProposedDate.setOnClickListener(v -> showDatePicker());
+
+        View timeCard = findViewById(R.id.cardProposedTime);
+        if (timeCard != null) timeCard.setOnClickListener(v -> showTimePicker());
+        if (tvProposedTime != null) tvProposedTime.setOnClickListener(v -> showTimePicker());
+    }
+
+    private void showDatePicker() {
+        Calendar today = Calendar.getInstance();
+        int initYear  = pickedYear  > 0 ? pickedYear  : today.get(Calendar.YEAR);
+        int initMonth = pickedMonth >= 0 ? pickedMonth : today.get(Calendar.MONTH);
+        int initDay   = pickedDay   > 0 ? pickedDay   : today.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dlg = new DatePickerDialog(this,
+                (view, year, month, day) -> {
+                    pickedYear  = year;
+                    pickedMonth = month;
+                    pickedDay   = day;
+                    if (tvProposedDate != null)
+                        tvProposedDate.setText(MONTHS[month] + " " + day + ", " + year);
+                }, initYear, initMonth, initDay);
+        dlg.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        dlg.show();
+    }
+
+    private void showTimePicker() {
+        Calendar now = Calendar.getInstance();
+        int initHour   = pickedHour   >= 0 ? pickedHour   : now.get(Calendar.HOUR_OF_DAY);
+        int initMinute = pickedMinute >= 0 ? pickedMinute : 0;
+
+        new TimePickerDialog(this,
+                (view, hour, minute) -> {
+                    pickedHour   = hour;
+                    pickedMinute = minute;
+                    if (tvProposedTime != null)
+                        tvProposedTime.setText(String.format("%02d:%02d", hour, minute));
+                }, initHour, initMinute, true).show();
+    }
+
+    /** Builds a Date from the user's picked year/month/day/hour/minute. */
+    private Date buildProposedDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(pickedYear, pickedMonth, pickedDay, pickedHour, pickedMinute, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    // ── Subject dropdown ─────────────────────────────────────────────────────
+
     private void loadTutorSubjects() {
         if (tutorUid == null || tutorUid.isEmpty()) {
             setupSubjectDropdown(getAllSubjectsList());
             return;
         }
-
         db.collection("users").document(tutorUid).get()
                 .addOnSuccessListener(doc -> {
                     List<String> subjects = null;
-                    if (doc.exists()) {
-                        //noinspection unchecked
+                    if (doc.exists()) //noinspection unchecked
                         subjects = (List<String>) doc.get("subjects");
-                    }
-                    if (subjects == null || subjects.isEmpty()) {
-                        subjects = getAllSubjectsList();
-                    }
+                    if (subjects == null || subjects.isEmpty()) subjects = getAllSubjectsList();
                     setupSubjectDropdown(subjects);
                 })
                 .addOnFailureListener(e -> setupSubjectDropdown(getAllSubjectsList()));
@@ -142,12 +198,11 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         if (spinnerSubject != null) {
             spinnerSubject.setAdapter(adapter);
             spinnerSubject.setOnClickListener(v -> spinnerSubject.showDropDown());
-            // Auto-select if only one subject
-            if (subjects.size() == 1) {
-                spinnerSubject.setText(subjects.get(0), false);
-            }
+            if (subjects.size() == 1) spinnerSubject.setText(subjects.get(0), false);
         }
     }
+
+    // ── Duration buttons ─────────────────────────────────────────────────────
 
     private void setupDurationButtons() {
         View.OnClickListener listener = v -> {
@@ -159,7 +214,6 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             if (etCustomDuration != null) etCustomDuration.setText("");
             updateCostPreview();
         };
-
         if (btn30 != null) btn30.setOnClickListener(listener);
         if (btn45 != null) btn45.setOnClickListener(listener);
         if (btn60 != null) btn60.setOnClickListener(listener);
@@ -184,29 +238,23 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         }
     }
 
-    /** Shows the calculated token cost live as duration changes. */
     private void updateCostPreview() {
         if (tvCostPreview == null) return;
         int cost = calculateTokenCost(selectedDuration);
-        tvCostPreview.setText("Cost: " + cost + " tokens  ("
-                + tutorRatePerHour + " tokens/hr)");
+        tvCostPreview.setText("Cost: " + cost + " tokens  (" + tutorRatePerHour + " tokens/hr)");
     }
 
-    /**
-     * Token cost = ceil(durationMinutes / 60.0) × tutorRatePerHour.
-     * e.g. 45 min @ 80/hr = 80 tokens (1 full hour billed)
-     *      90 min @ 80/hr = 160 tokens (2 hours)
-     */
     private int calculateTokenCost(int durationMinutes) {
         return Math.max(1, (int) Math.ceil(durationMinutes / 60.0) * tutorRatePerHour);
     }
 
-    private void checkTokensAndPost() {
+    // ── Submit flow ───────────────────────────────────────────────────────────
+
+    private void checkAndPost() {
         String subject   = spinnerSubject != null ? spinnerSubject.getText().toString().trim() : "";
         String topic     = etTopic != null ? etTopic.getText().toString().trim() : "";
         String goals     = etGoals != null ? etGoals.getText().toString().trim() : "";
-        String customDur = etCustomDuration != null
-                ? etCustomDuration.getText().toString().trim() : "";
+        String customDur = etCustomDuration != null ? etCustomDuration.getText().toString().trim() : "";
 
         int finalDuration = selectedDuration;
         if (!TextUtils.isEmpty(customDur)) {
@@ -222,38 +270,58 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             if (etTopic != null) etTopic.setError("Topic is required");
             return;
         }
+        if (pickedDay < 0 || pickedHour < 0) {
+            Toast.makeText(this, "Please select a proposed date and time", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (currentUid == null || currentUid.isEmpty()) {
             Toast.makeText(this, "Please sign in first", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        final int tokenCost    = calculateTokenCost(finalDuration);
-        final int dur          = finalDuration;
+        Date proposedDate = buildProposedDate();
+        if (!proposedDate.after(new Date())) {
+            Toast.makeText(this, "Proposed time must be in the future", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final int    tokenCost = calculateTokenCost(finalDuration);
+        final int    dur       = finalDuration;
         final String subFinal  = subject;
         final String topFinal  = topic;
         final String goalFinal = goals;
 
-        if (btnSubmit != null) {
-            btnSubmit.setEnabled(false);
-            btnSubmit.setText("Checking balance...");
-        }
+        setBtnState(false, "Checking conflicts...");
 
+        ConflictChecker.checkConflict(db, tutorUid, currentUid, proposedDate, dur, null,
+                (hasConflict, reason) -> {
+                    if (hasConflict) {
+                        SoundManager.playError(this);
+                        Toast.makeText(this, "Scheduling conflict: " + reason, Toast.LENGTH_LONG).show();
+                        resetSubmitButton();
+                        return;
+                    }
+                    checkTokensAndPost(proposedDate, tokenCost, dur, subFinal, topFinal, goalFinal);
+                });
+    }
+
+    private void checkTokensAndPost(Date proposedDate, int tokenCost, int dur,
+                                    String subject, String topic, String goals) {
+        setBtnState(false, "Checking balance...");
         db.collection("users").document(currentUid).get()
                 .addOnSuccessListener(doc -> {
                     Long bal = doc.getLong("tokens");
                     long currentTokens = (bal != null) ? bal : 100L;
-
                     if (currentTokens < tokenCost) {
                         SoundManager.playError(this);
                         Toast.makeText(this,
-                                "❌ Need " + tokenCost + " tokens, you have " + currentTokens,
+                                "Need " + tokenCost + " tokens, you have " + currentTokens,
                                 Toast.LENGTH_LONG).show();
                         resetSubmitButton();
                         return;
                     }
-
                     deductAndPost(currentTokens - tokenCost, tokenCost,
-                            subFinal, topFinal, goalFinal, dur);
+                            proposedDate, subject, topic, goals, dur);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -261,10 +329,9 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                 });
     }
 
-    private void deductAndPost(long newBalance, int tokenCost, String subject,
-                               String topic, String goals, int duration) {
-        if (btnSubmit != null) btnSubmit.setText("Posting...");
-
+    private void deductAndPost(long newBalance, int tokenCost, Date proposedDate,
+                               String subject, String topic, String goals, int duration) {
+        setBtnState(false, "Posting...");
         db.collection("users").document(currentUid)
                 .update("tokens", newBalance)
                 .addOnSuccessListener(unused -> {
@@ -272,6 +339,7 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                             currentUid, currentUserName, subject, topic, goals, duration);
                     req.setStatus(SessionRequest.STATUS_REQUESTED);
                     req.setTokens(tokenCost);
+                    req.setScheduledDate(proposedDate);
                     if (tutorUid  != null && !tutorUid.isEmpty())  req.setTutorUid(tutorUid);
                     if (tutorName != null && !tutorName.isEmpty()) req.setTutorName(tutorName);
 
@@ -280,12 +348,12 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                                 docRef.update("requestId", docRef.getId());
                                 SoundManager.playSuccess(this);
                                 Toast.makeText(this,
-                                        "✅ Booked! " + tokenCost + " tokens reserved.",
+                                        "Request sent! " + tokenCost + " tokens reserved.",
                                         Toast.LENGTH_LONG).show();
                                 finish();
                             })
                             .addOnFailureListener(e -> {
-                                // Refund on failure
+                                // Refund on write failure
                                 db.collection("users").document(currentUid)
                                         .update("tokens", newBalance + tokenCost);
                                 Toast.makeText(this, "Error: " + e.getMessage(),
@@ -299,10 +367,14 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                 });
     }
 
-    private void resetSubmitButton() {
+    private void setBtnState(boolean enabled, String text) {
         if (btnSubmit != null) {
-            btnSubmit.setEnabled(true);
-            btnSubmit.setText("Post Session Request");
+            btnSubmit.setEnabled(enabled);
+            btnSubmit.setText(text);
         }
+    }
+
+    private void resetSubmitButton() {
+        setBtnState(true, "Post Session Request");
     }
 }

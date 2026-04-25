@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import com.example.peertutoring.R;
 import com.example.peertutoring.models.SessionRequest;
 import com.example.peertutoring.utils.ExpirationUtils;
@@ -204,6 +205,21 @@ public class SessionRequestsActivity extends AppCompatActivity {
             tvLocation.setText(" " + sdf.format(doc.scheduledDate));
         }
 
+        // Tap to open request detail (US-15: cancel/reschedule)
+        card.setOnClickListener(v -> {
+            if (doc.id.startsWith("mock_")) return;
+            Intent intent = new Intent(this, RequestDetailActivity.class);
+            intent.putExtra("requestId", doc.id);
+            intent.putExtra("topic",     doc.topic);
+            intent.putExtra("status",    doc.status);
+            intent.putExtra("provider",  doc.provider);
+            intent.putExtra("category",  doc.category);
+            intent.putExtra("duration",  doc.duration);
+            intent.putExtra("tokens",    doc.tokens);
+            intent.putExtra("isStudentView", true);
+            startActivity(intent);
+        });
+
         if (tvStatusBadge != null && cardStatusBadge != null) {
             String displayStatus = doc.status.toUpperCase();
             tvStatusBadge.setText(displayStatus);
@@ -234,7 +250,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
 
     /** Internal wrapper class to simplify document processing from both Firestore and Mock sources. */
     private static class SessionDoc {
-        String id, topic, status, provider, category;
+        String id, topic, status, provider, category, tutorUid;
         int duration, tokens;
         Date scheduledDate;
 
@@ -246,6 +262,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
             topic = d.getString("topic");
             status = d.getString("status");
             provider = d.getString("tutorName");
+            tutorUid = d.getString("tutorUid");
             category = d.getString("subject");
             Long dur = d.getLong("durationMinutes");
             duration = dur != null ? dur.intValue() : 60;
