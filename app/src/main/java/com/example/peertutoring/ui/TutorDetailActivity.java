@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.peertutoring.R;
+import com.example.peertutoring.utils.LowBalanceDialog;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -179,45 +180,59 @@ public class TutorDetailActivity extends AppCompatActivity {
 
     /**
      * Book Session button — hidden entirely for tutors.
-     * Passes the tutor's actual rate so NewSessionRequestActivity
-     * deducts the correct number of tokens.
+     * Checks wallet balance before navigating; shows LowBalanceDialog if insufficient.
      */
     private void setupBookButton(boolean isTutor) {
         View btnBook = findViewById(R.id.btnBookSession);
         if (btnBook == null) return;
 
-        if (isTutor) {
-            btnBook.setVisibility(View.GONE);
-            return;
-        }
+        if (isTutor) { btnBook.setVisibility(View.GONE); return; }
 
         btnBook.setVisibility(View.VISIBLE);
-        btnBook.setOnClickListener(v -> {
-            Intent intent = new Intent(TutorDetailActivity.this, NewSessionRequestActivity.class);
-            intent.putExtra("tutorUid",  tutorUid  != null ? tutorUid  : "");
-            intent.putExtra("tutorName", tutorName != null ? tutorName : "");
-            intent.putExtra("tutorRate", tutorRate); // actual tokens/hr — key fix
-            startActivity(intent);
-        });
+        btnBook.setOnClickListener(v -> checkBalanceAndNavigate(false));
     }
 
     private void setupInstantBookButton(boolean isTutor) {
         View btnInstant = findViewById(R.id.btnInstantBook);
         if (btnInstant == null) return;
 
-        if (isTutor) {
-            btnInstant.setVisibility(View.GONE);
-            return;
-        }
+        if (isTutor) { btnInstant.setVisibility(View.GONE); return; }
 
         btnInstant.setVisibility(View.VISIBLE);
-        btnInstant.setOnClickListener(v -> {
-            Intent intent = new Intent(TutorDetailActivity.this, InstantBookActivity.class);
-            intent.putExtra("tutorUid",  tutorUid  != null ? tutorUid  : "");
-            intent.putExtra("tutorName", tutorName != null ? tutorName : "");
-            intent.putExtra("tutorRate", tutorRate);
-            startActivity(intent);
-        });
+        btnInstant.setOnClickListener(v -> checkBalanceAndNavigate(true));
+    }
+
+    /**
+     * Fetches the student's token balance before launching a booking screen.
+     * If the balance is below the tutor's hourly rate (the minimum session cost),
+     * shows LowBalanceDialog instead of navigating.
+     */
+    private void checkBalanceAndNavigate(boolean isInstantBook) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) { launchSession(isInstantBook); return; }
+
+        FirebaseFirestore.getInstance()
+                .collection("users").document(user.getUid()).get()
+                .addOnSuccessListener(doc -> {
+                    long balance = doc.getLong("tokens") != null
+                            ? doc.getLong("tokens") : 100L;
+                    if (balance < tutorRate) {
+                        LowBalanceDialog.show(TutorDetailActivity.this,
+                                (int) balance, tutorRate);
+                    } else {
+                        launchSession(isInstantBook);
+                    }
+                })
+                .addOnFailureListener(e -> launchSession(isInstantBook));
+    }
+
+    private void launchSession(boolean isInstantBook) {
+        Intent intent = new Intent(this,
+                isInstantBook ? InstantBookActivity.class : NewSessionRequestActivity.class);
+        intent.putExtra("tutorUid",  tutorUid  != null ? tutorUid  : "");
+        intent.putExtra("tutorName", tutorName != null ? tutorName : "");
+        intent.putExtra("tutorRate", tutorRate);
+        startActivity(intent);
     }
 
     // ── US 19: Load and display public reviews ────────────────

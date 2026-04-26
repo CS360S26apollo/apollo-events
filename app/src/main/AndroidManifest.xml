@@ -61,6 +61,9 @@
             android:exported="false" />
 
         <!-- Fixed keyboard appearing on Messages/Dashboard -->
+        <activity android:name=".ui.BuyTokensActivity" android:exported="false" />
+        <activity android:name=".ui.PurchaseSuccessActivity" android:exported="false" />
+
         <activity
             android:name=".ui.SessionRequestsActivity"
             android:exported="false"

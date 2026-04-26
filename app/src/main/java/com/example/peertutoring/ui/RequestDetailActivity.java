@@ -13,9 +13,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import com.example.peertutoring.R;
 import com.example.peertutoring.utils.CancellationUtils;
 import com.example.peertutoring.utils.ConflictChecker;
+import com.example.peertutoring.utils.EscrowManager;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -120,6 +123,10 @@ public class RequestDetailActivity extends AppCompatActivity {
         Button btnDecline = findViewById(R.id.btnDeclineRequest);
         if (btnDecline != null)
             btnDecline.setOnClickListener(v -> declineAndRefund());
+
+        Button btnMarkComplete = findViewById(R.id.btnMarkComplete);
+        if (btnMarkComplete != null)
+            btnMarkComplete.setOnClickListener(v -> onMarkCompleteClicked());
     }
 
     // ── Real-time snapshot ─────────────────────────────────��─────────────────
@@ -200,6 +207,12 @@ public class RequestDetailActivity extends AppCompatActivity {
         boolean showTutorActions = isTutor && "requested".equals(sessionStatus);
         if (tutorActions != null)
             tutorActions.setVisibility(showTutorActions ? View.VISIBLE : View.GONE);
+
+        // US 24: tutor can mark complete on booked sessions to release escrow
+        Button btnMarkComplete = findViewById(R.id.btnMarkComplete);
+        boolean showMarkComplete = isTutor && "booked".equals(sessionStatus);
+        if (btnMarkComplete != null)
+            btnMarkComplete.setVisibility(showMarkComplete ? View.VISIBLE : View.GONE);
     }
 
     // ── Cancel (US-15) ────────────────────────────────��──────────────────────
@@ -226,10 +239,16 @@ public class RequestDetailActivity extends AppCompatActivity {
                 .update("status", "cancelled")
                 .addOnSuccessListener(u -> {
                     updateStatusUI("cancelled");
-                    Toast.makeText(this, "Session cancelled.", Toast.LENGTH_SHORT).show();
                     if (sessionStudentUid != null && tokensToRefund > 0) {
-                        refundTokens(sessionStudentUid, tokensToRefund);
+                        EscrowManager.refundToStudent(db, requestId, sessionStudentUid,
+                                tokensToRefund, () -> {
+                                    Toast.makeText(this,
+                                            "Session cancelled. " + tokensToRefund + " tokens refunded.",
+                                            Toast.LENGTH_SHORT).show();
+                                    finish();
+                                });
                     } else {
+                        Toast.makeText(this, "Session cancelled.", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 })
@@ -306,15 +325,58 @@ public class RequestDetailActivity extends AppCompatActivity {
                 .update("status", "cancelled")
                 .addOnSuccessListener(u -> {
                     updateStatusUI("cancelled");
-                    Toast.makeText(this, "Request declined.", Toast.LENGTH_SHORT).show();
                     if (sessionStudentUid != null && sessionTokens > 0) {
-                        refundTokens(sessionStudentUid, sessionTokens);
+                        EscrowManager.refundToStudent(db, requestId, sessionStudentUid,
+                                sessionTokens, () -> {
+                                    Toast.makeText(this,
+                                            "Request declined. " + sessionTokens + " tokens refunded.",
+                                            Toast.LENGTH_SHORT).show();
+                                    finish();
+                                });
                     } else {
+                        Toast.makeText(this, "Request declined.", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    // ── Mark Complete (US 24) ─────────────────────────────────────────────────
+
+    private void onMarkCompleteClicked() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Complete Session?")
+                .setMessage("Mark this session as complete? The escrowed tokens will be released to your wallet.")
+                .setPositiveButton("Complete", (d, w) -> performMarkComplete())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Sets session status to "completed", then releases the escrowed tokens to the
+     * tutor via EscrowManager (HELD → RELEASED).
+     */
+    private void performMarkComplete() {
+        if (requestId == null) return;
+        Button btn = findViewById(R.id.btnMarkComplete);
+        if (btn != null) { btn.setEnabled(false); btn.setText("Processing..."); }
+
+        db.collection("sessionRequests").document(requestId)
+                .update("status", "completed")
+                .addOnSuccessListener(u -> {
+                    updateStatusUI("completed");
+                    if (sessionTutorUid != null && !sessionTutorUid.isEmpty()) {
+                        EscrowManager.releaseToTutor(db, requestId, sessionTutorUid, () ->
+                                Toast.makeText(this,
+                                        "Session complete! Tokens added to your wallet.",
+                                        Toast.LENGTH_LONG).show());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (btn != null) { btn.setEnabled(true); btn.setText("✓  Mark as Complete"); }
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     // ── Post-completion: US-17 & US-19 ───────────────────────────────────────
@@ -403,23 +465,6 @@ public class RequestDetailActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
-    private void refundTokens(String studentUid, long amount) {
-        db.collection("users").document(studentUid).get()
-                .addOnSuccessListener(doc -> {
-                    Long current = doc.getLong("tokens");
-                    long newBal  = (current != null ? current : 0) + amount;
-                    db.collection("users").document(studentUid)
-                            .update("tokens", newBal)
-                            .addOnSuccessListener(u -> {
-                                Toast.makeText(this,
-                                        amount + " tokens refunded.", Toast.LENGTH_SHORT).show();
-                                finish();
-                            })
-                            .addOnFailureListener(e -> finish());
-                })
-                .addOnFailureListener(e -> finish());
     }
 
     private void updateStatusUI(String status) {

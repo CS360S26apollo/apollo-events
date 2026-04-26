@@ -23,6 +23,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.example.peertutoring.R;
 import com.example.peertutoring.models.SessionRequest;
 import com.example.peertutoring.utils.ConflictChecker;
+import com.example.peertutoring.utils.EscrowManager;
 import com.example.peertutoring.utils.SoundManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -348,7 +349,7 @@ public class InstantBookActivity extends AppCompatActivity {
                         return;
                     }
 
-                    deductAndBook(currentTokens - tokenCost, tokenCost, subject, topic, goals, slotDate);
+                    deductAndBook(tokenCost, subject, topic, goals, slotDate);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -356,14 +357,13 @@ public class InstantBookActivity extends AppCompatActivity {
                 });
     }
 
-    private void deductAndBook(long newBalance, int tokenCost,
+    private void deductAndBook(int tokenCost,
                                String subject, String topic, String goals, Date scheduledDate) {
         if (btnBookNow != null) btnBookNow.setText("Booking...");
 
-        db.collection("users").document(currentUid)
-                .update("tokens", newBalance)
-                .addOnSuccessListener(unused -> {
-
+        // US 24: atomic deduct → HELD state
+        EscrowManager.deductFromStudent(db, currentUid, tokenCost,
+                () -> {
                     SessionRequest req = new SessionRequest(
                             currentUid, currentUserName, subject, topic, goals, selectedDuration);
                     req.setStatus(SessionRequest.STATUS_BOOKED); // skip "requested" — instant!
@@ -371,28 +371,27 @@ public class InstantBookActivity extends AppCompatActivity {
                     req.setTutorUid(tutorUid  != null ? tutorUid  : "");
                     req.setTutorName(tutorName != null ? tutorName : "");
                     req.setScheduledDate(scheduledDate);
+                    req.setPaymentStatus(EscrowManager.PAYMENT_HELD);
+                    req.setEscrowBalance(tokenCost);
 
                     db.collection("sessionRequests").add(req)
                             .addOnSuccessListener(docRef -> {
                                 docRef.update("requestId", docRef.getId());
                                 SoundManager.playSuccess(this);
                                 Toast.makeText(this,
-                                        "Booked! " + tokenCost + " tokens deducted.",
+                                        "Booked! " + tokenCost + " tokens held in escrow.",
                                         Toast.LENGTH_LONG).show();
                                 finish();
                             })
                             .addOnFailureListener(e -> {
-                                // Refund on write failure
-                                db.collection("users").document(currentUid)
-                                        .update("tokens", newBalance + tokenCost);
+                                EscrowManager.atomicRefund(db, currentUid, tokenCost);
                                 Toast.makeText(this, "Error: " + e.getMessage(),
                                         Toast.LENGTH_SHORT).show();
                                 resetBookButton();
                             });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to deduct tokens: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                },
+                () -> {
+                    Toast.makeText(this, "Failed to deduct tokens.", Toast.LENGTH_SHORT).show();
                     resetBookButton();
                 });
     }

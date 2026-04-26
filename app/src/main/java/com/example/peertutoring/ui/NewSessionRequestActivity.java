@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.example.peertutoring.R;
 import com.example.peertutoring.utils.ConflictChecker;
+import com.example.peertutoring.utils.EscrowManager;
 import com.example.peertutoring.utils.SoundManager;
 import com.example.peertutoring.models.SessionRequest;
 import com.google.firebase.auth.FirebaseAuth;
@@ -320,8 +321,7 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                         resetSubmitButton();
                         return;
                     }
-                    deductAndPost(currentTokens - tokenCost, tokenCost,
-                            proposedDate, subject, topic, goals, dur);
+                    deductAndPost(tokenCost, proposedDate, subject, topic, goals, dur);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -329,17 +329,19 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                 });
     }
 
-    private void deductAndPost(long newBalance, int tokenCost, Date proposedDate,
+    private void deductAndPost(int tokenCost, Date proposedDate,
                                String subject, String topic, String goals, int duration) {
         setBtnState(false, "Posting...");
-        db.collection("users").document(currentUid)
-                .update("tokens", newBalance)
-                .addOnSuccessListener(unused -> {
+        // US 24: atomic deduct → HELD state; avoids stale-read race in read-modify-write
+        EscrowManager.deductFromStudent(db, currentUid, tokenCost,
+                () -> {
                     SessionRequest req = new SessionRequest(
                             currentUid, currentUserName, subject, topic, goals, duration);
                     req.setStatus(SessionRequest.STATUS_REQUESTED);
                     req.setTokens(tokenCost);
                     req.setScheduledDate(proposedDate);
+                    req.setPaymentStatus(EscrowManager.PAYMENT_HELD);
+                    req.setEscrowBalance(tokenCost);
                     if (tutorUid  != null && !tutorUid.isEmpty())  req.setTutorUid(tutorUid);
                     if (tutorName != null && !tutorName.isEmpty()) req.setTutorName(tutorName);
 
@@ -348,21 +350,19 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                                 docRef.update("requestId", docRef.getId());
                                 SoundManager.playSuccess(this);
                                 Toast.makeText(this,
-                                        "Request sent! " + tokenCost + " tokens reserved.",
+                                        "Request sent! " + tokenCost + " tokens held in escrow.",
                                         Toast.LENGTH_LONG).show();
                                 finish();
                             })
                             .addOnFailureListener(e -> {
-                                // Refund on write failure
-                                db.collection("users").document(currentUid)
-                                        .update("tokens", newBalance + tokenCost);
+                                EscrowManager.atomicRefund(db, currentUid, tokenCost);
                                 Toast.makeText(this, "Error: " + e.getMessage(),
                                         Toast.LENGTH_SHORT).show();
                                 resetSubmitButton();
                             });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                },
+                () -> {
+                    Toast.makeText(this, "Failed to deduct tokens.", Toast.LENGTH_SHORT).show();
                     resetSubmitButton();
                 });
     }

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.peertutoring.R;
 import com.example.peertutoring.utils.ValidationUtils;
 
@@ -38,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(this, HomeActivity.class));
-            finish();
+            routeByRole(auth.getCurrentUser().getUid());
             return;
         }
 
@@ -105,6 +105,21 @@ public class MainActivity extends AppCompatActivity {
      * Helper method to display a short Toast message.
      * @param message The text to display.
      */
+    /** Reads role from Firestore and navigates to the correct home screen. */
+    private void routeByRole(String uid) {
+        FirebaseFirestore.getInstance().collection("users").document(uid).get()
+                .addOnSuccessListener(doc -> {
+                    Class<?> target = "tutor".equals(doc.getString("role"))
+                            ? TutorRequestsActivity.class : HomeActivity.class;
+                    startActivity(new Intent(this, target));
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    startActivity(new Intent(this, HomeActivity.class));
+                    finish();
+                });
+    }
+
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

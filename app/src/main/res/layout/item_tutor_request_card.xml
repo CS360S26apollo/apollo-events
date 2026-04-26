@@ -31,7 +31,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Top row: avatar + name + arrow -->
+            <!-- Status badge row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -39,7 +39,56 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="8dp">
 
-                <!-- Student avatar -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStatusBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    app:cardBackgroundColor="#E6F2FF"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:id="@+id/tvStatusBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="PENDING"
+                        android:textColor="#007AFF"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Payment status chip (escrow state) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPaymentBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="10dp"
+                    app:cardBackgroundColor="#E8F5E9"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:id="@+id/tvPaymentBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="🔒 HELD"
+                        android:textColor="#089A3C"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Top row: avatar + name -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
                 <FrameLayout
                     android:layout_width="52dp"
                     android:layout_height="52dp"
@@ -62,7 +111,6 @@
                             android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Online dot -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="14dp"
                         android:layout_height="14dp"
@@ -76,7 +124,6 @@
                     </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
 
-                <!-- Name + subject -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -102,7 +149,6 @@
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
 
-                <!-- Arrow -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -129,7 +175,6 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="10dp">
 
-                <!-- Date -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -147,7 +192,6 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Time + duration -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -165,31 +209,87 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Token pill -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="wrap_content"
+            <!-- Token pill + earnings placeholder row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="#00C853"
-                app:cardElevation="0dp">
-                <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="14dp"
-                    android:paddingVertical="7dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙 " android:textSize="13sp" />
-                    <TextView
-                        android:id="@+id/tvTokens"
+                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="#00C853"
+                    app:cardElevation="0dp">
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="150 Tokens"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="7dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙 " android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/tvTokens"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="150 Tokens"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- View Earnings placeholder — shown for completed sessions -->
+                <TextView
+                    android:id="@+id/tvViewEarnings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="💰 View Earnings"
+                    android:textColor="#8A2EFF"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Inline Accept / Decline buttons — shown only for PENDING (requested) sessions -->
+            <LinearLayout
+                android:id="@+id/layoutActionButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btnAccept"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="✓ Accept"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#089A3C"
+                    android:textAllCaps="false"
+                    app:cornerRadius="22dp" />
+
+                <Button
+                    android:id="@+id/btnDecline"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="✗ Decline"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#FF3B30"
+                    android:textAllCaps="false"
+                    app:cornerRadius="22dp" />
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>

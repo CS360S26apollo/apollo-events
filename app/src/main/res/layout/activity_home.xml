@@ -73,10 +73,13 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Token balance chip -->
+                    <!-- Token balance chip — tap to open Buy Tokens -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTokenChip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
                         app:cardCornerRadius="20dp"
                         app:cardBackgroundColor="#33FFFFFF"
                         app:cardElevation="0dp">

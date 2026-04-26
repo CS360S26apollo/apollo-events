@@ -63,6 +63,7 @@ public class HomeActivity extends AppCompatActivity {
         setupTutorCards();
         setupSeeAll();
         setupSeedDataButton();
+        setupTokenChip();
     }
 
     private void setupSeedDataButton() {
@@ -448,6 +449,19 @@ public class HomeActivity extends AppCompatActivity {
                         });
                     }
                 });
+    }
+
+    // ── Token Chip → Buy Tokens ───────────────────────────────
+
+    /** Tapping the balance chip in the header opens BuyTokensActivity. */
+    private void setupTokenChip() {
+        View chip = findViewById(R.id.cardTokenChip);
+        if (chip == null) return;
+        SoundManager.attachClick(this, chip);
+        chip.setOnClickListener(v -> {
+            SoundManager.playClick(this);
+            startActivity(new Intent(this, BuyTokensActivity.class));
+        });
     }
 
     // ── Token Balance ─────────────────────────────────────────

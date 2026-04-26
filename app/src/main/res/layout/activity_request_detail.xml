@@ -272,9 +272,24 @@
                 android:id="@+id/btnReschedule"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="12dp"
                 android:backgroundTint="#8A2EFF"
                 android:text="Reschedule Session"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="28dp"
+                android:visibility="gone" />
+
+            <!-- US 24: Tutor marks session complete to release escrow to their wallet -->
+            <Button
+                android:id="@+id/btnMarkComplete"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="40dp"
+                android:backgroundTint="#089A3C"
+                android:text="✓  Mark as Complete"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"

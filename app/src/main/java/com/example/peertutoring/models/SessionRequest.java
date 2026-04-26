@@ -35,10 +35,15 @@ public class SessionRequest {
     private String topic;
     private String goals;
     private int durationMinutes;
-    private String status; 
+    private String status;
     private int tokens;
     private Date scheduledDate;
-    
+
+    /** US 24: escrow state — "HELD", "RELEASED", or "REFUNDED". */
+    private String paymentStatus;
+    /** US 24: tokens held from student until session is completed. */
+    private int escrowBalance;
+
     @ServerTimestamp
     private Date createdAt;
 
@@ -105,6 +110,11 @@ public class SessionRequest {
     public void setTokens(int tokens)                    { this.tokens = tokens; }
     public void setScheduledDate(Date scheduledDate)     { this.scheduledDate = scheduledDate; }
     public void setCreatedAt(Date createdAt)             { this.createdAt = createdAt; }
+    public void setPaymentStatus(String paymentStatus)   { this.paymentStatus = paymentStatus; }
+    public void setEscrowBalance(int escrowBalance)      { this.escrowBalance = escrowBalance; }
+
+    public String getPaymentStatus()  { return paymentStatus; }
+    public int    getEscrowBalance()  { return escrowBalance; }
 
     /**
      * Returns true if this request is still "requested" and older than windowMs milliseconds.
