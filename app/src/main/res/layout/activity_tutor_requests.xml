@@ -47,6 +47,24 @@
             </LinearLayout>
 
             <!-- Bell with badge -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnOpenEarnings"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#33FFFFFF"
+                app:cardElevation="0dp"
+                android:clickable="true"
+                android:focusable="true">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="🪙"
+                    android:textSize="20sp" />
+            </com.google.android.material.card.MaterialCardView>
+
             <FrameLayout
                 android:layout_width="44dp"
                 android:layout_height="44dp">
@@ -231,5 +249,73 @@
             android:paddingTop="8dp"
             android:paddingBottom="24dp" />
     </ScrollView>
+
+
+    <!-- ── BOTTOM NAV ── -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout android:id="@+id/navHome"
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🏠" android:textSize="20sp" android:gravity="center"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Home" android:textSize="10sp" android:textColor="#8B97A8"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/navRequests"
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="📋" android:textSize="20sp" android:gravity="center"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Requests" android:textSize="10sp" android:textColor="#8A2EFF"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/navEarnings"
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🪙" android:textSize="20sp" android:gravity="center"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Earnings" android:textSize="10sp" android:textColor="#8B97A8"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/navAvailability"
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="📅" android:textSize="20sp" android:gravity="center"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Schedule" android:textSize="10sp" android:textColor="#8B97A8"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/navProfile"
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="👤" android:textSize="20sp" android:gravity="center"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Profile" android:textSize="10sp" android:textColor="#8B97A8"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
