@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- Header -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp" app:cardElevation="0dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_gradient"
+            android:orientation="vertical"
+            android:paddingTop="48dp"
+            android:paddingBottom="24dp"
+            android:paddingHorizontal="20dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="44dp" android:layout_height="44dp"
+                    android:layout_marginEnd="14dp"
+                    app:cardCornerRadius="22dp" app:cardBackgroundColor="#33FFFFFF"
+                    app:cardElevation="0dp">
+                    <ImageButton android:id="@+id/btnBack"
+                        android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:src="@android:drawable/ic_media_previous"
+                        app:tint="#FFFFFF" android:contentDescription="Back"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Buy Tokens" android:textColor="#FFFFFF"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="10 tokens = $1 USD" android:textColor="#CCFFFFFF"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Current balance card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:padding="16dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Current Balance" android:textColor="#8B97A8"
+                            android:textSize="12sp"/>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="🪙 " android:textSize="16sp"/>
+                            <TextView android:id="@+id/tvCurrentBalance"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="0" android:textColor="#8A2EFF"
+                                android:textSize="24sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="tokens" android:textColor="#8B97A8" android:textSize="13sp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Choose a Package" android:textColor="#071A3D"
+                android:textSize="18sp" android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Package cards built programmatically -->
+            <LinearLayout android:id="@+id/layoutPackages"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+            <!-- Info note -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#EEF9F3"
+                app:strokeColor="#C8E6C9" app:strokeWidth="1dp" app:cardElevation="0dp">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="ℹ  Tokens never expire. Use them to book sessions with any tutor on the platform."
+                    android:textColor="#4B5D7A" android:textSize="13sp"
+                    android:padding="16dp" android:lineSpacingExtra="4dp"/>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Purchase button -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="#FFFFFF" android:elevation="8dp" android:padding="16dp">
+        <Button android:id="@+id/btnPurchase"
+            android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="Select a package above" android:textAllCaps="false"
+            android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"
+            android:background="@drawable/bg_button_gradient"
+            app:backgroundTint="@null"
+            android:enabled="false" android:alpha="0.4"/>
+    </LinearLayout>
+</LinearLayout>

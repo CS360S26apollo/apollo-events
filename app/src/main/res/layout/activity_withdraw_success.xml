@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F8"
+    android:fillViewport="true">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:gravity="center_horizontal"
+        android:padding="24dp" android:paddingTop="80dp">
+
+        <!-- Success icon -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="80dp" android:layout_height="80dp"
+            app:cardCornerRadius="40dp" app:cardBackgroundColor="#00C853" app:cardElevation="4dp"
+            android:layout_marginBottom="24dp">
+            <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                android:gravity="center" android:text="✓" android:textColor="#FFFFFF"
+                android:textSize="36sp" android:textStyle="bold"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Withdrawal Requested!" android:textColor="#8A2EFF"
+            android:textSize="24sp" android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Your request has been submitted successfully"
+            android:textColor="#8B97A8" android:textSize="14sp"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Details card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp"
+            android:layout_marginBottom="24dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="24dp">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Withdrawal Amount" android:textColor="#8B97A8"
+                    android:textSize="13sp" android:gravity="center" android:layout_marginBottom="8dp"/>
+
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_gravity="center" android:orientation="horizontal"
+                    android:gravity="center_vertical" android:layout_marginBottom="20dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🪙 " android:textSize="24sp"/>
+                    <TextView android:id="@+id/tvWithdrawAmount"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="#8A2EFF"
+                        android:textSize="44sp" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Tokens" android:textColor="#8B97A8" android:textSize="13sp"
+                    android:gravity="center" android:layout_marginBottom="16dp"/>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="#F0F0F0" android:layout_marginBottom="16dp"/>
+
+                <!-- Rows -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Transaction ID"
+                        android:textColor="#8B97A8" android:textSize="13sp"/>
+                    <TextView android:id="@+id/tvTransactionId"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="WD-..." android:textColor="#071A3D"
+                        android:textSize="13sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Method"
+                        android:textColor="#8B97A8" android:textSize="13sp"/>
+                    <TextView android:id="@+id/tvMethodName"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Bank Transfer" android:textColor="#071A3D"
+                        android:textSize="13sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Processing Time"
+                        android:textColor="#8B97A8" android:textSize="13sp"/>
+                    <TextView android:id="@+id/tvProcessingTime"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="2-3 business days" android:textColor="#071A3D"
+                        android:textSize="13sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Date &amp; Time"
+                        android:textColor="#8B97A8" android:textSize="13sp"/>
+                    <TextView android:id="@+id/tvDateTime"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#071A3D"
+                        android:textSize="13sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Processing note -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp" app:cardBackgroundColor="#EEF9F3"
+            app:cardElevation="0dp" android:layout_marginBottom="28dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical" android:padding="16dp">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="40dp" android:layout_height="40dp"
+                    android:layout_marginEnd="12dp"
+                    app:cardCornerRadius="20dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:gravity="center" android:text="🪙" android:textSize="18sp"/>
+                </com.google.android.material.card.MaterialCardView>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Processing" android:textColor="#071A3D"
+                        android:textSize="14sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="You'll receive a notification once processed"
+                        android:textColor="#8B97A8" android:textSize="12sp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Button android:id="@+id/btnBackToDashboard"
+            android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="Back to Dashboard" android:textAllCaps="false"
+            android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"
+            android:background="@drawable/bg_button_gradient"
+            app:backgroundTint="@null"/>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- GRADIENT HEADER -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_gradient"
+            android:orientation="vertical"
+            android:paddingTop="48dp"
+            android:paddingBottom="24dp"
+            android:paddingHorizontal="20dp">
+
+            <!-- Title row -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Find Tutor" android:textColor="#FFFFFF"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Tutor Dashboard" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
+                </LinearLayout>
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnViewHistory"
+                    android:layout_width="44dp" android:layout_height="44dp"
+                    app:cardCornerRadius="22dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true" android:focusable="true">
+                    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:gravity="center" android:text="🕐" android:textSize="18sp"/>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Balance card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="4dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="20dp">
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="48dp" android:layout_height="48dp"
+                            android:layout_marginEnd="14dp"
+                            app:cardCornerRadius="14dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                                android:gravity="center" android:text="🪙" android:textSize="22sp"/>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Available Balance" android:textColor="#8B97A8" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tvAvailableBalance"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="0" android:textColor="#8A2EFF"
+                                android:textSize="32sp" android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:orientation="vertical" android:gravity="end">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Tokens" android:textColor="#8B97A8" android:textSize="11sp"
+                                android:gravity="end"/>
+                            <TextView android:id="@+id/tvGrowthPercent"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="↑ +12%" android:textColor="#00C853" android:textSize="13sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnRequestWithdrawal"
+                        android:layout_width="match_parent" android:layout_height="56dp"
+                        android:layout_marginTop="16dp"
+                        app:cardCornerRadius="28dp" app:cardBackgroundColor="@null" app:cardElevation="0dp"
+                        android:clickable="true" android:focusable="true">
+                        <View android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:background="@drawable/bg_button_gradient"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:text="↗  Request Withdrawal"
+                            android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:fillViewport="true">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+
+            <!-- Period tabs -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:padding="6dp">
+                    <Button android:id="@+id/btnPeriodWeek"
+                        android:layout_width="48dp" android:layout_height="48dp" android:layout_weight="1"
+                        android:text="Week" android:textAllCaps="false" android:textSize="14sp"
+                        android:textColor="#4B5D7A" android:background="@android:color/transparent"/>
+                    <Button android:id="@+id/btnPeriodMonth"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="Month" android:textAllCaps="false" android:textSize="14sp"
+                        android:textColor="#FFFFFF"/>
+                    <Button android:id="@+id/btnPeriodYear"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="Year" android:textAllCaps="false" android:textSize="14sp"
+                        android:textColor="#4B5D7A" android:background="@android:color/transparent"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Stats row -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="24dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="130dp" android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="20dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:orientation="vertical" android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="📅  This month" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
+                        <TextView android:id="@+id/tvMonthlyTokens"
+                            android:layout_width="wrap_content" android:layout_height="0dp"
+                            android:layout_weight="1" android:gravity="center_vertical"
+                            android:text="0" android:textColor="#FFFFFF"
+                            android:textSize="36sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Tokens Earned" android:textColor="#CCFFFFFF" android:textSize="12sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="130dp" android:layout_weight="1"
+                    app:cardCornerRadius="20dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:orientation="vertical" android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="👤  Sessions" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
+                        <TextView android:id="@+id/tvSessionsCompleted"
+                            android:layout_width="wrap_content" android:layout_height="0dp"
+                            android:layout_weight="1" android:gravity="center_vertical"
+                            android:text="0" android:textColor="#FFFFFF"
+                            android:textSize="36sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Completed" android:textColor="#CCFFFFFF" android:textSize="12sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Recent sessions header -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Recent Sessions"
+                    android:textColor="#071A3D" android:textSize="18sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/btnViewAll"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="View All" android:textColor="#0062FF" android:textSize="14sp"
+                    android:clickable="true" android:focusable="true"/>
+            </LinearLayout>
+
+            <!-- Recent sessions list (built programmatically) -->
+            <LinearLayout android:id="@+id/layoutRecentSessions"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+            <!-- Pending tokens label -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Pending Tokens" android:textColor="#F57C00"
+                android:textSize="14sp" android:textStyle="bold"
+                android:layout_marginTop="8dp" android:visibility="gone"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

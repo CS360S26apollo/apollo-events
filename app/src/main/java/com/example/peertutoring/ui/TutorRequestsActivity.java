@@ -28,11 +28,11 @@ import java.util.List;
 /**
  * Activity for tutors to view and manage incoming tutoring session requests from students.
  * Role: Request Management View for User Story 09 (Tutor Response).
- * Purpose: Displays a list of pending student proposals, allowing tutors to filter 
+ * Purpose: Displays a list of pending student proposals, allowing tutors to filter
  * by priority (token amount) and search for specific topics or students.
- * 
+ *
  * Design Pattern: View-Controller with dynamic list rendering.
- * 
+ *
  * Outstanding Issues:
  * - Real-time listener is not yet implemented (uses one-time get() with mock fallback).
  */
@@ -60,6 +60,8 @@ public class TutorRequestsActivity extends AppCompatActivity {
 
         setupSearch();
         setupFilterChips();
+        setupEarningsButton();
+        setupBottomNav();
         loadRequests();
     }
 
@@ -309,4 +311,59 @@ public class TutorRequestsActivity extends AppCompatActivity {
         TextView tv = parent.findViewById(id);
         if (tv != null && text != null) tv.setText(text);
     }
+    // ── Earnings button (header) ──────────────────────────────
+
+    private void setupEarningsButton() {
+        View btn = findViewById(R.id.btnOpenEarnings);
+        if (btn != null) {
+            btn.setOnClickListener(v ->
+                    startActivity(new Intent(this, TutorEarningsActivity.class)));
+        }
+    }
+
+    // ── Bottom navigation ─────────────────────────────────────
+
+    private void setupBottomNav() {
+        View navHome         = findViewById(R.id.navHome);
+        View navRequests     = findViewById(R.id.navRequests);
+        View navEarnings     = findViewById(R.id.navEarnings);
+        View navAvailability = findViewById(R.id.navAvailability);
+        View navProfile      = findViewById(R.id.navProfile);
+
+        if (navHome != null) {
+            navHome.setOnClickListener(v -> {
+                startActivity(new Intent(this, HomeActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+            });
+        }
+
+        if (navRequests != null) {
+            // Already on this screen
+            navRequests.setOnClickListener(v -> { /* current screen */ });
+        }
+
+        if (navEarnings != null) {
+            navEarnings.setOnClickListener(v -> {
+                startActivity(new Intent(this, TutorEarningsActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
+
+        if (navAvailability != null) {
+            navAvailability.setOnClickListener(v -> {
+                startActivity(new Intent(this, AvailabilityDashboardActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
+
+        if (navProfile != null) {
+            navProfile.setOnClickListener(v -> {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
+    }
+
+
 }

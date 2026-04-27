@@ -60,9 +60,7 @@
             android:name=".ui.BufferPricingActivity"
             android:exported="false" />
 
-        <!-- Fixed keyboard appearing on Messages/Dashboard -->
-        <activity android:name=".ui.BuyTokensActivity" android:exported="false" />
-        <activity android:name=".ui.PurchaseSuccessActivity" android:exported="false" />
+
 
         <activity
             android:name=".ui.SessionRequestsActivity"
@@ -73,6 +71,11 @@
             android:name=".ui.RequestDetailActivity"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity android:name=".ui.TutorEarningsActivity" android:exported="false" />
+        <activity android:name=".ui.WithdrawActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.WithdrawSuccessActivity" android:exported="false" />
+        <activity android:name=".ui.TransactionHistoryActivity" android:exported="false" />
 
     </application>
 

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- Header -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp" app:cardElevation="0dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_gradient" android:orientation="vertical"
+            android:paddingTop="48dp" android:paddingBottom="24dp" android:paddingHorizontal="20dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="40dp" android:layout_height="40dp"
+                    android:layout_marginEnd="14dp"
+                    app:cardCornerRadius="20dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp"
+                    android:clickable="true" android:focusable="true">
+                    <ImageButton android:id="@+id/btnBack"
+                        android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:src="@android:drawable/ic_media_previous"
+                        app:tint="#FFFFFF" android:contentDescription="Back"/>
+                </com.google.android.material.card.MaterialCardView>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Transaction History" android:textColor="#FFFFFF"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Track your earnings" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Summary row -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="↗ Total Earned" android:textColor="#00C853" android:textSize="12sp"/>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="🪙 " android:textSize="14sp"/>
+                            <TextView android:id="@+id/tvTotalEarned"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="0" android:textColor="#00C853"
+                                android:textSize="22sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="14dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="↙ Withdrawn" android:textColor="#8A2EFF" android:textSize="12sp"/>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="🪙 " android:textSize="14sp"/>
+                            <TextView android:id="@+id/tvTotalWithdrawn"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="0" android:textColor="#8A2EFF"
+                                android:textSize="22sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Search -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp" android:layout_marginTop="16dp"
+        app:cardCornerRadius="28dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="50dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingHorizontal="16dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🔍  " android:textSize="16sp"/>
+            <EditText android:id="@+id/etSearchTransactions"
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:hint="Search transactions..."
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Filter chips -->
+    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp" android:layout_marginTop="12dp"
+        android:scrollbars="none">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:paddingBottom="2dp">
+
+            <com.google.android.material.card.MaterialCardView android:id="@+id/chipAll"
+                android:layout_width="wrap_content" android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="20dp" app:cardBackgroundColor="#071A3D" app:cardElevation="0dp"
+                android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="match_parent"
+                    android:text="⚙ All" android:textColor="#FFFFFF" android:textSize="13sp"
+                    android:gravity="center" android:paddingHorizontal="16dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView android:id="@+id/chipEarned"
+                android:layout_width="wrap_content" android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="20dp" app:cardBackgroundColor="#F3F4F6" app:cardElevation="0dp"
+                android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="match_parent"
+                    android:text="⚙ Earned" android:textColor="#4B5D7A" android:textSize="13sp"
+                    android:gravity="center" android:paddingHorizontal="16dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView android:id="@+id/chipWithdrawn"
+                android:layout_width="wrap_content" android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="20dp" app:cardBackgroundColor="#F3F4F6" app:cardElevation="0dp"
+                android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="match_parent"
+                    android:text="⚙ Withdrawn" android:textColor="#4B5D7A" android:textSize="13sp"
+                    android:gravity="center" android:paddingHorizontal="16dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView android:id="@+id/chipBonus"
+                android:layout_width="wrap_content" android:layout_height="40dp"
+                app:cardCornerRadius="20dp" app:cardBackgroundColor="#F3F4F6" app:cardElevation="0dp"
+                android:clickable="true" android:focusable="true">
+                <TextView android:layout_width="wrap_content" android:layout_height="match_parent"
+                    android:text="⚙ Bonus" android:textColor="#4B5D7A" android:textSize="13sp"
+                    android:gravity="center" android:paddingHorizontal="16dp"/>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Transactions list -->
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:layout_marginTop="12dp">
+        <LinearLayout android:id="@+id/layoutTransactions"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp"/>
+    </ScrollView>
+</LinearLayout>

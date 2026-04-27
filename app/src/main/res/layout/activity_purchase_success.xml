@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F8"
+    android:fillViewport="true">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:gravity="center_horizontal"
+        android:padding="24dp" android:paddingTop="80dp">
+
+        <!-- Success icon -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="90dp" android:layout_height="90dp"
+            app:cardCornerRadius="45dp" app:cardBackgroundColor="#00C853"
+            app:cardElevation="4dp" android:layout_marginBottom="24dp">
+            <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                android:gravity="center" android:text="🪙" android:textSize="40sp"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Purchase Successful!" android:textColor="#071A3D"
+            android:textSize="26sp" android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView android:id="@+id/tvPackageLabel"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="#8B97A8" android:textSize="15sp"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Tokens added card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF"
+            app:cardElevation="2dp" android:layout_marginBottom="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="24dp" android:gravity="center">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Tokens Added" android:textColor="#8B97A8"
+                    android:textSize="13sp" android:layout_marginBottom="8dp"/>
+
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="20dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🪙 " android:textSize="28sp"/>
+                    <TextView android:id="@+id/tvPurchasedTokens"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="#00C853"
+                        android:textSize="48sp" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="#F0F0F0" android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="New Balance"
+                        android:textColor="#8B97A8" android:textSize="14sp"/>
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="🪙 " android:textSize="14sp"/>
+                        <TextView android:id="@+id/tvNewBalance"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="0" android:textColor="#8A2EFF"
+                            android:textSize="18sp" android:textStyle="bold"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Action buttons -->
+        <Button android:id="@+id/btnBrowseTutors"
+            android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="Browse Tutors" android:textAllCaps="false"
+            android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"
+            android:background="@drawable/bg_button_gradient"
+            app:backgroundTint="@null"
+            android:layout_marginBottom="12dp"/>
+
+        <Button android:id="@+id/btnGoHome"
+            android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="Go to Home" android:textAllCaps="false"
+            android:textColor="#8A2EFF" android:textSize="16sp"
+            android:background="@android:color/transparent"
+            app:backgroundTint="@null"/>
+    </LinearLayout>
+</ScrollView>
