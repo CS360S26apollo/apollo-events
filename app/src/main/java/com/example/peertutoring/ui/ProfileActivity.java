@@ -129,7 +129,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onSuccess() {
                 Toast.makeText(ProfileActivity.this,
                         "Tutor profile created successfully.", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+                Intent intent = new Intent(ProfileActivity.this, TutorHomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

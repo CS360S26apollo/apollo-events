@@ -44,7 +44,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Populate Firestore with test tutors for QA"
+                android:text="Populate Firestore with test tutors and session requests"
                 android:textColor="#CCFFFFFF"
                 android:textSize="13sp"
                 android:layout_marginTop="4dp" />
@@ -105,6 +105,60 @@
 
                     <TextView
                         android:id="@+id/tvSeedStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="#4B5D7A"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Session Requests card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Test Session Requests"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="#071A3D"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#4B5D7A"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="Creates 3 fake student accounts and session requests targeting YOU (the logged-in tutor). Requests use your registered subjects so they appear in your Requests tab. Log in as a tutor before seeding." />
+
+                    <Button
+                        android:id="@+id/btnSeedRequests"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Seed Test Requests"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#8A2EFF"
+                        app:cornerRadius="28dp" />
+
+                    <TextView
+                        android:id="@+id/tvSeedRequestsStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"

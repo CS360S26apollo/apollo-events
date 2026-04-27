@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
                     Class<?> target = "tutor".equals(doc.getString("role"))
-                            ? TutorRequestsActivity.class : HomeActivity.class;
+                            ? TutorHomeActivity.class : HomeActivity.class;
                     startActivity(new Intent(this, target));
                     finish();
                 })

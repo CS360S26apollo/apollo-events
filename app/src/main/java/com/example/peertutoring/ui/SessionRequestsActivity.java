@@ -19,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -120,15 +119,23 @@ public class SessionRequestsActivity extends AppCompatActivity {
     private void startRealTimeListener() {
         if (currentUid.isEmpty()) { loadMockData(); return; }
 
+        // Query by studentUid only — adding orderBy would require a composite index.
+        // Sort in-memory after loading.
         requestsListener = db.collection("sessionRequests")
                 .whereEqualTo("studentUid", currentUid)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .addSnapshotListener((snap, e) -> {
                     if (snap != null && !snap.isEmpty()) {
                         allSessions.clear();
                         for (DocumentSnapshot d : snap.getDocuments()) {
                             allSessions.add(new SessionDoc(d));
                         }
+                        // Sort by createdAt descending in-memory
+                        allSessions.sort((a, b) -> {
+                            if (a.createdAt == null && b.createdAt == null) return 0;
+                            if (a.createdAt == null) return 1;
+                            if (b.createdAt == null) return -1;
+                            return b.createdAt.compareTo(a.createdAt);
+                        });
                         updateCounts();
                         updateListUI();
                     } else {
@@ -253,6 +260,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         String id, topic, status, provider, category, tutorUid;
         int duration, tokens;
         Date scheduledDate;
+        Date createdAt;
 
         SessionDoc(String t, String s, int d, int tok, String p, String c, Date date) {
             id = "mock_" + t; topic = t; status = s; duration = d; tokens = tok; provider = p; category = c; scheduledDate = date;
@@ -269,6 +277,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
             Long tok = d.getLong("tokens");
             tokens = tok != null ? tok.intValue() : 0;
             scheduledDate = d.getDate("scheduledDate");
+            createdAt = d.getDate("createdAt");
         }
     }
 

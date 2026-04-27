@@ -20,7 +20,6 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,20 +132,33 @@ public class TutorRequestsActivity extends AppCompatActivity {
      * Falls back to mock data if the collection is empty or if user is not logged in.
      */
     private void loadRequests() {
-        if (tutorUid.isEmpty()) { loadMockData(); return; }
+        if (tutorUid.isEmpty()) { showEmpty(); return; }
 
+        // Query by tutorUid only — filtering by status + orderBy would require a
+        // composite Firestore index. Filter and sort in-memory instead.
         db.collection("sessionRequests")
                 .whereEqualTo("tutorUid", tutorUid)
-                .whereEqualTo("status", "requested")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .limit(20)
                 .get()
                 .addOnSuccessListener(snap -> {
-                    allRequests = snap.getDocuments();
-                    if (allRequests.isEmpty()) loadMockData();
+                    allRequests = new ArrayList<>();
+                    for (DocumentSnapshot doc : snap.getDocuments()) {
+                        if ("requested".equals(doc.getString("status"))) {
+                            allRequests.add(doc);
+                        }
+                    }
+                    // Sort by createdAt descending (nulls last)
+                    allRequests.sort((a, b) -> {
+                        com.google.firebase.Timestamp ta = a.getTimestamp("createdAt");
+                        com.google.firebase.Timestamp tb = b.getTimestamp("createdAt");
+                        if (ta == null && tb == null) return 0;
+                        if (ta == null) return 1;
+                        if (tb == null) return -1;
+                        return tb.compareTo(ta);
+                    });
+                    if (allRequests.isEmpty()) showEmpty();
                     else displayRequests(allRequests);
                 })
-                .addOnFailureListener(e -> loadMockData());
+                .addOnFailureListener(e -> showEmpty());
     }
 
     /**
@@ -230,82 +242,33 @@ public class TutorRequestsActivity extends AppCompatActivity {
     }
 
     private void showEmpty() {
-        TextView tv = new TextView(this);
-        tv.setText("No new session requests yet.");
-        tv.setTextColor(Color.parseColor("#8B97A8"));
-        tv.setTextSize(15f);
-        tv.setGravity(android.view.Gravity.CENTER);
-        tv.setPadding(0, 80, 0, 0);
-        layoutRequestList.addView(tv);
-    }
-
-    private void loadMockData() {
-        String[][] mocks = {
-                {"Emily Chen",       "Mathematics",       "Calculus II - Integration Techniques", "Mar 12", "14:00", "60",  "150",
-                        "Exam Prep", "Hi! I need help understanding u-substitution and integration by parts. I have an exam next week."},
-                {"Marcus Johnson",   "Physics",           "Quantum Mechanics - Wave Functions",   "Mar 10", "16:30", "90",  "225",
-                        "Concept Review", "Need help with wave function normalisation and probability density."},
-                {"Sophia Rodriguez", "Chemistry",         "Organic Chemistry - Reaction...",      "Mar 11", "10:00", "75",  "190",
-                        "Homework Help", "Struggling with SN1 vs SN2 reaction mechanisms for my assignment."},
-                {"Alex Kim",         "Computer Science",  "Data Structures - Binary Trees",       "Mar 13", "18:00", "60",  "150",
-                        "Problem Solving", "Need to understand BST insertion, deletion and traversal algorithms."},
-        };
-
         layoutRequestList.removeAllViews();
-        LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (String[] m : mocks) {
-            View card = inflater.inflate(R.layout.item_tutor_request_card, layoutRequestList, false);
+        TextView tvIcon = new TextView(this);
+        tvIcon.setText("📭");
+        tvIcon.setTextSize(48f);
+        tvIcon.setGravity(android.view.Gravity.CENTER);
+        tvIcon.setPadding(0, 80, 0, 8);
+        layoutRequestList.addView(tvIcon);
 
-            setText(card, R.id.tvStudentName, m[0]);
-            setText(card, R.id.tvSubject,     m[1]);
-            setText(card, R.id.tvTopic,       m[2]);
-            setText(card, R.id.tvDate,        m[3]);
-            setText(card, R.id.tvTime,        m[4] + " (" + m[5] + "m)");
-            setText(card, R.id.tvTokens,      m[6] + " Tokens");
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("No pending requests");
+        tvTitle.setTextColor(Color.parseColor("#071A3D"));
+        tvTitle.setTextSize(18f);
+        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvTitle.setGravity(android.view.Gravity.CENTER);
+        tvTitle.setPadding(40, 0, 40, 8);
+        layoutRequestList.addView(tvTitle);
 
-            TextView tvInitials = card.findViewById(R.id.tvStudentInitials);
-            if (tvInitials != null) {
-                String[] parts = m[0].split(" ");
-                String initials = parts.length > 1
-                        ? "" + parts[0].charAt(0) + parts[1].charAt(0)
-                        : "" + parts[0].charAt(0);
-                tvInitials.setText(initials.toUpperCase());
-                MaterialCardView avatarCard = (MaterialCardView) tvInitials.getParent();
-                avatarCard.setCardBackgroundColor(
-                        AVATAR_COLORS[Math.abs(initials.hashCode()) % AVATAR_COLORS.length]);
-            }
-
-            View accentBar = card.findViewById(R.id.viewAccentBar);
-            if (accentBar != null) {
-                int color;
-                switch (m[1].toLowerCase()) {
-                    case "physics":          color = 0xFF0062FF; break;
-                    case "chemistry":        color = 0xFF00C853; break;
-                    case "computer science": color = 0xFF4ECDC4; break;
-                    default:                 color = 0xFF8A2EFF; break;
-                }
-                accentBar.setBackgroundColor(color);
-            }
-
-            final String[] row = m;
-            card.setOnClickListener(v -> {
-                Intent intent = new Intent(this, RequestDetailActivity.class);
-                intent.putExtra("studentName",    row[0]);
-                intent.putExtra("subject",        row[1]);
-                intent.putExtra("topic",          row[2]);
-                intent.putExtra("date",           row[3]);
-                intent.putExtra("time",           row[4]);
-                intent.putExtra("duration",       Integer.parseInt(row[5]));
-                intent.putExtra("tokens",         Integer.parseInt(row[6]));
-                intent.putExtra("goals",          row[7]);
-                intent.putExtra("studentMessage", row[8]);
-                startActivity(intent);
-            });
-
-            layoutRequestList.addView(card);
-        }
+        TextView tvSub = new TextView(this);
+        tvSub.setText("Students who book your profile will appear here. Use the Seed Data tool from the home screen to add test requests.");
+        tvSub.setTextColor(Color.parseColor("#8B97A8"));
+        tvSub.setTextSize(13f);
+        tvSub.setGravity(android.view.Gravity.CENTER);
+        tvSub.setPadding(40, 0, 40, 0);
+        layoutRequestList.addView(tvSub);
     }
+
 
     private void setText(View parent, int id, String text) {
         TextView tv = parent.findViewById(id);
@@ -332,7 +295,7 @@ public class TutorRequestsActivity extends AppCompatActivity {
 
         if (navHome != null) {
             navHome.setOnClickListener(v -> {
-                startActivity(new Intent(this, HomeActivity.class));
+                startActivity(new Intent(this, TutorHomeActivity.class));
                 overridePendingTransition(0, 0);
                 finish();
             });
