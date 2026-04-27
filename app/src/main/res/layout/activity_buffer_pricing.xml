@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#8A2EFF"
+        android:background="@drawable/bg_button_gradient"
         android:paddingTop="48dp"
         android:paddingBottom="24dp"
         android:paddingHorizontal="20dp">
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="#6200EA"
+                app:cardBackgroundColor="#8A2EFF"
                 app:cardElevation="0dp">
 
                 <LinearLayout
@@ -55,7 +55,7 @@
 
                     <!-- Rate display -->
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
-                        <com.google.android.material.card.MaterialCardView android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🪙" android:textSize="18sp" />
                         </com.google.android.material.card.MaterialCardView>
                         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
@@ -68,7 +68,7 @@
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="10dp">
                         <Button android:id="@+id/btnRate50"  android:layout_width="48dp" android:layout_height="48dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:backgroundTint="#33FFFFFF" android:text="50"  android:textAllCaps="false" android:textColor="#CCFFFFFF" android:textSize="14sp" app:cornerRadius="10dp" />
                         <Button android:id="@+id/btnRate75"  android:layout_width="48dp" android:layout_height="48dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:backgroundTint="#33FFFFFF" android:text="75"  android:textAllCaps="false" android:textColor="#CCFFFFFF" android:textSize="14sp" app:cornerRadius="10dp" />
-                        <Button android:id="@+id/btnRate100" android:layout_width="48dp" android:layout_height="48dp" android:layout_weight="1" android:backgroundTint="#FFFFFF"       android:text="100" android:textAllCaps="false" android:textColor="#6200EA"  android:textSize="14sp" android:textStyle="bold" app:cornerRadius="10dp" />
+                        <Button android:id="@+id/btnRate100" android:layout_width="48dp" android:layout_height="48dp" android:layout_weight="1" android:backgroundTint="#FFFFFF"       android:text="100" android:textAllCaps="false" android:textColor="#8A2EFF"  android:textSize="14sp" android:textStyle="bold" app:cornerRadius="10dp" />
                     </LinearLayout>
 
                     <!-- Rate preset buttons row 2 -->
@@ -96,19 +96,19 @@
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="12dp">
                                 <TextView android:id="@+id/tvEarningsDaily" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="400" android:textColor="#00C853" android:textSize="20sp" android:textStyle="bold" />
                                 <TextView android:id="@+id/tvEarningsDailyLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Daily (4h)" android:textColor="#4B5D7A" android:textSize="11sp" android:layout_marginTop="2dp" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
-                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="12dp">
                                 <TextView android:id="@+id/tvEarningsWeekly" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2000" android:textColor="#0062FF" android:textSize="20sp" android:textStyle="bold" />
                                 <TextView android:id="@+id/tvEarningsWeeklyLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Weekly (20h)" android:textColor="#4B5D7A" android:textSize="11sp" android:layout_marginTop="2dp" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
-                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" app:cardCornerRadius="12dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" app:cardCornerRadius="16dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="12dp">
                                 <TextView android:id="@+id/tvEarningsMonthly" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="8000" android:textColor="#8A2EFF" android:textSize="20sp" android:textStyle="bold" />
                                 <TextView android:id="@+id/tvEarningsMonthlyLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Monthly (80h)" android:textColor="#4B5D7A" android:textSize="11sp" android:layout_marginTop="2dp" />
@@ -141,7 +141,7 @@
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
                         <TextView android:id="@+id/tvBufferLabel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Selected: 15 minutes" android:textColor="#4B5D7A" android:textSize="13sp" />
-                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="10dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
                             <TextView android:id="@+id/tvBufferBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="10dp" android:paddingVertical="4dp" android:text="15min" android:textColor="#0062FF" android:textSize="12sp" android:textStyle="bold" />
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>

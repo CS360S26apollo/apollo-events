@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#8A2EFF"
+    android:background="@drawable/bg_button_gradient"
     android:fillViewport="true">
 
     <LinearLayout
@@ -50,7 +50,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="8dp"
                     android:text="Create Your Tutor Profile"
-                    android:textColor="#1F355B"
+                    android:textColor="#071A3D"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -112,8 +112,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_myplaces"
-                            app:tint="#0062FF" />
+                            android:src="@drawable/ic_app_logo"></ImageView>
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -123,7 +122,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Connect with Students"
-                                android:textColor="#1F355B"
+                                android:textColor="#071A3D"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
                             <TextView

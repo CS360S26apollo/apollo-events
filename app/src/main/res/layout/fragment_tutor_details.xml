@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#F0F0F8">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,12 +12,29 @@
         android:padding="24dp"
         android:gravity="center_horizontal">
 
+        <!-- App logo -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="24dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardElevation="2dp">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="12dp"
+                android:src="@drawable/ic_app_logo"
+                android:scaleType="fitCenter"
+                android:contentDescription="Find Tutor"/>
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Expertise &amp; Rate"
-            android:textColor="#1F355B"
+            android:textColor="#071A3D"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -39,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Current Academic Level *"
-                android:textColor="#1F355B"
+                android:textColor="#071A3D"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -61,7 +78,7 @@
                     android:hint="Select your level"
                     android:inputType="none"
                     android:padding="16dp"
-                    android:textColor="#1F355B" />
+                    android:textColor="#071A3D" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -69,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
                 android:text="Hourly Rate (Tokens) *"
-                android:textColor="#1F355B"
+                android:textColor="#071A3D"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -93,7 +110,7 @@
                     android:hint="e.g. 25"
                     android:inputType="number"
                     android:padding="16dp"
-                    android:textColor="#1F355B" />
+                    android:textColor="#071A3D" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.card.MaterialCardView
@@ -128,7 +145,7 @@
                 android:backgroundTint="#FFFFFF"
                 android:text="Back"
                 android:textAllCaps="false"
-                android:textColor="#1F355B"
+                android:textColor="#071A3D"
                 android:textStyle="bold"
                 app:strokeColor="#D9DCE3"
                 app:strokeWidth="1dp"

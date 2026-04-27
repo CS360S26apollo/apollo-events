@@ -80,7 +80,7 @@
                             android:layout_height="80dp"
                             app:cardCornerRadius="40dp"
                             app:cardBackgroundColor="#D0C4F7"
-                            app:cardElevation="4dp">
+                            app:cardElevation="2dp">
                             <TextView
                                 android:id="@+id/tvTutorInitials"
                                 android:layout_width="match_parent"
@@ -97,7 +97,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_gravity="bottom|end"
-                            app:cardCornerRadius="12dp"
+                            app:cardCornerRadius="16dp"
                             app:cardBackgroundColor="#0062FF"
                             app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" />
@@ -123,14 +123,14 @@
                             android:layout_marginTop="2dp" />
 
                         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="10dp">
-                            <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="12dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFB300" app:cardElevation="0dp">
+                            <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="12dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFB300" app:cardElevation="0dp">
                                 <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="10dp" android:paddingVertical="5dp">
                                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⭐ " android:textSize="13sp" />
                                     <TextView android:id="@+id/tvRating" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4.9" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
+                            <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
                                 <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="10dp" android:paddingVertical="5dp">
                                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👥 " android:textSize="13sp" />
                                     <TextView android:id="@+id/tvStudents" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="127" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" />
@@ -165,7 +165,7 @@
                             </LinearLayout>
                         </LinearLayout>
 
-                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#E8F5E9" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardBackgroundColor="#E8F5E9" app:cardElevation="0dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="Expert" android:textColor="#089A3C" android:textSize="13sp" android:textStyle="bold" />
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
@@ -281,8 +281,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#FFFFFF"
+        android:orientation="vertical" android:background="#F0F0F8"
         android:elevation="12dp"
         android:paddingHorizontal="12dp"
         android:paddingTop="10dp"

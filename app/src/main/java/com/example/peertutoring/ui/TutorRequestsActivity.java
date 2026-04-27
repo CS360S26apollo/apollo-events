@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,14 +25,6 @@ import java.util.List;
 
 /**
  * Activity for tutors to view and manage incoming tutoring session requests from students.
- * Role: Request Management View for User Story 09 (Tutor Response).
- * Purpose: Displays a list of pending student proposals, allowing tutors to filter
- * by priority (token amount) and search for specific topics or students.
- *
- * Design Pattern: View-Controller with dynamic list rendering.
- *
- * Outstanding Issues:
- * - Real-time listener is not yet implemented (uses one-time get() with mock fallback).
  */
 public class TutorRequestsActivity extends AppCompatActivity {
 
@@ -59,20 +50,17 @@ public class TutorRequestsActivity extends AppCompatActivity {
 
         setupSearch();
         setupFilterChips();
-        setupEarningsButton();
-        setupBottomNav();
         loadRequests();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ExpirationUtils.expireStaleRequestsForTutor(tutorUid, db);
+        if (!tutorUid.isEmpty()) {
+            ExpirationUtils.expireStaleRequestsForTutor(tutorUid, db);
+        }
     }
 
-    /**
-     * Initializes the search input field with a listener to filter the list by student name or topic.
-     */
     private void setupSearch() {
         EditText etSearch = findViewById(R.id.etSearch);
         if (etSearch == null) return;
@@ -98,9 +86,6 @@ public class TutorRequestsActivity extends AppCompatActivity {
         displayRequests(filtered);
     }
 
-    /**
-     * Sets up priority-based filter chips (High, Medium, Low) based on the session's token value.
-     */
     private void setupFilterChips() {
         View chipAll    = findViewById(R.id.chipAll);
         View chipHigh   = findViewById(R.id.chipHighPriority);
@@ -127,15 +112,9 @@ public class TutorRequestsActivity extends AppCompatActivity {
         displayRequests(filtered);
     }
 
-    /**
-     * Fetches all pending session requests from Firestore where status is 'waiting'.
-     * Falls back to mock data if the collection is empty or if user is not logged in.
-     */
     private void loadRequests() {
         if (tutorUid.isEmpty()) { showEmpty(); return; }
 
-        // Query by tutorUid only — filtering by status + orderBy would require a
-        // composite Firestore index. Filter and sort in-memory instead.
         db.collection("sessionRequests")
                 .whereEqualTo("tutorUid", tutorUid)
                 .get()
@@ -146,26 +125,14 @@ public class TutorRequestsActivity extends AppCompatActivity {
                             allRequests.add(doc);
                         }
                     }
-                    // Sort by createdAt descending (nulls last)
-                    allRequests.sort((a, b) -> {
-                        com.google.firebase.Timestamp ta = a.getTimestamp("createdAt");
-                        com.google.firebase.Timestamp tb = b.getTimestamp("createdAt");
-                        if (ta == null && tb == null) return 0;
-                        if (ta == null) return 1;
-                        if (tb == null) return -1;
-                        return tb.compareTo(ta);
-                    });
                     if (allRequests.isEmpty()) showEmpty();
                     else displayRequests(allRequests);
                 })
                 .addOnFailureListener(e -> showEmpty());
     }
 
-    /**
-     * Renders the list of session request cards into the scrollable container.
-     * @param list The list of document snapshots to display.
-     */
     private void displayRequests(List<DocumentSnapshot> list) {
+        if (layoutRequestList == null) return;
         layoutRequestList.removeAllViews();
         if (list.isEmpty()) { showEmpty(); return; }
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -189,8 +156,8 @@ public class TutorRequestsActivity extends AppCompatActivity {
         setText(card, R.id.tvSubject,     subject);
         setText(card, R.id.tvTopic,       topic);
         setText(card, R.id.tvDate,        date  != null ? date  : "TBD");
-        setText(card, R.id.tvTime,        (time != null ? time  : "TBD")
-                + (duration != null ? " (" + duration + "m)" : ""));
+        String timeStr = (time != null ? time  : "TBD") + (duration != null ? " (" + duration + "m)" : "");
+        setText(card, R.id.tvTime,        timeStr);
         setText(card, R.id.tvTokens,      (tokens != null ? tokens : 0) + " Tokens");
 
         TextView tvInitials = card.findViewById(R.id.tvStudentInitials);
@@ -217,116 +184,38 @@ public class TutorRequestsActivity extends AppCompatActivity {
             accentBar.setBackgroundColor(color);
         }
 
-        String requestId    = doc.getId();
-        String studentUid   = doc.getString("studentUid");
-        String goals        = doc.getString("goals");
-        String studentMsg   = doc.getString("studentMessage");
-        int    dur          = duration != null ? duration.intValue() : 60;
-        int    tok          = tokens   != null ? tokens.intValue()   : 150;
-
         card.setOnClickListener(v -> {
             Intent intent = new Intent(this, RequestDetailActivity.class);
-            intent.putExtra("requestId",      requestId);
-            intent.putExtra("studentUid",     studentUid);
+            intent.putExtra("requestId",      doc.getId());
+            intent.putExtra("studentUid",     doc.getString("studentUid"));
             intent.putExtra("studentName",    studentName);
             intent.putExtra("subject",        subject);
             intent.putExtra("topic",          topic);
             intent.putExtra("date",           date);
             intent.putExtra("time",           time);
-            intent.putExtra("duration",       dur);
-            intent.putExtra("tokens",         tok);
-            intent.putExtra("goals",          goals);
-            intent.putExtra("studentMessage", studentMsg);
+            intent.putExtra("duration",       duration != null ? duration.intValue() : 60);
+            intent.putExtra("tokens",         tokens   != null ? tokens.intValue()   : 150);
+            intent.putExtra("goals",          doc.getString("goals"));
+            intent.putExtra("studentMessage", doc.getString("studentMessage"));
             startActivity(intent);
         });
     }
 
     private void showEmpty() {
+        if (layoutRequestList == null) return;
         layoutRequestList.removeAllViews();
-
-        TextView tvIcon = new TextView(this);
-        tvIcon.setText("📭");
-        tvIcon.setTextSize(48f);
-        tvIcon.setGravity(android.view.Gravity.CENTER);
-        tvIcon.setPadding(0, 80, 0, 8);
-        layoutRequestList.addView(tvIcon);
 
         TextView tvTitle = new TextView(this);
         tvTitle.setText("No pending requests");
         tvTitle.setTextColor(Color.parseColor("#071A3D"));
         tvTitle.setTextSize(18f);
-        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
         tvTitle.setGravity(android.view.Gravity.CENTER);
-        tvTitle.setPadding(40, 0, 40, 8);
+        tvTitle.setPadding(40, 100, 40, 8);
         layoutRequestList.addView(tvTitle);
-
-        TextView tvSub = new TextView(this);
-        tvSub.setText("Students who book your profile will appear here. Use the Seed Data tool from the home screen to add test requests.");
-        tvSub.setTextColor(Color.parseColor("#8B97A8"));
-        tvSub.setTextSize(13f);
-        tvSub.setGravity(android.view.Gravity.CENTER);
-        tvSub.setPadding(40, 0, 40, 0);
-        layoutRequestList.addView(tvSub);
     }
-
 
     private void setText(View parent, int id, String text) {
         TextView tv = parent.findViewById(id);
         if (tv != null && text != null) tv.setText(text);
     }
-    // ── Earnings button (header) ──────────────────────────────
-
-    private void setupEarningsButton() {
-        View btn = findViewById(R.id.btnOpenEarnings);
-        if (btn != null) {
-            btn.setOnClickListener(v ->
-                    startActivity(new Intent(this, TutorEarningsActivity.class)));
-        }
-    }
-
-    // ── Bottom navigation ─────────────────────────────────────
-
-    private void setupBottomNav() {
-        View navHome         = findViewById(R.id.navHome);
-        View navRequests     = findViewById(R.id.navRequests);
-        View navEarnings     = findViewById(R.id.navEarnings);
-        View navAvailability = findViewById(R.id.navAvailability);
-        View navProfile      = findViewById(R.id.navProfile);
-
-        if (navHome != null) {
-            navHome.setOnClickListener(v -> {
-                startActivity(new Intent(this, TutorHomeActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-            });
-        }
-
-        if (navRequests != null) {
-            // Already on this screen
-            navRequests.setOnClickListener(v -> { /* current screen */ });
-        }
-
-        if (navEarnings != null) {
-            navEarnings.setOnClickListener(v -> {
-                startActivity(new Intent(this, TutorEarningsActivity.class));
-                overridePendingTransition(0, 0);
-            });
-        }
-
-        if (navAvailability != null) {
-            navAvailability.setOnClickListener(v -> {
-                startActivity(new Intent(this, AvailabilityDashboardActivity.class));
-                overridePendingTransition(0, 0);
-            });
-        }
-
-        if (navProfile != null) {
-            navProfile.setOnClickListener(v -> {
-                startActivity(new Intent(this, EditProfileActivity.class));
-                overridePendingTransition(0, 0);
-            });
-        }
-    }
-
-
 }

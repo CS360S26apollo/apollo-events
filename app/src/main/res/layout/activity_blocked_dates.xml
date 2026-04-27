@@ -133,7 +133,7 @@
                             <TextView android:id="@+id/tvBlockedCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#FFFFFF" android:textSize="32sp" android:textStyle="bold" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Blocked Dates" android:textColor="#CCFFFFFF" android:textSize="14sp" />
                         </LinearLayout>
-                        <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="📅" android:textSize="22sp" />
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>

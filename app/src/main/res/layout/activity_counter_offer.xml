@@ -101,7 +101,7 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="16dp"
                         app:cardBackgroundColor="#F8F9FA"
                         app:cardElevation="0dp">
                         <TextView
@@ -135,7 +135,7 @@
                     android:padding="18dp">
 
                     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
-                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="📅" android:textSize="16sp" />
                         </com.google.android.material.card.MaterialCardView>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select Date" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
@@ -145,7 +145,7 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="16dp"
                         app:cardBackgroundColor="#EEF2FF"
                         app:cardElevation="0dp">
 
@@ -205,7 +205,7 @@
                     android:padding="18dp">
 
                     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
-                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🕒" android:textSize="16sp" />
                         </com.google.android.material.card.MaterialCardView>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select Time" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
@@ -215,7 +215,7 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="16dp"
                         app:cardBackgroundColor="#E6FAF0"
                         app:cardElevation="0dp">
 
@@ -268,23 +268,23 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
 
                     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
-                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#8A2EFF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#8A2EFF" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="⏱️" android:textSize="16sp" />
                         </com.google.android.material.card.MaterialCardView>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Duration" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnDurationMinus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnDurationMinus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="−" android:textColor="#8A2EFF" android:textSize="22sp" android:textStyle="bold" />
                         </com.google.android.material.card.MaterialCardView>
-                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="12dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:paddingVertical="14dp">
                                 <TextView android:id="@+id/tvDurationValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="90" android:textColor="#071A3D" android:textSize="28sp" android:textStyle="bold" />
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="minutes" android:textColor="#8B97A8" android:textSize="12sp" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
-                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnDurationPlus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnDurationPlus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="+" android:textColor="#8A2EFF" android:textSize="22sp" android:textStyle="bold" />
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
@@ -303,23 +303,23 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
 
                     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
-                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🪙" android:textSize="16sp" />
                         </com.google.android.material.card.MaterialCardView>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Token Amount" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnTokenMinus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnTokenMinus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="−" android:textColor="#00C853" android:textSize="22sp" android:textStyle="bold" />
                         </com.google.android.material.card.MaterialCardView>
-                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="12dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="12dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#00C853" app:cardElevation="0dp">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:paddingVertical="14dp">
                                 <TextView android:id="@+id/tvTokenValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="225" android:textColor="#FFFFFF" android:textSize="28sp" android:textStyle="bold" />
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="tokens" android:textColor="#CCFFFFFF" android:textSize="12sp" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
-                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnTokenPlus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="14dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/btnTokenPlus" android:layout_width="48dp" android:layout_height="48dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#E6FAF0" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="+" android:textColor="#00C853" android:textSize="22sp" android:textStyle="bold" />
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
@@ -338,13 +338,13 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
 
                     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
-                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="36dp" android:layout_height="36dp" android:layout_marginEnd="10dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
                             <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="💬" android:textSize="16sp" />
                         </com.google.android.material.card.MaterialCardView>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Add Message (Optional)" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
 
-                    <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
+                    <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardBackgroundColor="#EEF2FF" app:cardElevation="0dp">
                         <android.widget.EditText
                             android:id="@+id/etMessage"
                             android:layout_width="match_parent"
