@@ -92,8 +92,10 @@ public class TutorHomeActivity extends AppCompatActivity {
         findViewById(R.id.cardEarnings).setOnClickListener(v ->
                 startActivity(new Intent(this, TutorEarningsActivity.class)));
 
+        // Chat is session-scoped: open a session from TutorRequests, then message from there.
+        // Opening MessagingActivity without a conversationId shows an empty screen.
         findViewById(R.id.cardMessages).setOnClickListener(v ->
-                startActivity(new Intent(this, MessagingActivity.class)));
+                startActivity(new Intent(this, TutorRequestsActivity.class)));
 
         findViewById(R.id.cardOffers).setOnClickListener(v ->
                 startActivity(new Intent(this, TutorOffersActivity.class)));

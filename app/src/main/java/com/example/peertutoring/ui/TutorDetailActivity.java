@@ -59,7 +59,10 @@ public class TutorDetailActivity extends AppCompatActivity {
 
         populateViews(tutorName, subject, rateStr, rating, students, isVerified);
         checkRoleAndSetupButtons();
-        if (tutorUid != null && !tutorUid.isEmpty()) loadReviews();
+        if (tutorUid != null && !tutorUid.isEmpty()) {
+            loadTutorProfileDetails();
+            loadReviews();
+        }
     }
 
     private void populateViews(String name, String subject, String rate,
@@ -233,6 +236,36 @@ public class TutorDetailActivity extends AppCompatActivity {
         intent.putExtra("tutorName", tutorName != null ? tutorName : "");
         intent.putExtra("tutorRate", tutorRate);
         startActivity(intent);
+    }
+
+    /**
+     * Fetches live tutor profile fields (bio, institution, level) from Firestore and
+     * replaces the hard-coded XML placeholder text. Called once after populateViews().
+     * Uses the same "users" collection path as the rest of the app.
+     */
+    private void loadTutorProfileDetails() {
+        FirebaseFirestore.getInstance()
+                .collection("users").document(tutorUid).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) return;
+
+                    TextView tvBio = findViewById(R.id.tvBio);
+                    TextView tvLoc = findViewById(R.id.tvLocation);
+                    TextView tvExp = findViewById(R.id.tvExperience);
+
+                    String bio         = doc.getString("bio");
+                    String institution = doc.getString("institution");
+                    String level       = doc.getString("level");
+
+                    if (tvBio != null) tvBio.setText(bio != null && !bio.isEmpty()
+                            ? bio : "No bio available.");
+
+                    if (tvLoc != null) tvLoc.setText(institution != null && !institution.isEmpty()
+                            ? institution : "Location not set");
+
+                    if (tvExp != null) tvExp.setText(level != null && !level.isEmpty()
+                            ? level + " level" : "Experience not listed");
+                });
     }
 
     // ── US 19: Load and display public reviews ────────────────

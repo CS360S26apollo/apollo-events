@@ -77,6 +77,8 @@
         <activity android:name=".ui.WithdrawActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.WithdrawSuccessActivity" android:exported="false" />
         <activity android:name=".ui.TransactionHistoryActivity" android:exported="false" />
+        <activity android:name=".ui.BuyTokensActivity" android:exported="false" />
+        <activity android:name=".ui.PurchaseSuccessActivity" android:exported="false" />
 
     </application>
 

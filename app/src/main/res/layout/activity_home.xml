@@ -27,8 +27,9 @@
                         android:text="Find Tutor" android:textColor="#FFFFFF"
                         android:textSize="22sp" android:textStyle="bold"/>
                 </LinearLayout>
-                <!-- Token balance badge -->
+                <!-- Token balance badge — tap to purchase more tokens (US-23) -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/chipTokenBalance"
                     android:layout_width="wrap_content" android:layout_height="40dp"
                     app:cardCornerRadius="20dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp"
                     android:clickable="true" android:focusable="true">

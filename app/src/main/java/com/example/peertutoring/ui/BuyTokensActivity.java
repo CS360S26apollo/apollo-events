@@ -24,37 +24,37 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 /**
- * US-25: Buy Tokens screen.
+ * US-23: Buy Tokens / Load Wallet screen.
  *
- * Students purchase token bundles to use for booking sessions.
- * Conversion rate: 10 tokens = $1 USD.
+ * Token packages are defined as {@code PACKAGES[i] = {tokens, price_rs, full_price_rs}}.
+ * {@code full_price_rs - price_rs} is the saving displayed on discounted bundles.
  *
- * Packages:
- *  Starter  — 100  tokens = $10
- *  Popular  — 500  tokens = $45  (10% saving)
- *  Value    — 1000 tokens = $80  (20% saving)
- *  Premium  — 2500 tokens = $175 (30% saving)
- *
- * NOTE: Real payment integration (Stripe / Google Pay) would wrap
- * confirmPurchase(). The UI and Firestore token-credit logic are
- * production-ready; only the payment step is simulated.
+ * Static helper methods ({@link #isValidCardNumber}, {@link #isValidExpiry},
+ * {@link #detectCardType}) are unit-tested in BuyTokensUnitTest and must stay public + static.
  */
 public class BuyTokensActivity extends AppCompatActivity {
 
-    private static final int TOKENS_PER_DOLLAR = 10;
-
-    // {tokens, priceCents, label, discountPct, emoji}
-    private static final Object[][] PACKAGES = {
-            {100,    1000, "Starter",  0,  "🌱"},
-            {500,    4500, "Popular",  10, "⭐"},
-            {1000,   8000, "Value",    20, "🔥"},
-            {2500,  17500, "Premium",  30, "💎"},
+    /**
+     * Package definitions: each row is {tokens, discountedPriceRs, fullPriceRs}.
+     * Public so BuyTokensUnitTest can access the values directly.
+     */
+    public static final int[][] PACKAGES = {
+            {  50,  500,  500},   // Starter  — Rs. 500  (no discount)
+            { 100,  900, 1000},   // Standard — Rs. 900  (save Rs. 100)
+            { 250, 2000, 2500},   // Pro      — Rs. 2000 (save Rs. 500)
+            { 500, 3500, 5000},   // Premium  — Rs. 3500 (save Rs. 1500)
     };
+
+    /** Display labels aligned 1:1 with PACKAGES rows. */
+    public static final String[] PACKAGE_NAMES = {"Starter", "Standard", "Pro", "Premium"};
+
+    private static final String[] PACKAGE_EMOJIS = {"🌱", "⭐", "🔥", "💎"};
 
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
@@ -94,14 +94,14 @@ public class BuyTokensActivity extends AppCompatActivity {
         }
     }
 
-    // ── Balance ───────────────────────────────────────────────
+    // ── Balance display ───────────────────────────────────────
 
     private void loadBalance() {
-        if (currentUser == null) { updateBalance(100); return; }
+        if (currentUser == null) { updateBalance(0); return; }
         db.collection("users").document(currentUser.getUid()).get()
                 .addOnSuccessListener(doc -> {
                     Long bal = doc.getLong("tokens");
-                    updateBalance(bal != null ? bal.intValue() : 100);
+                    updateBalance(bal != null ? bal.intValue() : 0);
                 });
     }
 
@@ -119,12 +119,13 @@ public class BuyTokensActivity extends AppCompatActivity {
         packageCards = new MaterialCardView[PACKAGES.length];
 
         for (int i = 0; i < PACKAGES.length; i++) {
-            final int idx      = i;
-            int    tokens      = (int)    PACKAGES[i][0];
-            int    priceCents  = (int)    PACKAGES[i][1];
-            String label       = (String) PACKAGES[i][2];
-            int    discount    = (int)    PACKAGES[i][3];
-            String emoji       = (String) PACKAGES[i][4];
+            final int idx        = i;
+            int       tokens     = PACKAGES[i][0];
+            int       priceRs    = PACKAGES[i][1];
+            int       fullPriceRs= PACKAGES[i][2];
+            int       saveRs     = fullPriceRs - priceRs;
+            String    label      = PACKAGE_NAMES[i];
+            String    emoji      = PACKAGE_EMOJIS[i];
 
             MaterialCardView card = new MaterialCardView(this);
             LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
@@ -178,9 +179,9 @@ public class BuyTokensActivity extends AppCompatActivity {
             tvTokens.setTextSize(13f);
             info.addView(tvTokens);
 
-            if (discount > 0) {
+            if (saveRs > 0) {
                 TextView tvSave = new TextView(this);
-                tvSave.setText("Save " + discount + "%");
+                tvSave.setText("Save Rs. " + saveRs);
                 tvSave.setTextColor(0xFF00C853);
                 tvSave.setTextSize(12f);
                 tvSave.setTypeface(null, Typeface.BOLD);
@@ -194,20 +195,16 @@ public class BuyTokensActivity extends AppCompatActivity {
             priceCol.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
 
             TextView tvPrice = new TextView(this);
-            tvPrice.setText(String.format(Locale.getDefault(), "$%.2f", priceCents / 100.0));
+            tvPrice.setText("Rs. " + priceRs);
             tvPrice.setTextColor(0xFF071A3D);
             tvPrice.setTextSize(20f);
             tvPrice.setTypeface(null, Typeface.BOLD);
             tvPrice.setGravity(Gravity.END);
             priceCol.addView(tvPrice);
 
-            if (discount > 0) {
-                int origCents = tokens * (100 / TOKENS_PER_DOLLAR) * 100 / 100;
-                // Simple: undiscounted = tokens / 10 * 100 cents
-                int undiscountedCents = (tokens / TOKENS_PER_DOLLAR) * 100;
+            if (saveRs > 0) {
                 TextView tvOrig = new TextView(this);
-                tvOrig.setText(String.format(Locale.getDefault(),
-                        "$%.2f", undiscountedCents / 100.0));
+                tvOrig.setText("Rs. " + fullPriceRs);
                 tvOrig.setTextColor(0xFF8B97A8);
                 tvOrig.setTextSize(12f);
                 tvOrig.setGravity(Gravity.END);
@@ -237,11 +234,10 @@ public class BuyTokensActivity extends AppCompatActivity {
         }
 
         if (btnPurchase != null) {
-            int    tokens     = (int)    PACKAGES[idx][0];
-            int    priceCents = (int)    PACKAGES[idx][1];
-            String priceStr   = String.format(Locale.getDefault(), "$%.2f", priceCents / 100.0);
+            int tokens  = PACKAGES[idx][0];
+            int priceRs = PACKAGES[idx][1];
             btnPurchase.setText("Buy " + NumberFormat.getNumberInstance().format(tokens)
-                    + " Tokens  •  " + priceStr);
+                    + " Tokens  •  Rs. " + priceRs);
             btnPurchase.setEnabled(true);
             btnPurchase.setAlpha(1.0f);
         }
@@ -251,28 +247,27 @@ public class BuyTokensActivity extends AppCompatActivity {
 
     private void showConfirmDialog() {
         if (selectedPackageIndex < 0) return;
-        int    tokens     = (int)    PACKAGES[selectedPackageIndex][0];
-        int    priceCents = (int)    PACKAGES[selectedPackageIndex][1];
-        String label      = (String) PACKAGES[selectedPackageIndex][2];
-        String priceStr   = String.format(Locale.getDefault(), "$%.2f", priceCents / 100.0);
+        int    tokens  = PACKAGES[selectedPackageIndex][0];
+        int    priceRs = PACKAGES[selectedPackageIndex][1];
+        String label   = PACKAGE_NAMES[selectedPackageIndex];
 
         new AlertDialog.Builder(this)
                 .setTitle("Confirm Purchase")
                 .setMessage(label + " Package\n\n"
                         + "🪙 " + NumberFormat.getNumberInstance().format(tokens)
-                        + " tokens\n" + priceStr + "\n\n"
+                        + " tokens\nRs. " + priceRs + "\n\n"
                         + "Tokens will be added to your account immediately.")
-                .setPositiveButton("Confirm & Pay", (d, w) -> confirmPurchase(tokens, priceCents, label))
+                .setPositiveButton("Confirm & Pay", (d, w) -> confirmPurchase(tokens, priceRs, label))
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
     /**
-     * Credits tokens to the student's Firestore balance and records
-     * the transaction. In production, call this ONLY after a successful
-     * payment callback from your payment processor (Stripe / Google Pay).
+     * Credits tokens to the student's Firestore balance and records the transaction.
+     * Uses FieldValue.increment for an atomic credit — no negative-balance risk on adds.
+     * In production, call ONLY after a successful payment-processor callback.
      */
-    private void confirmPurchase(int tokens, int priceCents, String label) {
+    private void confirmPurchase(int tokens, int priceRs, String label) {
         if (currentUser == null) {
             Toast.makeText(this, "Please sign in first.", Toast.LENGTH_SHORT).show();
             return;
@@ -283,38 +278,35 @@ public class BuyTokensActivity extends AppCompatActivity {
             btnPurchase.setText("Processing...");
         }
 
-        db.collection("users").document(currentUser.getUid()).get()
-                .addOnSuccessListener(doc -> {
-                    Long current    = doc.getLong("tokens");
-                    long newBalance = (current != null ? current : 0L) + tokens;
-
-                    db.collection("users").document(currentUser.getUid())
-                            .update("tokens", newBalance)
-                            .addOnSuccessListener(u -> {
-                                recordTransaction(tokens, priceCents, label);
-                                SoundManager.playSuccess(this);
+        // Atomic increment — no stale-read risk for a credit operation
+        db.collection("users").document(currentUser.getUid())
+                .update("tokens", FieldValue.increment(tokens))
+                .addOnSuccessListener(u -> {
+                    recordTransaction(tokens, priceRs, label);
+                    SoundManager.playSuccess(this);
+                    db.collection("users").document(currentUser.getUid()).get()
+                            .addOnSuccessListener(doc -> {
+                                Long bal = doc.getLong("tokens");
+                                long newBalance = bal != null ? bal : tokens;
                                 navigateToSuccess(tokens, newBalance, label);
                             })
-                            .addOnFailureListener(e -> {
-                                SoundManager.playError(this);
-                                Toast.makeText(this, "Purchase failed: " + e.getMessage(),
-                                        Toast.LENGTH_LONG).show();
-                                resetButton();
-                            });
+                            .addOnFailureListener(e -> navigateToSuccess(tokens, tokens, label));
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    SoundManager.playError(this);
+                    Toast.makeText(this, "Purchase failed: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
                     resetButton();
                 });
     }
 
-    private void recordTransaction(int tokens, int priceCents, String label) {
+    private void recordTransaction(int tokens, int priceRs, String label) {
         Map<String, Object> tx = new HashMap<>();
         tx.put("studentUid",  currentUser.getUid());
         tx.put("type",        "purchase");
         tx.put("label",       label);
         tx.put("tokens",      tokens);
-        tx.put("priceCents",  priceCents);
+        tx.put("priceRs",     priceRs);
         tx.put("createdAt",   FieldValue.serverTimestamp());
         db.collection("tokenPurchases").add(tx);
     }
@@ -333,6 +325,52 @@ public class BuyTokensActivity extends AppCompatActivity {
             btnPurchase.setEnabled(true);
             btnPurchase.setText("Complete Purchase");
         }
+    }
+
+    // ── Static validators (tested by BuyTokensUnitTest) ──────
+
+    /**
+     * Returns true iff the card number contains exactly 16 digits (spaces ignored).
+     */
+    public static boolean isValidCardNumber(String cardNumber) {
+        if (cardNumber == null || cardNumber.isEmpty()) return false;
+        String digits = cardNumber.replace(" ", "");
+        return digits.length() == 16 && digits.matches("\\d+");
+    }
+
+    /**
+     * Returns true iff expiry is in MM/YY format, month is 1–12, and the
+     * date is not in the past (year interpreted as 20YY).
+     */
+    public static boolean isValidExpiry(String expiry) {
+        if (expiry == null || expiry.isEmpty()) return false;
+        String[] parts = expiry.split("/");
+        if (parts.length != 2 || parts[0].length() != 2 || parts[1].length() != 2) return false;
+        try {
+            int month = Integer.parseInt(parts[0]);
+            int year  = Integer.parseInt(parts[1]); // 2-digit: 26 = 2026
+            if (month < 1 || month > 12) return false;
+            Calendar now = Calendar.getInstance();
+            int nowYear  = now.get(Calendar.YEAR) % 100;
+            int nowMonth = now.get(Calendar.MONTH) + 1; // Calendar.MONTH is 0-based
+            if (year < nowYear) return false;
+            if (year == nowYear && month < nowMonth) return false;
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Returns "Visa" for cards starting with 4, "Mastercard" for cards starting
+     * with 5, and "" for all other prefixes or null/empty input.
+     */
+    public static String detectCardType(String cardNumber) {
+        if (cardNumber == null || cardNumber.isEmpty()) return "";
+        String clean = cardNumber.replace(" ", "");
+        if (clean.startsWith("4")) return "Visa";
+        if (clean.startsWith("5")) return "Mastercard";
+        return "";
     }
 
     // ── Helpers ───────────────────────────────────────────────

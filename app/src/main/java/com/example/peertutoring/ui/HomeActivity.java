@@ -79,12 +79,21 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
-        // Buy Tokens
+        // Token balance chip in header — tapping shows purchase screen (US-23)
+        View chipTokenBalance = findViewById(R.id.chipTokenBalance);
+        if (chipTokenBalance != null) {
+            chipTokenBalance.setOnClickListener(v -> {
+                SoundManager.playClick(this);
+                startActivity(new Intent(this, BuyTokensActivity.class));
+            });
+        }
+
+        // "Need more tokens?" CTA card at the bottom — same destination (US-23)
         View cardBuyTokens = findViewById(R.id.cardBuyTokens);
         if (cardBuyTokens != null) {
             cardBuyTokens.setOnClickListener(v -> {
                 SoundManager.playClick(this);
-                // Navigate to BuyTokensActivity if implemented
+                startActivity(new Intent(this, BuyTokensActivity.class));
             });
         }
 

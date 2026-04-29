@@ -58,6 +58,7 @@ public class TutorRequestsActivity extends AppCompatActivity {
         super.onResume();
         if (!tutorUid.isEmpty()) {
             ExpirationUtils.expireStaleRequestsForTutor(tutorUid, db);
+            loadRequests();
         }
     }
 
@@ -112,6 +113,11 @@ public class TutorRequestsActivity extends AppCompatActivity {
         displayRequests(filtered);
     }
 
+    /**
+     * Loads all active sessions for this tutor: both "requested" (pending acceptance)
+     * and "booked" (accepted but not yet completed). Showing "booked" sessions here
+     * prevents them from disappearing after the tutor accepts — the invisible-session bug.
+     */
     private void loadRequests() {
         if (tutorUid.isEmpty()) { showEmpty(); return; }
 
@@ -120,15 +126,27 @@ public class TutorRequestsActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(snap -> {
                     allRequests = new ArrayList<>();
+                    int pendingCount = 0;
                     for (DocumentSnapshot doc : snap.getDocuments()) {
-                        if ("requested".equals(doc.getString("status"))) {
+                        String status = doc.getString("status");
+                        // Keep sessions visible until explicitly completed or cancelled
+                        if ("requested".equals(status) || "booked".equals(status)) {
                             allRequests.add(doc);
+                            if ("requested".equals(status)) pendingCount++;
                         }
                     }
+                    updateNotifBadge(pendingCount);
                     if (allRequests.isEmpty()) showEmpty();
                     else displayRequests(allRequests);
                 })
-                .addOnFailureListener(e -> showEmpty());
+                .addOnFailureListener(e -> { updateNotifBadge(0); showEmpty(); });
+    }
+
+    private void updateNotifBadge(int count) {
+        View badge = findViewById(R.id.cardNotifBadge);
+        TextView tvCount = findViewById(R.id.tvNotifCount);
+        if (badge != null) badge.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+        if (tvCount != null) tvCount.setText(String.valueOf(count));
     }
 
     private void displayRequests(List<DocumentSnapshot> list) {

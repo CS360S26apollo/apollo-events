@@ -1,6 +1,8 @@
 package com.example.peertutoring.utils;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
@@ -28,38 +30,41 @@ public class EscrowManager {
     // ── Deduct from student (booking) ─────────────────────────
 
     /**
-     * Deducts tokens from the student's balance and adds them to escrowBalance.
-     * Called when a student books a session (instant or regular).
+     * Atomically deducts tokens from the student's balance and moves them into escrow.
+     * Uses a Firestore transaction so concurrent booking attempts cannot both pass the
+     * balance check and cause a negative balance (the silent double-spend bug).
+     * The transaction aborts — triggering onFailure — if the balance is insufficient.
      */
     public static void deductFromStudent(FirebaseFirestore db,
                                          String studentUid,
                                          int tokenCost,
                                          OnSuccess onSuccess,
                                          OnFailure onFailure) {
-        db.collection("users").document(studentUid).get()
-                .addOnSuccessListener(doc -> {
-                    Long current = doc.getLong("tokens");
-                    long balance = (current != null) ? current : 0L;
+        DocumentReference userRef = db.collection("users").document(studentUid);
 
-                    if (balance < tokenCost) {
-                        onFailure.run();
-                        return;
-                    }
+        db.runTransaction(transaction -> {
+            // All reads before all writes (Firestore transaction requirement)
+            com.google.firebase.firestore.DocumentSnapshot doc = transaction.get(userRef);
 
-                    long newBalance = balance - tokenCost;
-                    Long existingEscrow = doc.getLong("escrowBalance");
-                    long newEscrow = (existingEscrow != null ? existingEscrow : 0L) + tokenCost;
+            Long current = doc.getLong("tokens");
+            long balance = (current != null) ? current : 0L;
 
-                    Map<String, Object> updates = new HashMap<>();
-                    updates.put("tokens",        newBalance);
-                    updates.put("escrowBalance", newEscrow);
+            if (balance < tokenCost) {
+                // Abort the transaction — triggers addOnFailureListener
+                throw new FirebaseFirestoreException(
+                        "Insufficient token balance: " + balance + " < " + tokenCost,
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
 
-                    db.collection("users").document(studentUid)
-                            .set(updates, SetOptions.merge())
-                            .addOnSuccessListener(u -> onSuccess.run())
-                            .addOnFailureListener(e -> onFailure.run());
-                })
-                .addOnFailureListener(e -> onFailure.run());
+            Long existingEscrow = doc.getLong("escrowBalance");
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("tokens",        balance - tokenCost);
+            updates.put("escrowBalance", (existingEscrow != null ? existingEscrow : 0L) + tokenCost);
+            transaction.update(userRef, updates);
+            return null;
+        })
+        .addOnSuccessListener(unused -> onSuccess.run())
+        .addOnFailureListener(e -> onFailure.run());
     }
 
     // ── Release to tutor (session completed) ──────────────────

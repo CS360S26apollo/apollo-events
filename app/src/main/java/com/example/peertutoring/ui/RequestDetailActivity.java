@@ -84,14 +84,16 @@ public class RequestDetailActivity extends AppCompatActivity {
         String category = getIntent().getStringExtra("category");
         // "subject" key used by TutorRequestsActivity; fall back to "category"
         if (category == null) category = getIntent().getStringExtra("subject");
-        int duration    = getIntent().getIntExtra("duration", 60);
-        int tokens      = getIntent().getIntExtra("tokens", 0);
+        int    duration = getIntent().getIntExtra("duration", 60);
+        int    tokens   = getIntent().getIntExtra("tokens", 0);
+        String goals    = getIntent().getStringExtra("goals");
 
         setText(R.id.tvTopic,        topic    != null ? topic    : "Request Detail");
         setText(R.id.tvProviderName, provider != null ? provider : "Tutor Pending");
         setText(R.id.tvCategory,     category != null ? category : "Education");
         setText(R.id.tvTokens,       String.valueOf(tokens));
         setText(R.id.tvDuration,     duration + " min");
+        setText(R.id.tvDetails,      goals    != null && !goals.isEmpty() ? goals : "No goals specified");
         updateStatusUI(status);
     }
 
@@ -148,10 +150,10 @@ public class RequestDetailActivity extends AppCompatActivity {
                     sessionDuration = dur  != null ? dur.intValue()  : 60;
                     sessionStatus   = doc.getString("status");
 
-                    // Update displayed provider name and status badge
-                    String tutorName = doc.getString("tutorName");
-                    setText(R.id.tvProviderName, tutorName != null ? tutorName : "Searching...");
+                    // Update displayed status badge and session goals
                     updateStatusUI(sessionStatus);
+                    String goals = doc.getString("goals");
+                    setText(R.id.tvDetails, goals != null && !goals.isEmpty() ? goals : "No goals specified");
 
                     // Show scheduled time in the location row if set
                     if (sessionScheduledDate != null) {
@@ -163,7 +165,26 @@ public class RequestDetailActivity extends AppCompatActivity {
                     boolean isStudent = currentUid.equals(sessionStudentUid);
                     boolean isTutor   = currentUid.equals(sessionTutorUid);
 
+                    // Show the OTHER party's name — tapping it opens the shared chat thread.
+                    // Tutor sees student name; student sees tutor name. Without this, the tutor
+                    // would see their own name and have no obvious chat entry point.
+                    String tutorName = doc.getString("tutorName");
+                    if (isTutor) {
+                        setText(R.id.tvProviderName, sessionStudentName != null ? sessionStudentName : "Student");
+                    } else {
+                        setText(R.id.tvProviderName, tutorName != null ? tutorName : "Searching...");
+                    }
+
                     updateButtonVisibility(isStudent, isTutor);
+
+                    // Tap the provider-name row to open the shared chat thread.
+                    // SessionNotesActivity uses the same buildConvId formula, so
+                    // notes sent by the tutor appear here for the student automatically.
+                    if (sessionStudentUid != null && sessionTutorUid != null) {
+                        setupChatShortcut(sessionStudentUid, sessionTutorUid,
+                                doc.getString("tutorName"), doc.getString("studentName"),
+                                isTutor);
+                    }
 
                     // Post-completion actions
                     if ("completed".equals(sessionStatus)) {
@@ -449,6 +470,37 @@ public class RequestDetailActivity extends AppCompatActivity {
             if (tvName != null) tvName.setText(doc.getString("tutorName"));
             layoutOfferContainer.addView(offerView);
         }
+    }
+
+    // ── Chat shortcut ─────────────────────────────────────────────────────────
+
+    /**
+     * Wires a tap on the provider-name row to open the shared conversation thread.
+     * The conversation ID is built identically to SessionNotesActivity.buildConvId()
+     * and TutorDetailActivity.setupMessageButton(), so all three screens share one
+     * Firestore path: conversations/{min_uid}_{max_uid}/messages.
+     */
+    private void setupChatShortcut(String studentUid, String tutorUid,
+                                   String tutorName, String studentName,
+                                   boolean isTutor) {
+        View providerRow = findViewById(R.id.tvProviderName);
+        if (providerRow == null) return;
+
+        String convId = tutorUid.compareTo(studentUid) < 0
+                ? tutorUid + "_" + studentUid
+                : studentUid + "_" + tutorUid;
+
+        String otherPersonName = isTutor
+                ? (studentName != null ? studentName : "Student")
+                : (tutorName   != null ? tutorName   : "Tutor");
+
+        providerRow.setClickable(true);
+        providerRow.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MessagingActivity.class);
+            intent.putExtra("requestId",       convId);
+            intent.putExtra("otherPersonName", otherPersonName);
+            startActivity(intent);
+        });
     }
 
     // ── Shared helpers ───────────────────────────────────────────────────────

@@ -166,7 +166,7 @@ public class TutorEarningsActivity extends AppCompatActivity {
         layoutRecentSessions.removeAllViews();
 
         if (currentUser == null) {
-            addMockSessions();
+            showEmptySessionsState();
             return;
         }
 
@@ -177,19 +177,25 @@ public class TutorEarningsActivity extends AppCompatActivity {
                 .limit(5)
                 .get()
                 .addOnSuccessListener(snap -> {
-                    if (snap.isEmpty()) { addMockSessions(); return; }
+                    if (snap.isEmpty()) { showEmptySessionsState(); return; }
                     for (DocumentSnapshot doc : snap.getDocuments()) {
-                        addSessionRow(doc.getString("studentName"), doc.getString("subject"), 
-                                     doc.getLong("tokens"), doc.getLong("durationMinutes"), 
+                        addSessionRow(doc.getString("studentName"), doc.getString("subject"),
+                                     doc.getLong("tokens"), doc.getLong("durationMinutes"),
                                      doc.getDate("scheduledDate"), false);
                     }
                 })
-                .addOnFailureListener(e -> addMockSessions());
+                .addOnFailureListener(e -> showEmptySessionsState());
     }
 
-    private void addMockSessions() {
-        addSessionRow("Sarah Johnson", "Mathematics", 150L, 90L, null, false);
-        addSessionRow("Mike Chen", "Physics", 200L, 120L, null, false);
+    private void showEmptySessionsState() {
+        if (layoutRecentSessions == null) return;
+        TextView tv = new TextView(this);
+        tv.setText("No completed sessions yet");
+        tv.setTextColor(0xFF8B97A8);
+        tv.setTextSize(14f);
+        tv.setGravity(Gravity.CENTER);
+        tv.setPadding(0, dp(24), 0, dp(24));
+        layoutRecentSessions.addView(tv);
     }
 
     private void addSessionRow(String name, String subject, Long tokens, Long durationMin, Date date, boolean isPending) {

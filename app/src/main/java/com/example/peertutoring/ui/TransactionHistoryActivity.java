@@ -103,7 +103,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
     // ── Load ──────────────────────────────────────────────────
 
     private void loadTransactions() {
-        if (currentUser == null) { loadMockData(); return; }
+        if (currentUser == null) { showEmptyState(); return; }
 
         // Load completed sessions (earnings)
         db.collection("sessionRequests")
@@ -129,7 +129,13 @@ public class TransactionHistoryActivity extends AppCompatActivity {
                     // Now load withdrawals
                     loadWithdrawals(totalEarned);
                 })
-                .addOnFailureListener(e -> loadMockData());
+                .addOnFailureListener(e -> showEmptyState());
+    }
+
+    private void showEmptyState() {
+        allTx.clear();
+        updateSummary(0, 0);
+        filterAndRender("");
     }
 
     private void loadWithdrawals(int totalEarned) {

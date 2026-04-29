@@ -137,13 +137,14 @@ public class SessionNotesActivity extends AppCompatActivity {
         StringBuilder sb = new StringBuilder();
         sb.append("📝 SESSION NOTES\n");
         sb.append("─────────────────────────\n");
-        if (!TextUtils.isEmpty(topics)) {
+        // Avoid TextUtils.isEmpty() so this static method is testable in pure-JVM unit tests
+        if (topics != null && !topics.isEmpty()) {
             sb.append("📚 Topics Covered:\n").append(topics).append("\n\n");
         }
-        if (!TextUtils.isEmpty(takeaways)) {
+        if (takeaways != null && !takeaways.isEmpty()) {
             sb.append("💡 Key Takeaways:\n").append(takeaways).append("\n\n");
         }
-        if (!TextUtils.isEmpty(actionItems)) {
+        if (actionItems != null && !actionItems.isEmpty()) {
             sb.append("✅ Action Items:\n").append(actionItems).append("\n\n");
         }
         sb.append("─────────────────────────");

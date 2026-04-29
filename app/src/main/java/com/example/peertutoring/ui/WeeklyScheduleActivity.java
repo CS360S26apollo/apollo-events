@@ -244,14 +244,18 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
     private void saveSchedule() {
         if (currentUser == null) return;
 
-        Map<String, Object> scheduleMap = new HashMap<>();
+        // Build a proper nested map — set() with dot-keyed strings creates literal field names
+        // (e.g. "schedule.mon"), not nested paths. Only update() resolves dots to nested maps.
+        Map<String, Object> dayMap = new HashMap<>();
         for (int i = 0; i < 7; i++) {
-            scheduleMap.put("schedule." + DAY_KEYS[i], schedule.get(i));
+            dayMap.put(DAY_KEYS[i], new ArrayList<>(schedule.get(i)));
         }
+        Map<String, Object> data = new HashMap<>();
+        data.put("schedule", dayMap);
 
         db.collection("tutorAvailability")
                 .document(currentUser.getUid())
-                .set(scheduleMap, SetOptions.merge())
+                .set(data, SetOptions.merge())
                 .addOnSuccessListener(unused ->
                         Toast.makeText(this, "✅ Schedule saved successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
@@ -272,11 +276,19 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
-                        for (int i = 0; i < 7; i++) {
-                            List<Long> saved = (List<Long>) doc.get("schedule." + DAY_KEYS[i]);
-                            if (saved != null) {
-                                schedule.get(i).clear();
-                                for (Long h : saved) schedule.get(i).add(h.intValue());
+                        // Read from nested map structure (matches how saveSchedule() writes it)
+                        Map<String, Object> scheduleMap = (Map<String, Object>) doc.get("schedule");
+                        if (scheduleMap != null) {
+                            for (int i = 0; i < 7; i++) {
+                                Object raw = scheduleMap.get(DAY_KEYS[i]);
+                                if (raw instanceof List) {
+                                    List<?> saved = (List<?>) raw;
+                                    schedule.get(i).clear();
+                                    for (Object h : saved) {
+                                        if (h instanceof Long) schedule.get(i).add(((Long) h).intValue());
+                                        else if (h instanceof Integer) schedule.get(i).add((Integer) h);
+                                    }
+                                }
                             }
                         }
                     }

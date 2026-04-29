@@ -246,7 +246,7 @@ public class NewSessionRequestActivity extends AppCompatActivity {
     }
 
     private int calculateTokenCost(int durationMinutes) {
-        return Math.max(1, (int) Math.ceil(durationMinutes / 60.0) * tutorRatePerHour);
+        return Math.max(1, (int) Math.ceil((durationMinutes * (double) tutorRatePerHour) / 60.0));
     }
 
     // ── Submit flow ───────────────────────────────────────────────────────────
@@ -312,7 +312,8 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         db.collection("users").document(currentUid).get()
                 .addOnSuccessListener(doc -> {
                     Long bal = doc.getLong("tokens");
-                    long currentTokens = (bal != null) ? bal : 100L;
+                    // Default to 0 if field absent — avoids false "sufficient balance" check
+                    long currentTokens = (bal != null) ? bal : 0L;
                     if (currentTokens < tokenCost) {
                         SoundManager.playError(this);
                         Toast.makeText(this,

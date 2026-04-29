@@ -4,6 +4,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * US-14: Detects scheduling conflicts before a session is booked or requested.
@@ -46,11 +48,32 @@ public class ConflictChecker {
         long proposedStartMs = proposedStart.getTime();
         long proposedEndMs   = proposedStartMs + (long) durationMinutes * 60_000L;
 
-        // Fetch tutor's buffer, then chain the two checks.
+        // Fetch tutorAvailability: check blockedDates first, then buffer + session overlap.
         db.collection("tutorAvailability").document(tutorUid).get()
                 .addOnSuccessListener(availDoc -> {
                     Long bufferLong = availDoc.exists() ? availDoc.getLong("bufferMinutes") : null;
                     long bufferMs   = (bufferLong != null ? bufferLong : 0L) * 60_000L;
+
+                    // Blocked-date guard: reject if the proposed day is marked unavailable.
+                    if (availDoc.exists()) {
+                        //noinspection unchecked
+                        List<String> blockedDates =
+                                (List<String>) availDoc.get("blockedDates");
+                        if (blockedDates != null && !blockedDates.isEmpty()) {
+                            java.util.Calendar cal = java.util.Calendar.getInstance();
+                            cal.setTimeInMillis(proposedStartMs);
+                            String proposedDay = String.format(Locale.US, "%04d-%02d-%02d",
+                                    cal.get(java.util.Calendar.YEAR),
+                                    cal.get(java.util.Calendar.MONTH) + 1,
+                                    cal.get(java.util.Calendar.DAY_OF_MONTH));
+                            if (blockedDates.contains(proposedDay)) {
+                                callback.onResult(true,
+                                        "Tutor has marked that date as unavailable.");
+                                return;
+                            }
+                        }
+                    }
+
                     runTutorCheck(db, tutorUid, proposedStartMs, proposedEndMs, bufferMs,
                             excludeRequestId, studentUid, callback);
                 })
