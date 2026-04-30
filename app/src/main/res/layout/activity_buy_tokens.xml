@@ -6,24 +6,17 @@
     android:orientation="vertical"
     android:background="#F0F0F8">
 
-    <!-- Header -->
+    <!-- Gradient header -->
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
         app:cardCornerRadius="0dp" app:cardElevation="0dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_button_gradient"
-            android:orientation="vertical"
-            android:paddingTop="48dp"
-            android:paddingBottom="24dp"
-            android:paddingHorizontal="20dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_gradient" android:orientation="vertical"
+            android:paddingTop="48dp" android:paddingBottom="20dp" android:paddingHorizontal="20dp">
 
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:gravity="center_vertical"
                 android:layout_marginBottom="16dp">
-
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="44dp" android:layout_height="44dp"
                     android:layout_marginEnd="14dp"
@@ -35,7 +28,6 @@
                         android:src="@android:drawable/ic_media_previous"
                         app:tint="#FFFFFF" android:contentDescription="Back"/>
                 </com.google.android.material.card.MaterialCardView>
-
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:orientation="vertical">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -47,19 +39,16 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Current balance card -->
+            <!-- Balance -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
-                app:cardElevation="2dp">
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="0dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:orientation="horizontal" android:gravity="center_vertical"
-                    android:padding="16dp">
+                    android:orientation="horizontal" android:gravity="center_vertical" android:padding="14dp">
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Current Balance" android:textColor="#8B97A8"
-                            android:textSize="12sp"/>
+                            android:text="Current Balance" android:textColor="#8B97A8" android:textSize="12sp"/>
                         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:orientation="horizontal" android:gravity="center_vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -67,7 +56,7 @@
                             <TextView android:id="@+id/tvCurrentBalance"
                                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                                 android:text="0" android:textColor="#8A2EFF"
-                                android:textSize="24sp" android:textStyle="bold"/>
+                                android:textSize="22sp" android:textStyle="bold"/>
                         </LinearLayout>
                     </LinearLayout>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -82,26 +71,133 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:padding="20dp">
 
+            <!-- ── Step 1: Choose Package ── -->
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Choose a Package" android:textColor="#071A3D"
-                android:textSize="18sp" android:textStyle="bold"
-                android:layout_marginBottom="16dp"/>
+                android:text="1. Choose a Package" android:textColor="#071A3D"
+                android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
 
-            <!-- Package cards built programmatically -->
             <LinearLayout android:id="@+id/layoutPackages"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:orientation="vertical" android:layout_marginBottom="24dp"/>
+
+            <!-- ── Step 2: Payment Method ── -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="2. Select Payment Method" android:textColor="#071A3D"
+                android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
+
+            <LinearLayout android:id="@+id/layoutPayMethods"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:layout_marginBottom="20dp"/>
+
+            <!-- ── Card input fields (shown for card payments) ── -->
+            <LinearLayout android:id="@+id/layoutCardInputs"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:visibility="gone">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="3. Enter Card Details" android:textColor="#071A3D"
+                    android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
+
+                <!-- Card number -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="💳  " android:textSize="18sp"/>
+                        <EditText android:id="@+id/etCardNumber"
+                            android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:hint="Card Number"
+                            android:inputType="number" android:textSize="16sp"
+                            android:textColor="#071A3D" android:letterSpacing="0.1"
+                            android:background="@android:color/transparent"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Cardholder name -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <EditText android:id="@+id/etCardHolder"
+                        android:layout_width="match_parent" android:layout_height="56dp"
+                        android:hint="Cardholder Name" android:inputType="textPersonName"
+                        android:textSize="15sp" android:textColor="#071A3D"
+                        android:paddingHorizontal="16dp"
+                        android:background="@android:color/transparent"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Expiry + CVV row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="20dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:layout_marginEnd="10dp"
+                        app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                        <EditText android:id="@+id/etExpiry"
+                            android:layout_width="match_parent" android:layout_height="56dp"
+                            android:hint="MM/YY" android:inputType="number"
+                            android:textSize="15sp" android:textColor="#071A3D"
+                            android:paddingHorizontal="16dp"
+                            android:background="@android:color/transparent"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                        <EditText android:id="@+id/etCVV"
+                            android:layout_width="match_parent" android:layout_height="56dp"
+                            android:hint="CVV" android:inputType="numberPassword"
+                            android:textSize="15sp" android:textColor="#071A3D"
+                            android:paddingHorizontal="16dp"
+                            android:background="@android:color/transparent"/>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ── Mobile wallet input ── -->
+            <LinearLayout android:id="@+id/layoutWalletInput"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:visibility="gone">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="3. Enter Mobile Number" android:textColor="#071A3D"
+                    android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="📱  " android:textSize="18sp"/>
+                        <EditText android:id="@+id/etPhoneNumber"
+                            android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:hint="Mobile number (03xx-xxxxxxx)"
+                            android:inputType="phone" android:textSize="15sp"
+                            android:textColor="#071A3D"
+                            android:background="@android:color/transparent"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
             <!-- Info note -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 app:cardCornerRadius="16dp" app:cardBackgroundColor="#EEF9F3"
                 app:strokeColor="#C8E6C9" app:strokeWidth="1dp" app:cardElevation="0dp">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="ℹ  Tokens never expire. Use them to book sessions with any tutor on the platform."
+                    android:text="🔒  Your payment is secure. Tokens are credited instantly after payment."
                     android:textColor="#4B5D7A" android:textSize="13sp"
-                    android:padding="16dp" android:lineSpacingExtra="4dp"/>
+                    android:padding="14dp" android:lineSpacingExtra="4dp"/>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
@@ -111,10 +207,9 @@
         android:background="#FFFFFF" android:elevation="8dp" android:padding="16dp">
         <Button android:id="@+id/btnPurchase"
             android:layout_width="match_parent" android:layout_height="56dp"
-            android:text="Select a package above" android:textAllCaps="false"
+            android:text="Select package &amp; payment" android:textAllCaps="false"
             android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"
-            android:background="@drawable/bg_button_gradient"
-            app:backgroundTint="@null"
+            android:background="@drawable/bg_button_gradient" app:backgroundTint="@null"
             android:enabled="false" android:alpha="0.4"/>
     </LinearLayout>
 </LinearLayout>

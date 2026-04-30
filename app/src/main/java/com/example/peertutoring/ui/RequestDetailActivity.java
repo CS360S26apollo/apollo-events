@@ -84,16 +84,14 @@ public class RequestDetailActivity extends AppCompatActivity {
         String category = getIntent().getStringExtra("category");
         // "subject" key used by TutorRequestsActivity; fall back to "category"
         if (category == null) category = getIntent().getStringExtra("subject");
-        int    duration = getIntent().getIntExtra("duration", 60);
-        int    tokens   = getIntent().getIntExtra("tokens", 0);
-        String goals    = getIntent().getStringExtra("goals");
+        int duration    = getIntent().getIntExtra("duration", 60);
+        int tokens      = getIntent().getIntExtra("tokens", 0);
 
         setText(R.id.tvTopic,        topic    != null ? topic    : "Request Detail");
         setText(R.id.tvProviderName, provider != null ? provider : "Tutor Pending");
         setText(R.id.tvCategory,     category != null ? category : "Education");
         setText(R.id.tvTokens,       String.valueOf(tokens));
         setText(R.id.tvDuration,     duration + " min");
-        setText(R.id.tvDetails,      goals    != null && !goals.isEmpty() ? goals : "No goals specified");
         updateStatusUI(status);
     }
 
@@ -150,10 +148,10 @@ public class RequestDetailActivity extends AppCompatActivity {
                     sessionDuration = dur  != null ? dur.intValue()  : 60;
                     sessionStatus   = doc.getString("status");
 
-                    // Update displayed status badge and session goals
+                    // Update displayed provider name and status badge
+                    String tutorName = doc.getString("tutorName");
+                    setText(R.id.tvProviderName, tutorName != null ? tutorName : "Searching...");
                     updateStatusUI(sessionStatus);
-                    String goals = doc.getString("goals");
-                    setText(R.id.tvDetails, goals != null && !goals.isEmpty() ? goals : "No goals specified");
 
                     // Show scheduled time in the location row if set
                     if (sessionScheduledDate != null) {
@@ -165,26 +163,7 @@ public class RequestDetailActivity extends AppCompatActivity {
                     boolean isStudent = currentUid.equals(sessionStudentUid);
                     boolean isTutor   = currentUid.equals(sessionTutorUid);
 
-                    // Show the OTHER party's name — tapping it opens the shared chat thread.
-                    // Tutor sees student name; student sees tutor name. Without this, the tutor
-                    // would see their own name and have no obvious chat entry point.
-                    String tutorName = doc.getString("tutorName");
-                    if (isTutor) {
-                        setText(R.id.tvProviderName, sessionStudentName != null ? sessionStudentName : "Student");
-                    } else {
-                        setText(R.id.tvProviderName, tutorName != null ? tutorName : "Searching...");
-                    }
-
                     updateButtonVisibility(isStudent, isTutor);
-
-                    // Tap the provider-name row to open the shared chat thread.
-                    // SessionNotesActivity uses the same buildConvId formula, so
-                    // notes sent by the tutor appear here for the student automatically.
-                    if (sessionStudentUid != null && sessionTutorUid != null) {
-                        setupChatShortcut(sessionStudentUid, sessionTutorUid,
-                                doc.getString("tutorName"), doc.getString("studentName"),
-                                isTutor);
-                    }
 
                     // Post-completion actions
                     if ("completed".equals(sessionStatus)) {
@@ -228,6 +207,13 @@ public class RequestDetailActivity extends AppCompatActivity {
         boolean showTutorActions = isTutor && "requested".equals(sessionStatus);
         if (tutorActions != null)
             tutorActions.setVisibility(showTutorActions ? View.VISIBLE : View.GONE);
+
+        // Always hide counter-offer section for tutors
+        if (isTutor) {
+            View pl = findViewById(R.id.layoutProviderList);
+            if (pl != null) pl.setVisibility(View.GONE);
+            if (layoutOfferContainer != null) layoutOfferContainer.removeAllViews();
+        }
 
         // US 24: tutor can mark complete on booked sessions to release escrow
         Button btnMarkComplete = findViewById(R.id.btnMarkComplete);
@@ -448,59 +434,179 @@ public class RequestDetailActivity extends AppCompatActivity {
     // ── Offers (counter-offers shown to student) ────────────────────────��────
 
     private void loadProviderOffers() {
-        db.collection("sessionRequests").document(requestId).collection("offers")
+        if (requestId == null || requestId.startsWith("mock_")) return;
+
+        // Ensure offer section is completely hidden for tutors
+        View providerList = findViewById(R.id.layoutProviderList);
+        if (providerList != null) providerList.setVisibility(android.view.View.GONE);
+        if (layoutOfferContainer != null) layoutOfferContainer.removeAllViews();
+
+        // Only students see counter offers
+        if (!currentUid.equals(sessionStudentUid)) return;
+
+        db.collection("sessionRequests").document(requestId)
+                .collection("counterOffers")
                 .addSnapshotListener((snap, e) -> {
-                    if (snap != null) displayOffers(snap.getDocuments());
+                    if (snap == null) return;
+                    // Only show pending offers — accepted ones disappear
+                    java.util.List<com.google.firebase.firestore.DocumentSnapshot> pending =
+                            new java.util.ArrayList<>();
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : snap.getDocuments()) {
+                        if ("pending".equals(doc.getString("status"))) {
+                            pending.add(doc);
+                        }
+                    }
+                    displayOffers(pending);
                 });
     }
 
-    private void displayOffers(List<DocumentSnapshot> offers) {
+    private void displayOffers(java.util.List<com.google.firebase.firestore.DocumentSnapshot> offers) {
         if (layoutOfferContainer == null) return;
         layoutOfferContainer.removeAllViews();
         View providerList = findViewById(R.id.layoutProviderList);
+
         if (offers.isEmpty()) {
             if (providerList != null) providerList.setVisibility(View.GONE);
             return;
         }
         if (providerList != null) providerList.setVisibility(View.VISIBLE);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        for (DocumentSnapshot doc : offers) {
-            View offerView = inflater.inflate(R.layout.item_tutor_offer, layoutOfferContainer, false);
-            TextView tvName = offerView.findViewById(R.id.tvTutorName);
-            if (tvName != null) tvName.setText(doc.getString("tutorName"));
-            layoutOfferContainer.addView(offerView);
+
+        for (com.google.firebase.firestore.DocumentSnapshot doc : offers) {
+            String offerId        = doc.getId();
+            String proposedDate   = doc.getString("proposedDate");
+            String proposedTime   = doc.getString("proposedTime");
+            Long   proposedDur    = doc.getLong("proposedDuration");
+            Long   proposedTokens = doc.getLong("proposedTokens");
+            String message        = doc.getString("message");
+
+            // Build card
+            com.google.android.material.card.MaterialCardView card =
+                    new com.google.android.material.card.MaterialCardView(this);
+            android.widget.LinearLayout.LayoutParams cp =
+                    new android.widget.LinearLayout.LayoutParams(
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            cp.setMargins(0, 0, 0, dp(12));
+            card.setLayoutParams(cp);
+            card.setRadius(dp(16));
+            card.setCardBackgroundColor(0xFFF9F5FF);
+            card.setStrokeColor(0xFF8A2EFF);
+            card.setStrokeWidth(dp(1));
+            card.setCardElevation(dp(2));
+
+            android.widget.LinearLayout inner = new android.widget.LinearLayout(this);
+            inner.setOrientation(android.widget.LinearLayout.VERTICAL);
+            inner.setPadding(dp(16), dp(14), dp(16), dp(14));
+
+            // Header
+            TextView tvHeader = new TextView(this);
+            tvHeader.setText("Counter Offer from Tutor");
+            tvHeader.setTextColor(0xFF8A2EFF);
+            tvHeader.setTextSize(14f);
+            tvHeader.setTypeface(null, android.graphics.Typeface.BOLD);
+            inner.addView(tvHeader);
+
+            // Details
+            StringBuilder sb = new StringBuilder();
+            if (proposedDate   != null) sb.append("Date: ").append(proposedDate);
+            if (proposedTime   != null) sb.append("  ").append(proposedTime);
+            if (proposedDur    != null) sb.append("Duration: ").append(proposedDur).append(" min");
+            if (proposedTokens != null) sb.append("Tokens: ").append(proposedTokens);
+            if (message != null && !message.isEmpty()) sb.append("Message: ").append(message);
+
+            TextView tvDetails = new TextView(this);
+            tvDetails.setText(sb.toString().trim());
+            tvDetails.setTextColor(0xFF4B5D7A);
+            tvDetails.setTextSize(13f);
+            android.widget.LinearLayout.LayoutParams dlp =
+                    new android.widget.LinearLayout.LayoutParams(
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            dlp.setMargins(0, dp(8), 0, dp(12));
+            tvDetails.setLayoutParams(dlp);
+            inner.addView(tvDetails);
+
+            // Accept button
+            android.widget.Button btnAccept = new android.widget.Button(this);
+            btnAccept.setText("Accept This Offer");
+            btnAccept.setAllCaps(false);
+            btnAccept.setTextColor(android.graphics.Color.WHITE);
+            btnAccept.setTextSize(14f);
+            try {
+                btnAccept.setBackground(
+                        androidx.core.content.ContextCompat.getDrawable(
+                                this, R.drawable.bg_button_gradient));
+            } catch (Exception ignored) {}
+            android.widget.LinearLayout.LayoutParams blp =
+                    new android.widget.LinearLayout.LayoutParams(
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT, dp(48));
+            btnAccept.setLayoutParams(blp);
+
+            final int    fTokens = proposedTokens != null ? proposedTokens.intValue() : sessionTokens;
+            final int    fDur    = proposedDur    != null ? proposedDur.intValue()    : sessionDuration;
+            final String fDate   = proposedDate;
+            final String fTime   = proposedTime;
+            btnAccept.setOnClickListener(v ->
+                    acceptCounterOffer(offerId, fDate, fTime, fDur, fTokens, btnAccept));
+
+            inner.addView(btnAccept);
+            card.addView(inner);
+            layoutOfferContainer.addView(card);
         }
     }
 
-    // ── Chat shortcut ─────────────────────────────────────────────────────────
-
     /**
-     * Wires a tap on the provider-name row to open the shared conversation thread.
-     * The conversation ID is built identically to SessionNotesActivity.buildConvId()
-     * and TutorDetailActivity.setupMessageButton(), so all three screens share one
-     * Firestore path: conversations/{min_uid}_{max_uid}/messages.
+     * Student accepts a counter offer:
+     * 1. Marks offer doc status → "accepted" (pending filter removes it from view instantly)
+     * 2. Updates session status → "booked" with proposed schedule
+     *    (session automatically moves to booked list in SessionRequestsActivity)
      */
-    private void setupChatShortcut(String studentUid, String tutorUid,
-                                   String tutorName, String studentName,
-                                   boolean isTutor) {
-        View providerRow = findViewById(R.id.tvProviderName);
-        if (providerRow == null) return;
+    private void acceptCounterOffer(String offerId, String proposedDate, String proposedTime,
+                                    int durationMinutes, int tokens, android.widget.Button btn) {
+        if (requestId == null) return;
+        if (btn != null) { btn.setEnabled(false); btn.setText("Accepting..."); }
 
-        String convId = tutorUid.compareTo(studentUid) < 0
-                ? tutorUid + "_" + studentUid
-                : studentUid + "_" + tutorUid;
+        // Step 1: mark this specific offer as accepted → disappears from pending filter
+        db.collection("sessionRequests").document(requestId)
+                .collection("counterOffers").document(offerId)
+                .update("status", "accepted")
+                .addOnSuccessListener(u -> {
+                    // Step 2: update session to BOOKED with proposed details
+                    java.util.Map<String, Object> updates = new java.util.HashMap<>();
+                    updates.put("status",          "booked");
+                    updates.put("durationMinutes", durationMinutes);
+                    updates.put("tokens",          tokens);
+                    if (proposedDate != null) updates.put("sessionDate", proposedDate);
+                    if (proposedTime != null) updates.put("sessionTime", proposedTime);
 
-        String otherPersonName = isTutor
-                ? (studentName != null ? studentName : "Student")
-                : (tutorName   != null ? tutorName   : "Tutor");
+                    db.collection("sessionRequests").document(requestId)
+                            .update(updates)
+                            .addOnSuccessListener(u2 -> {
+                                Toast.makeText(this,
+                                        "Offer accepted! Session is now booked.",
+                                        Toast.LENGTH_LONG).show();
+                                finish(); // return to session list — it will show as Booked
+                            })
+                            .addOnFailureListener(e2 -> {
+                                Toast.makeText(this, "Error: " + e2.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                if (btn != null) {
+                                    btn.setEnabled(true);
+                                    btn.setText("Accept This Offer");
+                                }
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (btn != null) {
+                        btn.setEnabled(true);
+                        btn.setText("Accept This Offer");
+                    }
+                });
+    }
 
-        providerRow.setClickable(true);
-        providerRow.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MessagingActivity.class);
-            intent.putExtra("requestId",       convId);
-            intent.putExtra("otherPersonName", otherPersonName);
-            startActivity(intent);
-        });
+    private int dp(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
     // ── Shared helpers ───────────────────────────────────────────────────────
