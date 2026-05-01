@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Camera temp photos stored in app cache -->
+    <cache-path name="camera_photos" path="." />
+    <!-- Also allow external files dir -->
+    <external-files-path name="external_files" path="." />
+</paths>
