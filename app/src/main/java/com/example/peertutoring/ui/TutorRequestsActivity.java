@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,12 +20,21 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Activity for tutors to view and manage incoming tutoring session requests from students.
+ * Role: Request Management View for User Story 09 (Tutor Response).
+ * Purpose: Displays a list of pending student proposals, allowing tutors to filter
+ * by priority (token amount) and search for specific topics or students.
+ *
+ * Design Pattern: View-Controller with dynamic list rendering.
+ *
+ * Outstanding Issues:
+ * - Real-time listener is not yet implemented (uses one-time get() with mock fallback).
  */
 public class TutorRequestsActivity extends AppCompatActivity {
 
@@ -50,18 +60,20 @@ public class TutorRequestsActivity extends AppCompatActivity {
 
         setupSearch();
         setupFilterChips();
+        setupEarningsButton();
+        setupBottomNav();
         loadRequests();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!tutorUid.isEmpty()) {
-            ExpirationUtils.expireStaleRequestsForTutor(tutorUid, db);
-            loadRequests();
-        }
+        ExpirationUtils.expireStaleRequestsForTutor(tutorUid, db);
     }
 
+    /**
+     * Initializes the search input field with a listener to filter the list by student name or topic.
+     */
     private void setupSearch() {
         EditText etSearch = findViewById(R.id.etSearch);
         if (etSearch == null) return;
@@ -87,6 +99,9 @@ public class TutorRequestsActivity extends AppCompatActivity {
         displayRequests(filtered);
     }
 
+    /**
+     * Sets up priority-based filter chips (High, Medium, Low) based on the session's token value.
+     */
     private void setupFilterChips() {
         View chipAll    = findViewById(R.id.chipAll);
         View chipHigh   = findViewById(R.id.chipHighPriority);
@@ -113,44 +128,42 @@ public class TutorRequestsActivity extends AppCompatActivity {
         displayRequests(filtered);
     }
 
+    private com.google.firebase.firestore.ListenerRegistration requestsListener;
+
     /**
-     * Loads all active sessions for this tutor: both "requested" (pending acceptance)
-     * and "booked" (accepted but not yet completed). Showing "booked" sessions here
-     * prevents them from disappearing after the tutor accepts — the invisible-session bug.
+     * Real-time listener for session requests assigned to this tutor.
+     * Filters client-side to avoid needing a composite Firestore index.
      */
     private void loadRequests() {
-        if (tutorUid.isEmpty()) { showEmpty(); return; }
+        if (tutorUid.isEmpty()) { loadMockData(); return; }
 
-        db.collection("sessionRequests")
+        // Query only by tutorUid — no compound index needed
+        // Filter status client-side to avoid composite index requirement
+        requestsListener = db.collection("sessionRequests")
                 .whereEqualTo("tutorUid", tutorUid)
-                .get()
-                .addOnSuccessListener(snap -> {
-                    allRequests = new ArrayList<>();
-                    int pendingCount = 0;
-                    for (DocumentSnapshot doc : snap.getDocuments()) {
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null || snap == null) {
+                        loadMockData();
+                        return;
+                    }
+                    allRequests = new java.util.ArrayList<>();
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : snap.getDocuments()) {
                         String status = doc.getString("status");
-                        // Keep sessions visible until explicitly completed or cancelled
+                        // Show requested + booked (tutor needs to see both)
                         if ("requested".equals(status) || "booked".equals(status)) {
                             allRequests.add(doc);
-                            if ("requested".equals(status)) pendingCount++;
                         }
                     }
-                    updateNotifBadge(pendingCount);
-                    if (allRequests.isEmpty()) showEmpty();
+                    if (allRequests.isEmpty()) loadMockData();
                     else displayRequests(allRequests);
-                })
-                .addOnFailureListener(e -> { updateNotifBadge(0); showEmpty(); });
+                });
     }
 
-    private void updateNotifBadge(int count) {
-        View badge = findViewById(R.id.cardNotifBadge);
-        TextView tvCount = findViewById(R.id.tvNotifCount);
-        if (badge != null) badge.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
-        if (tvCount != null) tvCount.setText(String.valueOf(count));
-    }
-
+    /**
+     * Renders the list of session request cards into the scrollable container.
+     * @param list The list of document snapshots to display.
+     */
     private void displayRequests(List<DocumentSnapshot> list) {
-        if (layoutRequestList == null) return;
         layoutRequestList.removeAllViews();
         if (list.isEmpty()) { showEmpty(); return; }
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -174,8 +187,8 @@ public class TutorRequestsActivity extends AppCompatActivity {
         setText(card, R.id.tvSubject,     subject);
         setText(card, R.id.tvTopic,       topic);
         setText(card, R.id.tvDate,        date  != null ? date  : "TBD");
-        String timeStr = (time != null ? time  : "TBD") + (duration != null ? " (" + duration + "m)" : "");
-        setText(card, R.id.tvTime,        timeStr);
+        setText(card, R.id.tvTime,        (time != null ? time  : "TBD")
+                + (duration != null ? " (" + duration + "m)" : ""));
         setText(card, R.id.tvTokens,      (tokens != null ? tokens : 0) + " Tokens");
 
         TextView tvInitials = card.findViewById(R.id.tvStudentInitials);
@@ -202,38 +215,117 @@ public class TutorRequestsActivity extends AppCompatActivity {
             accentBar.setBackgroundColor(color);
         }
 
+        String requestId    = doc.getId();
+        String studentUid   = doc.getString("studentUid");
+        String goals        = doc.getString("goals");
+        String studentMsg   = doc.getString("studentMessage");
+        int    dur          = duration != null ? duration.intValue() : 60;
+        int    tok          = tokens   != null ? tokens.intValue()   : 150;
+
         card.setOnClickListener(v -> {
             Intent intent = new Intent(this, RequestDetailActivity.class);
-            intent.putExtra("requestId",      doc.getId());
-            intent.putExtra("studentUid",     doc.getString("studentUid"));
+            intent.putExtra("requestId",      requestId);
+            intent.putExtra("studentUid",     studentUid);
             intent.putExtra("studentName",    studentName);
             intent.putExtra("subject",        subject);
             intent.putExtra("topic",          topic);
             intent.putExtra("date",           date);
             intent.putExtra("time",           time);
-            intent.putExtra("duration",       duration != null ? duration.intValue() : 60);
-            intent.putExtra("tokens",         tokens   != null ? tokens.intValue()   : 150);
-            intent.putExtra("goals",          doc.getString("goals"));
-            intent.putExtra("studentMessage", doc.getString("studentMessage"));
+            intent.putExtra("duration",       dur);
+            intent.putExtra("tokens",         tok);
+            intent.putExtra("goals",          goals);
+            intent.putExtra("studentMessage", studentMsg);
             startActivity(intent);
         });
     }
 
     private void showEmpty() {
+        TextView tv = new TextView(this);
+        tv.setText("No new session requests yet.");
+        tv.setTextColor(Color.parseColor("#8B97A8"));
+        tv.setTextSize(15f);
+        tv.setGravity(android.view.Gravity.CENTER);
+        tv.setPadding(0, 80, 0, 0);
+        layoutRequestList.addView(tv);
+    }
+
+    /** No real requests found — show empty state instead of fake data. */
+    private void loadMockData() {
         if (layoutRequestList == null) return;
         layoutRequestList.removeAllViews();
-
-        TextView tvTitle = new TextView(this);
-        tvTitle.setText("No pending requests");
-        tvTitle.setTextColor(Color.parseColor("#071A3D"));
-        tvTitle.setTextSize(18f);
-        tvTitle.setGravity(android.view.Gravity.CENTER);
-        tvTitle.setPadding(40, 100, 40, 8);
-        layoutRequestList.addView(tvTitle);
+        TextView tv = new TextView(this);
+        tv.setText("No pending session requests.\nStudents will appear here when they book you.");
+        tv.setTextColor(android.graphics.Color.parseColor("#8B97A8"));
+        tv.setTextSize(15f);
+        tv.setGravity(android.view.Gravity.CENTER);
+        tv.setPadding(0, 80, 0, 0);
+        tv.setLineSpacing(8f, 1f);
+        layoutRequestList.addView(tv);
     }
 
     private void setText(View parent, int id, String text) {
         TextView tv = parent.findViewById(id);
         if (tv != null && text != null) tv.setText(text);
     }
+    // ── Earnings button (header) ──────────────────────────────
+
+    private void setupEarningsButton() {
+        View btn = findViewById(R.id.btnOpenEarnings);
+        if (btn != null) {
+            btn.setOnClickListener(v ->
+                    startActivity(new Intent(this, TutorEarningsActivity.class)));
+        }
+    }
+
+    // ── Bottom navigation ─────────────────────────────────────
+
+    private void setupBottomNav() {
+        View navHome         = findViewById(R.id.navHome);
+        View navRequests     = findViewById(R.id.navRequests);
+        View navEarnings     = findViewById(R.id.navEarnings);
+        View navAvailability = findViewById(R.id.navAvailability);
+        View navProfile      = findViewById(R.id.navProfile);
+
+        if (navHome != null) {
+            navHome.setOnClickListener(v -> {
+                startActivity(new Intent(this, HomeActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+            });
+        }
+
+        if (navRequests != null) {
+            // Already on this screen
+            navRequests.setOnClickListener(v -> { /* current screen */ });
+        }
+
+        if (navEarnings != null) {
+            navEarnings.setOnClickListener(v -> {
+                startActivity(new Intent(this, TutorEarningsActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
+
+        if (navAvailability != null) {
+            navAvailability.setOnClickListener(v -> {
+                startActivity(new Intent(this, AvailabilityDashboardActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
+
+        if (navProfile != null) {
+            navProfile.setOnClickListener(v -> {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                overridePendingTransition(0, 0);
+            });
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (requestsListener != null) requestsListener.remove();
+    }
+
 }

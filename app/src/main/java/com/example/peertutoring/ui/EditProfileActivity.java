@@ -61,8 +61,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private Button tabEditProfile, tabPrivacy, tabVerification;
     private LinearLayout panelEditProfile, panelPrivacy, panelVerification;
 
-    // -- Role toggle
-    private Button btnRoleStudent, btnRoleTutor;
+    // -- Role (read-only, fixed at signup)
     private String currentRole = "student";
 
     // -- Edit Profile fields
@@ -84,6 +83,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> documentLauncher;
     private Uri selectedDocumentUri = null;
     private FirebaseStorage storage;
+    private TextView tvUserRoleBadge;
 
     // -- Subject chip IDs and names
     private static final int[] CHIP_IDS = {
@@ -109,7 +109,6 @@ public class EditProfileActivity extends AppCompatActivity {
         setupLaunchers();
         bindViews();
         setupTabSwitcher();
-        setupRoleToggle();
         setupChips();
         setupBioCharCount();
         setupSaveButtons();
@@ -139,8 +138,7 @@ public class EditProfileActivity extends AppCompatActivity {
         panelEditProfile      = findViewById(R.id.panelEditProfile);
         panelPrivacy          = findViewById(R.id.panelPrivacy);
         panelVerification     = findViewById(R.id.panelVerification);
-        btnRoleStudent        = findViewById(R.id.btnRoleStudent);
-        btnRoleTutor          = findViewById(R.id.btnRoleTutor);
+        tvUserRoleBadge       = findViewById(R.id.tvUserRoleBadge);
         etFirstName           = findViewById(R.id.editTextFirstName);
         etLastName            = findViewById(R.id.editTextLastName);
         etEmail               = findViewById(R.id.editTextEmail);
@@ -210,18 +208,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Role is fixed at signup — buttons are display-only indicators.
-     * Clicking them shows a message explaining the role cannot be changed.
-     */
-    private void setupRoleToggle() {
-        View.OnClickListener locked = v ->
-                Toast.makeText(this,
-                        "Your role is fixed at signup. Create a new account to switch roles.",
-                        Toast.LENGTH_LONG).show();
-        if (btnRoleStudent != null) btnRoleStudent.setOnClickListener(locked);
-        if (btnRoleTutor   != null) btnRoleTutor.setOnClickListener(locked);
-    }
+
 
     /** Adjusts the visibility of role-specific input fields. */
     private void applyRoleUI(String role) {
@@ -247,24 +234,7 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }
 
-        if (btnRoleStudent != null) {
-            if (role.equals("student")) {
-                btnRoleStudent.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_button_gradient));
-                btnRoleStudent.setTextColor(Color.WHITE);
-            } else {
-                btnRoleStudent.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-                btnRoleStudent.setTextColor(Color.parseColor("#4B5D7A"));
-            }
-        }
-        if (btnRoleTutor != null) {
-            if (role.equals("tutor")) {
-                btnRoleTutor.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_button_gradient));
-                btnRoleTutor.setTextColor(Color.WHITE);
-            } else {
-                btnRoleTutor.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-                btnRoleTutor.setTextColor(Color.parseColor("#4B5D7A"));
-            }
-        }
+
     }
 
     /** Sets up selection listeners for the subject chips. */

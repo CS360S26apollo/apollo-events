@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,13 +30,13 @@ import java.util.Locale;
 
 /**
  * Activity for students to view and track all their tutoring session requests.
- * Role: Tracking View for User Story 10 (Track Request Status) 
+ * Role: Tracking View for User Story 10 (Track Request Status)
  * and User Story 16 (Session Lifecycle Tracking).
- * 
- * Purpose: Provides a comprehensive list of all requests (Requested, Booked, 
- * Completed, Cancelled) with real-time updates from Firestore. Aligned 
+ *
+ * Purpose: Provides a comprehensive list of all requests (Requested, Booked,
+ * Completed, Cancelled) with real-time updates from Firestore. Aligned
  * with the visual dashboard requirements from Figma.
- * 
+ *
  * Design Pattern: Observer pattern (Real-time Firestore snapshots).
  */
 public class SessionRequestsActivity extends AppCompatActivity {
@@ -119,22 +120,23 @@ public class SessionRequestsActivity extends AppCompatActivity {
     private void startRealTimeListener() {
         if (currentUid.isEmpty()) { loadMockData(); return; }
 
-        // Query by studentUid only — adding orderBy would require a composite index.
-        // Sort in-memory after loading.
         requestsListener = db.collection("sessionRequests")
                 .whereEqualTo("studentUid", currentUid)
+                // No orderBy — avoids composite index requirement.
+                // Sort client-side by createdAt descending.
                 .addSnapshotListener((snap, e) -> {
-                    if (snap != null && !snap.isEmpty()) {
+                    if (e != null) { loadMockData(); return; }
+                    if (snap != null) {
                         allSessions.clear();
                         for (DocumentSnapshot d : snap.getDocuments()) {
                             allSessions.add(new SessionDoc(d));
                         }
-                        // Sort by createdAt descending in-memory
+                        // Sort client-side by scheduledDate descending (newest first)
                         allSessions.sort((a, b) -> {
-                            if (a.createdAt == null && b.createdAt == null) return 0;
-                            if (a.createdAt == null) return 1;
-                            if (b.createdAt == null) return -1;
-                            return b.createdAt.compareTo(a.createdAt);
+                            if (a.scheduledDate == null && b.scheduledDate == null) return 0;
+                            if (a.scheduledDate == null) return 1;
+                            if (b.scheduledDate == null) return -1;
+                            return b.scheduledDate.compareTo(a.scheduledDate);
                         });
                         updateCounts();
                         updateListUI();
@@ -144,22 +146,25 @@ public class SessionRequestsActivity extends AppCompatActivity {
                 });
     }
 
-    /** Loads local mock data if the user is not authenticated (for demo purposes). */
+    /**
+     * Called when Firestore returns empty or user is not logged in.
+     * Shows empty state instead of fake hardcoded data.
+     */
     private void loadMockData() {
         allSessions.clear();
-        Calendar cal = Calendar.getInstance();
-
-        cal.add(Calendar.DAY_OF_YEAR, 2);
-        allSessions.add(new SessionDoc("Mathematics", SessionRequest.STATUS_BOOKED, 60, 50, "Dr. Sarah Johnson", "Mathematics", cal.getTime()));
-
-        cal.add(Calendar.DAY_OF_YEAR, -1);
-        allSessions.add(new SessionDoc("Physics", SessionRequest.STATUS_REQUESTED, 90, 82, "Prof. Michael Chen", "Physics", cal.getTime()));
-
-        cal.add(Calendar.DAY_OF_YEAR, -5);
-        allSessions.add(new SessionDoc("Chemistry", SessionRequest.STATUS_COMPLETED, 60, 45, "Emma Rodriguez", "Chemistry", cal.getTime()));
-        
         updateCounts();
         updateListUI();
+        // Show empty state message
+        if (layoutRequestList != null) {
+            android.widget.TextView tv = new android.widget.TextView(this);
+            tv.setText("No session requests yet.\nBrowse tutors to book your first session!");
+            tv.setTextColor(android.graphics.Color.parseColor("#8B97A8"));
+            tv.setTextSize(15f);
+            tv.setGravity(android.view.Gravity.CENTER);
+            tv.setPadding(0, 80, 0, 0);
+            tv.setLineSpacing(8f, 1f);
+            layoutRequestList.addView(tv);
+        }
     }
 
     /** Recalculates the summary statistics displayed in the screen header. */
@@ -230,7 +235,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         if (tvStatusBadge != null && cardStatusBadge != null) {
             String displayStatus = doc.status.toUpperCase();
             tvStatusBadge.setText(displayStatus);
-            
+
             if (SessionRequest.STATUS_REQUESTED.equals(doc.status)) {
                 tvStatusBadge.setTextColor(Color.parseColor("#007AFF"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#E6F2FF"));
@@ -260,7 +265,6 @@ public class SessionRequestsActivity extends AppCompatActivity {
         String id, topic, status, provider, category, tutorUid;
         int duration, tokens;
         Date scheduledDate;
-        Date createdAt;
 
         SessionDoc(String t, String s, int d, int tok, String p, String c, Date date) {
             id = "mock_" + t; topic = t; status = s; duration = d; tokens = tok; provider = p; category = c; scheduledDate = date;
@@ -277,7 +281,6 @@ public class SessionRequestsActivity extends AppCompatActivity {
             Long tok = d.getLong("tokens");
             tokens = tok != null ? tok.intValue() : 0;
             scheduledDate = d.getDate("scheduledDate");
-            createdAt = d.getDate("createdAt");
         }
     }
 

@@ -6,13 +6,15 @@
     android:orientation="vertical"
     android:background="#F0F0F8">
 
-    <!-- Header -->
+    <!-- Gradient header -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent" android:layout_height="wrap_content"
         app:cardCornerRadius="0dp" app:cardElevation="0dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:background="@drawable/bg_button_gradient" android:orientation="vertical"
-            android:paddingTop="48dp" android:paddingBottom="24dp" android:paddingHorizontal="20dp">
+            android:background="@drawable/bg_button_gradient"
+            android:orientation="vertical"
+            android:paddingTop="48dp" android:paddingBottom="20dp"
+            android:paddingHorizontal="20dp">
 
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:gravity="center_vertical"
@@ -20,31 +22,27 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="44dp" android:layout_height="44dp"
                     android:layout_marginEnd="14dp"
-                    app:cardCornerRadius="22dp" app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp"
-                    android:clickable="true" android:focusable="true">
+                    app:cardCornerRadius="22dp" app:cardBackgroundColor="#33FFFFFF"
+                    app:cardElevation="0dp">
                     <ImageButton android:id="@+id/btnBack"
                         android:layout_width="match_parent" android:layout_height="match_parent"
                         android:background="@android:color/transparent"
                         android:src="@android:drawable/ic_media_previous"
                         app:tint="#FFFFFF" android:contentDescription="Back"/>
                 </com.google.android.material.card.MaterialCardView>
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Withdraw Tokens" android:textColor="#FFFFFF"
-                        android:textSize="22sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Convert your earnings" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
-                </LinearLayout>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Withdraw Earnings" android:textColor="#FFFFFF"
+                    android:textSize="22sp" android:textStyle="bold"/>
             </LinearLayout>
 
             <!-- Balance card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="0dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:gravity="center_vertical"
-                    android:padding="18dp">
+                    android:padding="14dp">
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -52,21 +50,21 @@
                         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:orientation="horizontal" android:gravity="center_vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="🪙 " android:textSize="18sp"/>
+                                android:text="🪙 " android:textSize="16sp"/>
                             <TextView android:id="@+id/tvAvailableBalance"
                                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                                 android:text="0" android:textColor="#8A2EFF"
-                                android:textSize="28sp" android:textStyle="bold"/>
+                                android:textSize="22sp" android:textStyle="bold"/>
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:orientation="vertical" android:gravity="end">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Equivalent" android:textColor="#8B97A8" android:textSize="11sp"/>
+                            android:text="USD equivalent" android:textColor="#8B97A8" android:textSize="11sp"/>
                         <TextView android:id="@+id/tvUsdEquivalent"
                             android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="$0.00" android:textColor="#00C853"
-                            android:textSize="18sp" android:textStyle="bold"/>
+                            android:text="$0.00" android:textColor="#071A3D"
+                            android:textSize="16sp" android:textStyle="bold"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -78,74 +76,68 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:padding="20dp">
 
-            <!-- Amount card -->
+            <!-- Step 1: Amount -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="1. Enter Amount (tokens)"
+                android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Quick amount chips -->
+            <LinearLayout android:id="@+id/layoutQuickAmounts"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="12dp"/>
+
+            <!-- Manual amount input -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:padding="20dp">
-
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Enter Amount" android:textColor="#071A3D"
-                        android:textSize="16sp" android:textStyle="bold"
-                        android:layout_marginBottom="14dp"/>
-
-                    <!-- Amount input -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        app:cardCornerRadius="12dp" app:cardBackgroundColor="#F5F5F5" app:cardElevation="0dp">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
-                            android:orientation="horizontal" android:gravity="center_vertical"
-                            android:paddingHorizontal="16dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="🪙  " android:textSize="18sp"/>
-                            <EditText android:id="@+id/etWithdrawAmount"
-                                android:layout_width="0dp" android:layout_height="match_parent"
-                                android:layout_weight="1" android:hint="0"
-                                android:inputType="number" android:textSize="22sp"
-                                android:textColor="#071A3D" android:background="@android:color/transparent"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Quick amount chips -->
-                    <HorizontalScrollView android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:layout_marginTop="14dp"
-                        android:scrollbars="none">
-                        <LinearLayout android:id="@+id/layoutQuickAmounts"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:orientation="horizontal"/>
-                    </HorizontalScrollView>
+                        android:text="🪙  " android:textSize="18sp"/>
+                    <EditText android:id="@+id/etWithdrawAmount"
+                        android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:hint="Enter token amount"
+                        android:inputType="number" android:textSize="16sp"
+                        android:textColor="#071A3D"
+                        android:background="@android:color/transparent"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Withdrawal method section -->
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Select Withdrawal Method" android:textColor="#071A3D"
-                android:textSize="18sp" android:textStyle="bold"
-                android:layout_marginBottom="14dp"/>
+                android:text="Minimum withdrawal: 100 tokens ($10)"
+                android:textColor="#8B97A8" android:textSize="12sp"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Step 2: Payment method -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="2. Select Payment Method"
+                android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
 
             <LinearLayout android:id="@+id/layoutWithdrawMethods"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:orientation="vertical" android:layout_marginBottom="20dp"/>
 
-            <!-- Withdrawal rules -->
+            <!-- Step 3: Payment details (populated dynamically) -->
+            <LinearLayout android:id="@+id/layoutPaymentDetails"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"/>
+
+            <!-- Info note -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:cardCornerRadius="16dp" app:cardBackgroundColor="#F0F8FF"
-                app:strokeColor="#BBDEFB" app:strokeWidth="1dp" app:cardElevation="0dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="ℹ Withdrawal Rules" android:textColor="#0062FF"
-                        android:textSize="14sp" android:textStyle="bold"
-                        android:layout_marginBottom="10dp"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="• Minimum withdrawal: 100 tokens\n• Processing time varies by method\n• Ensure your payment details are up to date\n• Withdrawals are processed Monday–Friday"
-                        android:textColor="#4B5D7A" android:textSize="13sp" android:lineSpacingExtra="4dp"/>
-                </LinearLayout>
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#EEF9F3"
+                app:strokeColor="#C8E6C9" app:strokeWidth="1dp" app:cardElevation="0dp">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="🔒  Your payment details are saved securely. A PIN is required for all withdrawals and changes."
+                    android:textColor="#4B5D7A" android:textSize="13sp"
+                    android:padding="14dp" android:lineSpacingExtra="4dp"/>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
@@ -157,8 +149,9 @@
         <Button android:id="@+id/btnConfirmWithdrawal"
             android:layout_width="match_parent" android:layout_height="56dp"
             android:text="Confirm Withdrawal" android:textAllCaps="false"
-            android:textColor="#FFFFFF" android:textSize="17sp" android:textStyle="bold"
-            android:background="@drawable/bg_button_gradient"
-            app:backgroundTint="@null" android:enabled="false" android:alpha="0.4"/>
+            android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"
+            android:background="@drawable/bg_button_gradient" app:backgroundTint="@null"
+            android:enabled="false" android:alpha="0.4"/>
     </LinearLayout>
+
 </LinearLayout>

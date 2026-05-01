@@ -50,44 +50,74 @@
                 android:gravity="center_vertical"
                 android:padding="16dp">
 
-                <FrameLayout android:layout_width="64dp" android:layout_height="64dp">
+                <!-- Avatar — tappable to change photo -->
+                <FrameLayout
+                    android:id="@+id/avatarContainer"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/avatarContainer"
-                        android:layout_width="80dp" android:layout_height="80dp"
-                        app:cardCornerRadius="40dp" app:cardBackgroundColor="#8A2EFF"
-                        app:cardElevation="2dp"
-                        android:clickable="true" android:focusable="true">
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        app:cardCornerRadius="40dp"
+                        app:cardBackgroundColor="#8A2EFF"
+                        app:cardElevation="2dp">
                         <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
-                            <TextView android:id="@+id/tvAvatarInitials"
-                                android:layout_width="match_parent" android:layout_height="match_parent"
-                                android:gravity="center" android:text="AJ"
-                                android:textColor="#FFFFFF" android:textSize="26sp" android:textStyle="bold"/>
-                            <ImageView android:id="@+id/ivProfilePicture"
-                                android:layout_width="match_parent" android:layout_height="match_parent"
+                            <TextView
+                                android:id="@+id/tvAvatarInitials"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="AJ"
+                                android:textColor="#FFFFFF"
+                                android:textSize="26sp"
+                                android:textStyle="bold"/>
+                            <ImageView
+                                android:id="@+id/ivProfilePicture"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
                                 android:visibility="gone"
                                 android:contentDescription="Profile photo"/>
-                            <!-- Camera icon overlay -->
-                            <com.google.android.material.card.MaterialCardView
-                                android:layout_width="26dp" android:layout_height="26dp"
-                                android:layout_gravity="bottom|end"
-                                app:cardCornerRadius="13dp"
-                                app:cardBackgroundColor="#00C853"
-                                app:cardElevation="0dp">
-                                <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-                                    android:gravity="center" android:text="📷" android:textSize="12sp"/>
-                            </com.google.android.material.card.MaterialCardView>
                         </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
-                    <!-- US 04 Badge -->
+
+                    <!-- Camera badge -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_gravity="bottom|end"
+                        app:cardCornerRadius="13dp"
+                        app:cardBackgroundColor="#00C853"
+                        app:cardElevation="2dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="📷"
+                            android:textSize="12sp"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Verified badge -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/badgeVerified"
-                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_gravity="top|end"
-                        app:cardCornerRadius="10dp" app:cardBackgroundColor="#0062FF"
+                        app:cardCornerRadius="10dp"
+                        app:cardBackgroundColor="#0062FF"
                         app:cardElevation="2dp"
                         android:visibility="gone">
-                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="✓"
+                            android:textColor="#FFFFFF"
+                            android:textSize="10sp"
+                            android:textStyle="bold"/>
                     </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
 
@@ -117,30 +147,31 @@
             <!-- PROFILE PANEL -->
             <LinearLayout android:id="@+id/panelEditProfile" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
 
-                <!-- ROLE TOGGLE -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-                    <Button
-                        android:id="@+id/btnRoleStudent"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Student"
-                        android:textAllCaps="false"
-                        android:layout_marginEnd="8dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-                    <Button
-                        android:id="@+id/btnRoleTutor"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Tutor"
-                        android:textAllCaps="false"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-                </LinearLayout>
+                <!-- ROLE DISPLAY — read-only, set at signup -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="14dp" app:cardBackgroundColor="#F3EEFF"
+                    app:strokeColor="#D5B8FF" app:strokeWidth="1dp" app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:padding="14dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="🎭  " android:textSize="18sp"/>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Account Role" android:textColor="#8B97A8" android:textSize="12sp"/>
+                            <TextView android:id="@+id/tvUserRoleBadge"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Student" android:textColor="#8A2EFF"
+                                android:textSize="15sp" android:textStyle="bold"/>
+                        </LinearLayout>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Fixed at signup" android:textColor="#8B97A8"
+                            android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:strokeColor="#E4D5FF" app:strokeWidth="1dp" app:cardElevation="0dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
@@ -279,25 +310,8 @@
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/btnUploadID"
-                    android:layout_width="match_parent" android:layout_height="120dp"
-                    android:layout_marginTop="24dp"
-                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#F9F5FF"
-                    app:strokeColor="#8A2EFF" app:strokeWidth="1dp" app:cardElevation="0dp"
-                    android:clickable="true" android:focusable="true">
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:orientation="vertical" android:gravity="center">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="📄" android:textSize="28sp" android:gravity="center"/>
-                        <TextView android:id="@+id/tvUploadLabel"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Tap to select PDF document" android:textColor="#8A2EFF"
-                            android:textStyle="bold" android:textSize="14sp" android:gravity="center"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Only PDF files accepted" android:textColor="#8B97A8"
-                            android:textSize="12sp" android:gravity="center" android:layout_marginTop="4dp"/>
-                    </LinearLayout>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/btnUploadID" android:layout_width="match_parent" android:layout_height="100dp" android:layout_marginTop="32dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#F5F5FA" app:strokeColor="#D9DCE3" app:strokeWidth="1dp" app:cardElevation="0dp">
+                    <TextView android:id="@+id/tvUploadLabel" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Tap to select document" android:textColor="#8A2EFF" android:textStyle="bold" />
                 </com.google.android.material.card.MaterialCardView>
                 <Button android:id="@+id/btnSubmitVerification" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="20dp" android:layout_marginBottom="40dp" android:text="Submit for Review" android:textAllCaps="false" android:enabled="false" android:background="@drawable/bg_button_gradient" app:backgroundTint="@null" android:textColor="#FFFFFF" />
             </LinearLayout>
@@ -326,7 +340,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:background="@android:color/transparent"
-            app:backgroundTint="@null" />
+            app:backgroundTint="@null"/>
     </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

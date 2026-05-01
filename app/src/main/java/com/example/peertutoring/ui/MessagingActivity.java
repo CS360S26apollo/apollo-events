@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,28 +32,26 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Real-time messaging between a student and tutor.
+ * Real-time chat between student and tutor.
  *
- * Messages stored under: conversations/{convId}/messages/{msgId}
- * Each message: { senderUid, senderName, text, timestamp }
+ * Storage path: conversations/{convId}/messages/{msgId}
+ * convId is always built by sorting both UIDs alphabetically so both
+ * users always land on the SAME thread regardless of who opens it.
  *
- * Crash fixes:
- * - currentUserName now resolved from Firestore profile (not just DisplayName which is often null)
- * - All findViewById results null-checked
- * - requestId validated before attaching listener
- * - ScrollView cast done safely
+ * Both participants see all messages in real time via snapshot listener.
+ * Sent = purple bubble on right. Received = white bubble on left.
  */
 public class MessagingActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
-    private String currentUid = "";
-    private String currentUserName = "Me";
-    private String conversationId;
+    private String currentUid;
+    private String currentUserName;
+    private String convId;          // stable conversation ID
     private String otherPersonName;
 
     private LinearLayout layoutMessages;
-    private ScrollView scrollMessages;
-    private EditText etMessage;
+    private ScrollView   scrollMessages;
+    private EditText     etMessage;
     private ListenerRegistration messagesListener;
 
     private static final SimpleDateFormat TIME_FMT =
@@ -64,11 +64,37 @@ public class MessagingActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        conversationId  = getIntent().getStringExtra("requestId");
-        otherPersonName = getIntent().getStringExtra("otherPersonName");
-        // currentUserName from intent is a hint; we'll resolve from Firestore below
-        String nameHint = getIntent().getStringExtra("currentUserName");
-        if (nameHint != null && !nameHint.isEmpty()) currentUserName = nameHint;
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        currentUid      = user != null ? user.getUid() : "";
+        currentUserName = getIntent().getStringExtra("currentUserName");
+        if (currentUserName == null || currentUserName.isEmpty()) {
+            currentUserName = user != null && user.getDisplayName() != null
+                    ? user.getDisplayName() : "Me";
+        }
+
+        // requestId is used as convId when opened from TutorDetailActivity
+        // (it already contains the sorted UID pair e.g. "uid_aaa_uid_bbb")
+        String intentConvId = getIntent().getStringExtra("requestId");
+        String tutorUid     = getIntent().getStringExtra("tutorUid");
+        String studentUid   = getIntent().getStringExtra("studentUid");
+        otherPersonName     = getIntent().getStringExtra("otherPersonName");
+
+        // Build stable convId: sort current + other UID alphabetically
+        if (intentConvId != null && intentConvId.contains("_")
+                && !intentConvId.startsWith("mock")) {
+            // Already a convId (from TutorDetailActivity or SessionNotesActivity)
+            convId = intentConvId;
+        } else if (tutorUid != null && studentUid != null) {
+            convId = buildConvId(studentUid, tutorUid);
+        } else {
+            // Derive other uid from intent if available
+            String otherUid = getIntent().getStringExtra("otherUid");
+            if (otherUid != null && !currentUid.isEmpty()) {
+                convId = buildConvId(currentUid, otherUid);
+            } else {
+                convId = intentConvId; // fallback
+            }
+        }
 
         layoutMessages = findViewById(R.id.layoutMessages);
         scrollMessages = findViewById(R.id.scrollMessages);
@@ -78,56 +104,52 @@ public class MessagingActivity extends AppCompatActivity {
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
         TextView tvTitle = findViewById(R.id.tvChatTitle);
-        if (tvTitle != null) tvTitle.setText(otherPersonName != null ? otherPersonName : "Chat");
+        if (tvTitle != null && otherPersonName != null) tvTitle.setText(otherPersonName);
 
         View btnSend = findViewById(R.id.btnSend);
         if (btnSend != null) btnSend.setOnClickListener(v -> sendMessage());
 
-        // Resolve current user
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            currentUid = firebaseUser.getUid();
-            resolveUserNameThenListen();
+        if (convId != null && !convId.isEmpty()) {
+            ensureConversationExists();
+            startListening();
         } else {
-            Toast.makeText(this, "Please sign in to use messaging.", Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(this, "Cannot open chat: missing conversation ID.",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
-    /**
-     * Fetches the user's actual name from their Firestore profile,
-     * then starts the real-time message listener.
-     * Firebase DisplayName is often empty for email/password users.
-     */
-    private void resolveUserNameThenListen() {
-        db.collection("users").document(currentUid).get()
-                .addOnSuccessListener(doc -> {
-                    if (doc.exists()) {
-                        String fullName = doc.getString("fullName");
-                        String firstName = doc.getString("firstName");
-                        if (fullName != null && !fullName.isEmpty()) {
-                            currentUserName = fullName;
-                        } else if (firstName != null && !firstName.isEmpty()) {
-                            currentUserName = firstName;
-                        }
-                    }
-                    startListening();
-                })
-                .addOnFailureListener(e -> startListening()); // proceed anyway
+    // ── Stable conversation ID ────────────────────────────────
+
+    /** Sorts two UIDs so the ID is the same regardless of who opens the chat. */
+    private String buildConvId(String uid1, String uid2) {
+        return uid1.compareTo(uid2) < 0
+                ? uid1 + "_" + uid2
+                : uid2 + "_" + uid1;
     }
 
-    /**
-     * Sends a message to the Firestore messages sub-collection under the conversation.
-     */
+    /** Creates conversation metadata in Firestore if it doesn't exist yet. */
+    private void ensureConversationExists() {
+        Map<String, Object> meta = new HashMap<>();
+        // Store participant UIDs so either user can query their conversations
+        String[] parts = convId.split("_", 2);
+        meta.put("participantA",    parts.length > 0 ? parts[0] : currentUid);
+        meta.put("participantB",    parts.length > 1 ? parts[1] : "");
+        meta.put("otherPersonName", otherPersonName != null ? otherPersonName : "");
+        meta.put("updatedAt",       FieldValue.serverTimestamp());
+
+        db.collection("conversations").document(convId)
+                .set(meta, SetOptions.merge());
+    }
+
+    // ── Send ──────────────────────────────────────────────────
+
     private void sendMessage() {
         if (etMessage == null) return;
         String text = etMessage.getText().toString().trim();
-        if (TextUtils.isEmpty(text)) return;
+        if (TextUtils.isEmpty(text) || currentUid.isEmpty() || convId == null) return;
 
-        if (conversationId == null || conversationId.isEmpty()) {
-            Toast.makeText(this, "Cannot send message — invalid conversation.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        // Optimistic clear
+        etMessage.setText("");
 
         Map<String, Object> msg = new HashMap<>();
         msg.put("senderUid",  currentUid);
@@ -135,25 +157,31 @@ public class MessagingActivity extends AppCompatActivity {
         msg.put("text",       text);
         msg.put("timestamp",  FieldValue.serverTimestamp());
 
-        // Store under conversations/{convId}/messages
-        db.collection("conversations")
-                .document(conversationId)
+        db.collection("conversations").document(convId)
                 .collection("messages")
                 .add(msg)
-                .addOnSuccessListener(ref -> etMessage.setText(""))
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to send: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to send: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    // Restore text on failure
+                    etMessage.setText(text);
+                    etMessage.setSelection(text.length());
+                });
+
+        // Update conversation last message for listing purposes
+        Map<String, Object> lastMsg = new HashMap<>();
+        lastMsg.put("lastMessage", text);
+        lastMsg.put("lastMessageAt", FieldValue.serverTimestamp());
+        lastMsg.put("lastSenderUid", currentUid);
+        db.collection("conversations").document(convId)
+                .set(lastMsg, SetOptions.merge());
     }
 
-    /**
-     * Attaches a real-time listener for messages ordered by timestamp ascending.
-     */
-    private void startListening() {
-        if (conversationId == null || conversationId.isEmpty()) return;
+    // ── Listen ────────────────────────────────────────────────
 
+    private void startListening() {
         messagesListener = db.collection("conversations")
-                .document(conversationId)
+                .document(convId)
                 .collection("messages")
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener((snap, e) -> {
@@ -171,46 +199,44 @@ public class MessagingActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * Dynamically builds and adds a message bubble to the chat view.
-     */
+    // ── Message bubble ────────────────────────────────────────
+
     private void addMessageBubble(String senderName, String text, Date timestamp, boolean isMine) {
-        if (text == null || text.isEmpty() || layoutMessages == null) return;
+        if (layoutMessages == null || text == null) return;
 
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        rowParams.setMargins(0, 0, 0, dp(12));
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rowParams.setMargins(0, 0, 0, dp(10));
         row.setLayoutParams(rowParams);
         row.setGravity(isMine ? Gravity.END : Gravity.START);
 
-        // Sender name label (only for received messages)
+        // Sender name (only for received)
         if (!isMine && senderName != null && !senderName.isEmpty()) {
             TextView tvName = new TextView(this);
             tvName.setText(senderName);
-            tvName.setTextSize(11);
+            tvName.setTextSize(11f);
             tvName.setTextColor(0xFF8B97A8);
-            tvName.setPadding(dp(4), 0, 0, dp(2));
+            tvName.setPadding(dp(6), 0, 0, dp(2));
             row.addView(tvName);
         }
 
         // Bubble
         MaterialCardView bubble = new MaterialCardView(this);
-        int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.72);
-        LinearLayout.LayoutParams bubbleParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        bubble.setLayoutParams(bubbleParams);
+        int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.72f);
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bubble.setLayoutParams(bp);
         bubble.setCardElevation(0);
-        bubble.setRadius(dp(16));
+        bubble.setMaxCardElevation(0);
+        bubble.setRadius(dp(18));
         bubble.setCardBackgroundColor(isMine ? 0xFF8A2EFF : 0xFFFFFFFF);
 
         TextView tvText = new TextView(this);
         tvText.setText(text);
         tvText.setTextColor(isMine ? 0xFFFFFFFF : 0xFF071A3D);
-        tvText.setTextSize(15);
+        tvText.setTextSize(15f);
         tvText.setPadding(dp(14), dp(10), dp(14), dp(10));
         tvText.setMaxWidth(maxWidth);
         bubble.addView(tvText);
@@ -220,9 +246,9 @@ public class MessagingActivity extends AppCompatActivity {
         if (timestamp != null) {
             TextView tvTime = new TextView(this);
             tvTime.setText(TIME_FMT.format(timestamp));
-            tvTime.setTextSize(10);
+            tvTime.setTextSize(10f);
             tvTime.setTextColor(0xFF8B97A8);
-            tvTime.setPadding(dp(4), dp(2), dp(4), 0);
+            tvTime.setPadding(dp(6), dp(2), dp(6), 0);
             row.addView(tvTime);
         }
 

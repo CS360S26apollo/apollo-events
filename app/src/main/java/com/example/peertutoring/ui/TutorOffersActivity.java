@@ -77,7 +77,7 @@ public class TutorOffersActivity extends AppCompatActivity {
     private void loadOffersFromFirestore(String reqId, String topic) {
         db.collection("sessionRequests")
                 .document(reqId)
-                .collection("offers")
+                .collection("counterOffers")
                 .get()
                 .addOnSuccessListener(snap -> {
                     if (snap.isEmpty()) {
@@ -133,26 +133,18 @@ public class TutorOffersActivity extends AppCompatActivity {
         return true;
     }
 
+    /** No real counter offers found — show empty state. Never show fake data. */
     private void loadMockOffers(String topic) {
-        Object[][] allOffers = {
-                {"Amjad Iqbal", "AI", "4.8", "56", 40, "Mathematics", "I have 5 years of experience teaching Mathematics to college students.", true},
-                {"Kamran Saeed", "KS", "4.6", "32", 35, "Chemistry", "Chemistry is easy when you understand the logic. Let's work together!", true},
-                {"Hassan Fayyaz", "HF", "4.9", "88", 45, "Mathematics, Economics", "Specialist in Advanced Math and Economics principles.", true},
-                {"Abdullah Iqbal", "AI", "4.7", "41", 38, "Mathematics, Physics", "Expert in Mathematical Physics and problem solving techniques.", true},
-                {"Zain ul Abideen", "ZA", "4.5", "27", 30, "Computer Science, English", "Passionate about coding and literature.", false},
-                {"Ali Iqbal", "AI", "4.8", "64", 42, "Mathematics, Computer Science", "Bridging the gap between Pure Math and Algorithm design.", true},
-                {"Abdullah Khaliq", "AK", "4.7", "19", 35, "Mathematics, Accounting", "Master your numbers in both Mathematics and Business Accounting.", true}
-        };
-
-        for (Object[] o : allOffers) {
-            if (shouldShowOffer(topic, (String) o[5])) {
-                addOfferCard(
-                        (String)  o[0], (String) o[1], (String) o[2], (String) o[3],
-                        (Integer) o[4], (String) o[5], (String) o[6],
-                        (Boolean) o[7], "mock_" + o[0]
-                );
-            }
-        }
+        if (layoutOfferList == null) return;
+        layoutOfferList.removeAllViews();
+        android.widget.TextView tv = new android.widget.TextView(this);
+        tv.setText("No counter offers yet.\nTutors will appear here once they send you a counter offer.");
+        tv.setTextColor(android.graphics.Color.parseColor("#8B97A8"));
+        tv.setTextSize(15f);
+        tv.setGravity(android.view.Gravity.CENTER);
+        tv.setPadding(0, 80, 0, 0);
+        tv.setLineSpacing(8f, 1f);
+        layoutOfferList.addView(tv);
     }
 
     /**
@@ -223,7 +215,7 @@ public class TutorOffersActivity extends AppCompatActivity {
 
         db.collection("users").document(currentUid).get().addOnSuccessListener(doc -> {
             Long currentTokens = doc.getLong("tokens");
-            if (currentTokens == null) currentTokens = 100L;
+            if (currentTokens == null) currentTokens = 1000L;
 
             if (currentTokens < rate) {
                 Toast.makeText(this, "❌ Insufficient tokens! You need " + rate + " tokens.", Toast.LENGTH_LONG).show();
