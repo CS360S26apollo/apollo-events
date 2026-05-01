@@ -887,16 +887,27 @@ public class BuyTokensActivity extends AppCompatActivity {
                                 btnPurchase.setEnabled(true);
                                 updatePurchaseButton();
                             }
-                            SoundManager.playError(BuyTokensActivity.this);
-                            String msg = e.getMessage() != null ? e.getMessage() : "OTP failed.";
-                            // Common Firebase errors → friendly messages
-                            if (msg.contains("TOO_LONG") || msg.contains("INVALID_PHONE"))
-                                msg = "Invalid phone number format. Use 03xx-xxxxxxx.";
-                            else if (msg.contains("quota"))
-                                msg = "SMS quota exceeded. Please try again later.";
-                            else if (msg.contains("BLOCKED"))
-                                msg = "Too many attempts. Please wait before trying again.";
-                            Toast.makeText(BuyTokensActivity.this, msg, Toast.LENGTH_LONG).show();
+                            String msg = e.getMessage() != null ? e.getMessage() : "";
+                            // If Phone Auth is not enabled → fall back to simulation
+                            if (msg.contains("not allowed") || msg.contains("operation-not-allowed")
+                                    || msg.contains("OPERATION_NOT_ALLOWED")
+                                    || msg.contains("CONFIGURATION_NOT_FOUND")) {
+                                Toast.makeText(BuyTokensActivity.this,
+                                        "Using demo OTP (Firebase Phone Auth not enabled)",
+                                        Toast.LENGTH_SHORT).show();
+                                fallbackToSimulatedOtp(contactHint, payDisplayLabel);
+                            } else {
+                                SoundManager.playError(BuyTokensActivity.this);
+                                if (msg.contains("TOO_LONG") || msg.contains("INVALID_PHONE"))
+                                    msg = "Invalid phone number. Use format 03xx-xxxxxxx.";
+                                else if (msg.contains("quota"))
+                                    msg = "SMS quota exceeded. Please try again later.";
+                                else if (msg.contains("BLOCKED"))
+                                    msg = "Too many attempts. Please wait and try again.";
+                                else
+                                    msg = "OTP failed: " + msg;
+                                Toast.makeText(BuyTokensActivity.this, msg, Toast.LENGTH_LONG).show();
+                            }
                         }
 
                         @Override
@@ -934,6 +945,13 @@ public class BuyTokensActivity extends AppCompatActivity {
                 showOtpDialog(contactHint, payDisplayLabel, false);
             }, 1000);
         }
+    }
+
+    /** Called when Firebase Phone Auth is not enabled — uses local simulation instead. */
+    private void fallbackToSimulatedOtp(String contactHint, String payDisplayLabel) {
+        pendingOtp      = String.format("%06d", (int)(Math.random() * 1000000));
+        pendingVerifId  = null; // null signals simulation mode in verify logic
+        showOtpDialog(contactHint, payDisplayLabel, true);
     }
 
     private void showOtpDialog(String contactHint, String payLabel, boolean isWallet) {
@@ -976,12 +994,15 @@ public class BuyTokensActivity extends AppCompatActivity {
         tvResend.setFocusable(true);
         layout.addView(tvResend);
 
-        // DEBUG label: only shown for card (simulated OTP), hidden for wallet (real Firebase OTP)
-        TextView tvDebug = new TextView(this);
-        if (!isWallet) {
-            tvDebug.setText("[Dev] OTP: " + pendingOtp + " (remove before production)");
+        // Show dev OTP label for simulated cases (card or wallet fallback)
+        // pendingVerifId == null means Firebase not active → simulation mode
+        boolean isSimulated = !isWallet || pendingVerifId == null;
+        if (isSimulated && pendingOtp != null) {
+            TextView tvDebug = new TextView(this);
+            tvDebug.setText("[Dev] OTP: " + pendingOtp + "  (remove before production)");
             tvDebug.setTextColor(0xFFCC0000);
             tvDebug.setTextSize(12f);
+            tvDebug.setTypeface(null, android.graphics.Typeface.BOLD);
             tvDebug.setPadding(0, dp(8), 0, 0);
             tvDebug.setGravity(android.view.Gravity.CENTER);
             layout.addView(tvDebug);
@@ -1003,13 +1024,8 @@ public class BuyTokensActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (isWallet) {
+                if (isWallet && pendingVerifId != null) {
                     // ── Firebase credential verification ──────────────────
-                    if (pendingVerifId == null) {
-                        Toast.makeText(BuyTokensActivity.this,
-                                "Session expired. Please request a new OTP.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
                     btnVerify.setEnabled(false);
                     btnVerify.setText("Verifying...");
                     PhoneAuthCredential credential =
@@ -1028,8 +1044,8 @@ public class BuyTokensActivity extends AppCompatActivity {
                                 etOtp.setText("");
                             });
                 } else {
-                    // ── Simulated OTP check for card payments ─────────────
-                    if (!entered.equals(pendingOtp)) {
+                    // ── Simulated OTP check (cards + wallet fallback) ──────
+                    if (pendingOtp == null || !entered.equals(pendingOtp)) {
                         SoundManager.playError(BuyTokensActivity.this);
                         etOtp.setError("Incorrect OTP. Please try again.");
                         etOtp.setText("");
@@ -1043,8 +1059,16 @@ public class BuyTokensActivity extends AppCompatActivity {
 
             tvResend.setOnClickListener(v -> {
                 dialog.dismiss();
-                resendToken = resendToken; // keep existing token for Firebase resend
-                sendOtpAndVerify(); // re-triggers Firebase OTP (uses resendToken if set)
+                if (isWallet && pendingVerifId != null) {
+                    // Firebase resend using stored token
+                    sendOtpAndVerify();
+                } else {
+                    // Simulated resend
+                    pendingOtp = String.format("%06d", (int)(Math.random() * 1000000));
+                    Toast.makeText(BuyTokensActivity.this,
+                            "New OTP: " + pendingOtp, Toast.LENGTH_LONG).show();
+                    showOtpDialog(contactHint, payLabel, isWallet);
+                }
             });
         });
 

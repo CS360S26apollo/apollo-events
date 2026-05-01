@@ -2,7 +2,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Network -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Camera & Storage for profile photo -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Phone Auth -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <!-- Hardware features — required="false" so app works on devices without them -->
+    <uses-feature android:name="android.hardware.camera"         android:required="false" />
+    <uses-feature android:name="android.hardware.camera.front"   android:required="false" />
+    <uses-feature android:name="android.hardware.telephony"      android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +30,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PeerTutoringApollo">
 
+        <!-- Launcher -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -23,62 +40,74 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.ProfileActivity" android:exported="false" />
-        <activity android:name=".ui.HomeActivity" android:exported="false" />
-        <activity android:name=".ui.BrowseTutorsActivity" android:exported="false" />
-        <activity android:name=".ui.TutorDetailActivity" android:exported="false" />
-        <activity android:name=".ui.EditProfileActivity" android:label="Profile Settings" android:exported="false" />
-        <activity android:name=".ui.LoginActivity" android:exported="false" />
-        <activity android:name=".ui.NewSessionRequestActivity" android:exported="false" />
-        <activity android:name=".ui.RescheduleActivity" android:exported="false" />
-        <activity android:name=".ui.InstantBookActivity" android:exported="false" />
-        <activity android:name=".ui.SeedDataActivity" android:exported="false" />
-        <activity android:name=".ui.SessionNotesActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.RateReviewActivity" android:exported="false" />
-        <activity android:name=".ui.TutorRequestsActivity" android:exported="false" />
-        <activity android:name=".ui.TutorOffersActivity" android:exported="false" />
-        <activity android:name=".ui.CounterOfferActivity" android:exported="false" />
-        <activity android:name=".ui.RequestResultActivity" android:exported="false" />
-        <activity android:name=".ui.StudentPreferencesActivity" android:exported="false" />
+        <!-- Auth -->
+        <activity android:name=".ui.LoginActivity"          android:exported="false" />
 
-        <activity
-            android:name=".ui.MessagingActivity"
-            android:exported="false"
+        <!-- Onboarding -->
+        <activity android:name=".ui.ProfileActivity"        android:exported="false" />
+        <activity android:name=".ui.StudentPreferencesActivity" android:exported="false" />
+        <activity android:name=".ui.SeedDataActivity"       android:exported="false" />
+
+        <!-- Student screens -->
+        <activity android:name=".ui.HomeActivity"           android:exported="false" />
+        <activity android:name=".ui.BrowseTutorsActivity"  android:exported="false" />
+        <activity android:name=".ui.TutorDetailActivity"    android:exported="false" />
+        <activity android:name=".ui.NewSessionRequestActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.InstantBookActivity"    android:exported="false" />
+        <activity android:name=".ui.SessionRequestsActivity" android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".ui.RequestDetailActivity"  android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".ui.RescheduleActivity"     android:exported="false" />
+        <activity android:name=".ui.RateReviewActivity"     android:exported="false" />
+
+        <!-- Token purchase (student) -->
+        <activity android:name=".ui.BuyTokensActivity"      android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.PurchaseSuccessActivity" android:exported="false" />
+
+        <!-- Tutor screens -->
+        <activity android:name=".ui.TutorRequestsActivity"  android:exported="false" />
+        <activity android:name=".ui.TutorOffersActivity"    android:exported="false" />
+        <activity android:name=".ui.CounterOfferActivity"   android:exported="false" />
+        <activity android:name=".ui.RequestResultActivity"  android:exported="false" />
+        <activity android:name=".ui.SessionNotesActivity"   android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- Availability Activities -->
-        <activity
-            android:name=".ui.AvailabilityDashboardActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.WeeklyScheduleActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.BlockedDatesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.BufferPricingActivity"
-            android:exported="false" />
-
-
-
-        <activity
-            android:name=".ui.SessionRequestsActivity"
-            android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
-        <activity
-            android:name=".ui.RequestDetailActivity"
-            android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
-        <activity android:name=".ui.TutorHomeActivity" android:exported="false" />
-        <activity android:name=".ui.TutorEarningsActivity" android:exported="false" />
-        <activity android:name=".ui.WithdrawActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <!-- Tutor earnings -->
+        <activity android:name=".ui.TutorEarningsActivity"  android:exported="false" />
+        <activity android:name=".ui.WithdrawActivity"       android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.WithdrawSuccessActivity" android:exported="false" />
         <activity android:name=".ui.TransactionHistoryActivity" android:exported="false" />
-        <activity android:name=".ui.BuyTokensActivity" android:exported="false" />
-        <activity android:name=".ui.PurchaseSuccessActivity" android:exported="false" />
+
+        <!-- Tutor availability -->
+        <activity android:name=".ui.AvailabilityDashboardActivity" android:exported="false" />
+        <activity android:name=".ui.WeeklyScheduleActivity" android:exported="false" />
+        <activity android:name=".ui.BlockedDatesActivity"  android:exported="false" />
+        <activity android:name=".ui.BufferPricingActivity"  android:exported="false" />
+
+        <!-- Shared -->
+        <activity android:name=".ui.EditProfileActivity"    android:exported="false"
+            android:label="Profile Settings"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.MessagingActivity"      android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Legacy / unused but kept to avoid crash -->
+        <activity android:name=".ui.TutorHomeActivity"      android:exported="false" />
+
+        <!-- FileProvider for camera photo URIs (Android 7+) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 
