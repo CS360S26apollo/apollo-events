@@ -47,6 +47,10 @@ public class TutorRequestsActivity extends AppCompatActivity {
 
         layoutRequestList = findViewById(R.id.layoutRequestList);
 
+        // Support pre-selected filter (e.g. from "View All" on earnings screen)
+        String defaultFilter = getIntent().getStringExtra("defaultFilter");
+        if (defaultFilter != null && !defaultFilter.isEmpty()) currentFilter = defaultFilter;
+
         setupSearch();
         setupFilterChips();
         setupEarningsButton();

@@ -160,9 +160,11 @@ public class MessagingActivity extends AppCompatActivity {
         boolean iAmA = currentUid.equals(pA);
         meta.put("participantA", pA);
         meta.put("participantB", pB);
-        meta.put(iAmA ? "participantAName" : "participantBName", currentUserName);
-        meta.put(iAmA ? "participantBName" : "participantAName",
-                otherPersonName != null ? otherPersonName : "");
+        // Only write names when non-empty — avoids clobbering good Firestore data with blanks
+        if (currentUserName != null && !currentUserName.isEmpty())
+            meta.put(iAmA ? "participantAName" : "participantBName", currentUserName);
+        if (otherPersonName != null && !otherPersonName.isEmpty())
+            meta.put(iAmA ? "participantBName" : "participantAName", otherPersonName);
         meta.put("updatedAt", FieldValue.serverTimestamp());
         db.collection("conversations").document(convId).set(meta, SetOptions.merge());
     }
@@ -176,9 +178,17 @@ public class MessagingActivity extends AppCompatActivity {
 
         etMessage.setText("");
 
+        // Use the best name available at send time
+        String nameToSend = currentUserName;
+        if (nameToSend == null || nameToSend.isEmpty()) {
+            FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+            if (u != null && u.getDisplayName() != null && !u.getDisplayName().isEmpty())
+                nameToSend = u.getDisplayName();
+        }
+
         Map<String, Object> msg = new HashMap<>();
         msg.put("senderUid",  currentUid);
-        msg.put("senderName", currentUserName);
+        msg.put("senderName", nameToSend != null ? nameToSend : "");
         msg.put("text",       text);
         msg.put("timestamp",  FieldValue.serverTimestamp());
         msg.put("isRead",     false);
@@ -275,13 +285,22 @@ public class MessagingActivity extends AppCompatActivity {
         row.setGravity(isMine ? Gravity.END : Gravity.START);
 
         // Sender name label for received messages
-        if (!isMine && senderName != null && !senderName.isEmpty()) {
-            TextView tvName = new TextView(this);
-            tvName.setText(senderName);
-            tvName.setTextSize(11f);
-            tvName.setTextColor(0xFF8B97A8);
-            tvName.setPadding(dp(6), 0, 0, dp(2));
-            row.addView(tvName);
+        if (!isMine) {
+            // Fall back to the activity-level resolved name if the stored senderName is blank/placeholder
+            String displaySenderName = senderName;
+            if (displaySenderName == null || displaySenderName.isEmpty()
+                    || "Student".equals(displaySenderName) || "Tutor".equals(displaySenderName)) {
+                displaySenderName = (otherPersonName != null && !otherPersonName.isEmpty())
+                        ? otherPersonName : displaySenderName;
+            }
+            if (displaySenderName != null && !displaySenderName.isEmpty()) {
+                TextView tvName = new TextView(this);
+                tvName.setText(displaySenderName);
+                tvName.setTextSize(11f);
+                tvName.setTextColor(0xFF8B97A8);
+                tvName.setPadding(dp(6), 0, 0, dp(2));
+                row.addView(tvName);
+            }
         }
 
         // Bubble card

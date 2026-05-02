@@ -109,25 +109,44 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:padding="20dp">
 
-            <!-- Period tabs -->
+            <!-- Period tabs (segmented control) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
-                    android:orientation="horizontal" android:padding="6dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:padding="6dp">
                     <Button android:id="@+id/btnPeriodWeek"
-                        android:layout_width="48dp" android:layout_height="48dp" android:layout_weight="1"
-                        android:text="Week" android:textAllCaps="false" android:textSize="14sp"
-                        android:textColor="#4B5D7A" android:background="@android:color/transparent"/>
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Week"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:textColor="#4B5D7A"/>
                     <Button android:id="@+id/btnPeriodMonth"
-                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-                        android:text="Month" android:textAllCaps="false" android:textSize="14sp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Month"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        android:gravity="center"
                         android:textColor="#FFFFFF"/>
                     <Button android:id="@+id/btnPeriodYear"
-                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-                        android:text="Year" android:textAllCaps="false" android:textSize="14sp"
-                        android:textColor="#4B5D7A" android:background="@android:color/transparent"/>
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Year"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:textColor="#4B5D7A"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -141,7 +160,8 @@
                     app:cardCornerRadius="20dp" app:cardBackgroundColor="#0062FF" app:cardElevation="0dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
                         android:orientation="vertical" android:padding="16dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        <TextView android:id="@+id/tvPeriodLabel"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:text="📅  This month" android:textColor="#CCFFFFFF" android:textSize="13sp"/>
                         <TextView android:id="@+id/tvMonthlyTokens"
                             android:layout_width="wrap_content" android:layout_height="0dp"
