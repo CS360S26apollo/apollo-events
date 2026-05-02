@@ -24,11 +24,11 @@ import java.util.Map;
 /**
  * Activity for tutors to propose a counter offer to a student's session request.
  * Role: Negotiation View for User Story 09 (Tutor Response).
- * Purpose: Allows tutors to suggest alternative dates, times, durations, or token 
+ * Purpose: Allows tutors to suggest alternative dates, times, durations, or token
  * amounts if they cannot fulfill the student's original request.
- * 
+ *
  * Design Pattern: Command pattern for submitting the offer to Firestore.
- * 
+ *
  * Outstanding Issues:
  * - Does not check for tutor's own availability conflicts during selection.
  * - Minimum duration and token steps are currently hardcoded constants.
@@ -43,8 +43,14 @@ public class CounterOfferActivity extends AppCompatActivity {
     private int counterDuration;
     private int counterTokens;
 
+    // Session type for counter offer
+    private String counterSessionType = "online"; // "online" or "takehome"
+    // Student location passed in from RequestDetailActivity
+    private String studentAddress;
+    private double studentLat, studentLng;
+
     private int pickedYear  = -1;
-    private int pickedMonth = -1; 
+    private int pickedMonth = -1;
     private int pickedDay   = -1;
     private int pickedHour  = -1;
     private int pickedMinute = -1;
@@ -79,6 +85,9 @@ public class CounterOfferActivity extends AppCompatActivity {
         originalDuration = getIntent().getIntExtra("duration", 60);
         originalTokens   = getIntent().getIntExtra("tokens", 150);
         studentUid       = getIntent().getStringExtra("studentUid");
+        studentAddress   = getIntent().getStringExtra("studentAddress");
+        studentLat       = getIntent().getDoubleExtra("studentLat", 0);
+        studentLng       = getIntent().getDoubleExtra("studentLng", 0);
 
         counterDuration = originalDuration;
         counterTokens   = originalTokens;
@@ -94,6 +103,7 @@ public class CounterOfferActivity extends AppCompatActivity {
         populateHeader();
         bindSteppers();
         setupButtons();
+        setupSessionTypeSelector();
     }
 
     private void bindDisplayViews() {
@@ -289,6 +299,7 @@ public class CounterOfferActivity extends AppCompatActivity {
         counterOffer.put("proposedTokens",  counterTokens);
         counterOffer.put("message",         message);
         counterOffer.put("status",          "pending");
+        counterOffer.put("sessionType",     counterSessionType);
 
         db.collection("sessionRequests").document(requestId)
                 .collection("counterOffers")
@@ -301,6 +312,45 @@ public class CounterOfferActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     if (btnSend != null) { btnSend.setEnabled(true); btnSend.setText("✈  Send Counter Offer"); }
                 });
+    }
+
+
+    /**
+     * Tutor picks whether they want to go to student's home or do online.
+     * Student's location is shown if they picked take-home originally.
+     * No Google Maps needed — just show the address the student captured.
+     */
+    private void setupSessionTypeSelector() {
+        android.widget.Button btnOnline   = findViewById(R.id.btnCounterOnline);
+        android.widget.Button btnTakeHome = findViewById(R.id.btnCounterTakeHome);
+        android.view.View     layoutLoc   = findViewById(R.id.layoutStudentLocation);
+        android.widget.TextView tvAddr    = findViewById(R.id.tvStudentLocationAddr);
+
+        // Show student's location if they provided one
+        if (layoutLoc != null && studentAddress != null && !studentAddress.isEmpty()) {
+            layoutLoc.setVisibility(android.view.View.VISIBLE);
+            if (tvAddr != null) tvAddr.setText("📍 Student: " + studentAddress);
+        }
+
+        android.content.res.ColorStateList sel = android.content.res.ColorStateList.valueOf(
+                android.graphics.Color.parseColor("#8A2EFF"));
+        android.content.res.ColorStateList def = android.content.res.ColorStateList.valueOf(
+                android.graphics.Color.parseColor("#F3F4F6"));
+
+        android.view.View.OnClickListener l = v -> {
+            if (v.getId() == R.id.btnCounterOnline) {
+                counterSessionType = "online";
+                if (btnOnline   != null) { btnOnline.setBackgroundColor(android.graphics.Color.parseColor("#8A2EFF")); btnOnline.setTextColor(android.graphics.Color.WHITE); }
+                if (btnTakeHome != null) { btnTakeHome.setBackgroundColor(android.graphics.Color.parseColor("#F3F4F6")); btnTakeHome.setTextColor(android.graphics.Color.parseColor("#4B5D7A")); }
+            } else {
+                counterSessionType = "takehome";
+                if (btnTakeHome != null) { btnTakeHome.setBackgroundColor(android.graphics.Color.parseColor("#8A2EFF")); btnTakeHome.setTextColor(android.graphics.Color.WHITE); }
+                if (btnOnline   != null) { btnOnline.setBackgroundColor(android.graphics.Color.parseColor("#F3F4F6")); btnOnline.setTextColor(android.graphics.Color.parseColor("#4B5D7A")); }
+            }
+        };
+
+        if (btnOnline   != null) { btnOnline.setOnClickListener(l); btnOnline.callOnClick(); }
+        if (btnTakeHome != null) btnTakeHome.setOnClickListener(l);
     }
 
     private void navigateToResult(String newDate, String newTime) {

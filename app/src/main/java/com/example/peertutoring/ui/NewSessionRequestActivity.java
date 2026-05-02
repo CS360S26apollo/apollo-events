@@ -126,6 +126,7 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         }
 
         setupSessionType();
+        setupGoalChips();
         setupDateTimePickers();
         setupDurationButtons();
 
@@ -526,6 +527,53 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         android.widget.Button btn = findViewById(R.id.btnGetLocation);
         if (btn != null) { btn.setEnabled(true); btn.setText("🔄 Refresh Location"); }
         Toast.makeText(this, "✅ Location captured!", Toast.LENGTH_SHORT).show();
+    }
+
+
+    // ── Goal chips quick-select ───────────────────────────────────────────
+
+    private void setupGoalChips() {
+        int[] chipIds = {
+                R.id.chipExamPrep, R.id.chipHomework,
+                R.id.chipConceptReview, R.id.chipProblemSolving
+        };
+        String[] chipTexts = {
+                "Exam Preparation", "Homework Help",
+                "Concept Clarity", "Problem Solving"
+        };
+
+        android.content.res.ColorStateList selectedColor =
+                android.content.res.ColorStateList.valueOf(
+                        android.graphics.Color.parseColor("#8A2EFF"));
+        android.content.res.ColorStateList defaultColor =
+                android.content.res.ColorStateList.valueOf(
+                        android.graphics.Color.parseColor("#E0E0E0"));
+
+        com.google.android.material.chip.Chip[] chips =
+                new com.google.android.material.chip.Chip[chipIds.length];
+
+        for (int i = 0; i < chipIds.length; i++) {
+            chips[i] = findViewById(chipIds[i]);
+        }
+
+        for (int i = 0; i < chips.length; i++) {
+            if (chips[i] == null) continue;
+            final String text  = chipTexts[i];
+            final int    index = i;
+            chips[i].setOnClickListener(v -> {
+                // Set goals text
+                if (etGoals != null) etGoals.setText(text);
+                // Highlight selected chip, reset others
+                for (int j = 0; j < chips.length; j++) {
+                    if (chips[j] == null) continue;
+                    boolean sel = (j == index);
+                    chips[j].setChipBackgroundColor(sel ? selectedColor : defaultColor);
+                    chips[j].setTextColor(sel
+                            ? android.graphics.Color.WHITE
+                            : android.graphics.Color.parseColor("#33476A"));
+                }
+            });
+        }
     }
 
     private void setBtnState(boolean enabled, String text) {

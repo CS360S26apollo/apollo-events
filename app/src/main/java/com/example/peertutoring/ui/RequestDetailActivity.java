@@ -47,6 +47,9 @@ public class RequestDetailActivity extends AppCompatActivity {
     private String sessionTutorUid;
     private String sessionStudentName;
     private String sessionTutorName;
+    private String sessionStudentAddress = null;
+    private double sessionStudentLat = 0, sessionStudentLng = 0;
+    private String sessionTypeValue = "online";
     private String sessionSubject;
     private Date   sessionScheduledDate;
     private int    sessionTokens;
@@ -354,6 +357,9 @@ public class RequestDetailActivity extends AppCompatActivity {
         intent.putExtra("studentUid",  sessionStudentUid);
         intent.putExtra("duration",    sessionDuration);
         intent.putExtra("tokens",      sessionTokens);
+        if (sessionStudentAddress != null) intent.putExtra("studentAddress", sessionStudentAddress);
+        intent.putExtra("studentLat", sessionStudentLat);
+        intent.putExtra("studentLng", sessionStudentLng);
         startActivity(intent);
     }
 

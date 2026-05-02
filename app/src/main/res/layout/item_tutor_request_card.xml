@@ -2,97 +2,304 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp"
-    android:clickable="true" android:focusable="true">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
+    app:cardCornerRadius="20dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardElevation="2dp"
+    app:strokeColor="#E8EAFF"
+    app:strokeWidth="1dp">
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:padding="16dp" android:gravity="center_vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <!-- Accent bar -->
-        <View android:id="@+id/viewAccentBar"
-            android:layout_width="4dp" android:layout_height="60dp"
-            android:layout_marginEnd="14dp"
-            android:background="#8A2EFF"/>
+        <!-- Colored left accent strip -->
+        <View
+            android:id="@+id/viewAccentBar"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:background="#8A2EFF" />
 
-        <!-- Avatar -->
-        <com.google.android.material.card.MaterialCardView android:id="@+id/cardStudentAvatar"
-            android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="14dp"
-            app:cardCornerRadius="24dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
-            <TextView android:id="@+id/tvStudentInitials"
-                android:layout_width="match_parent" android:layout_height="match_parent"
-                android:gravity="center" android:text="S" android:textColor="#8A2EFF"
-                android:textSize="18sp" android:textStyle="bold"/>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Info -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical">
-            <TextView android:id="@+id/tvStudentName"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Student Name" android:textColor="#071A3D"
-                android:textSize="15sp" android:textStyle="bold"/>
-            <TextView android:id="@+id/tvSubject"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Subject" android:textColor="#8A2EFF" android:textSize="13sp"/>
-            <TextView android:id="@+id/tvTopic"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Topic" android:textColor="#4B5D7A" android:textSize="12sp"
-                android:layout_marginTop="2dp"/>
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginTop="4dp">
-                <TextView android:id="@+id/tvDate"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Date" android:textColor="#8B97A8" android:textSize="12sp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="  •  " android:textColor="#8B97A8" android:textSize="12sp"/>
-                <TextView android:id="@+id/tvTime"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Time" android:textColor="#8B97A8" android:textSize="12sp"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Right column: status badge + token badge -->
+        <!-- Main content -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="end">
+            android:padding="16dp">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardStatusBadge"
-                android:layout_width="wrap_content"
+            <!-- Status badge row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="#E6F2FF"
-                app:cardElevation="0dp">
-                <TextView
-                    android:id="@+id/tvStatusBadge"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStatusBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PENDING"
-                    android:textColor="#007AFF"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="4dp"/>
-            </com.google.android.material.card.MaterialCardView>
+                    app:cardCornerRadius="10dp"
+                    app:cardBackgroundColor="#E6F2FF"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:id="@+id/tvStatusBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="PENDING"
+                        android:textColor="#007AFF"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="horizontal" android:gravity="center_vertical"
-                    android:paddingHorizontal="10dp" android:paddingVertical="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🪙 " android:textSize="13sp"/>
-                    <TextView android:id="@+id/tvTokens"
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="0" android:textColor="#8A2EFF" android:textSize="14sp" android:textStyle="bold"/>
+                <!-- Payment status chip (escrow state) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPaymentBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="10dp"
+                    app:cardBackgroundColor="#E8F5E9"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:id="@+id/tvPaymentBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="🔒 HELD"
+                        android:textColor="#089A3C"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Top row: avatar + name -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <FrameLayout
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginEnd="12dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        app:cardCornerRadius="26dp"
+                        app:cardBackgroundColor="#D0C4F7"
+                        app:cardElevation="0dp">
+                        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+                            <TextView
+                                android:id="@+id/tvStudentInitials"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="EC"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                            <ImageView
+                                android:id="@+id/ivStudentPhoto"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:visibility="gone"
+                                android:contentDescription="Student photo"/>
+                        </FrameLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_gravity="bottom|end"
+                        app:cardCornerRadius="7dp"
+                        app:cardBackgroundColor="#00C853"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#FFFFFF"
+                        app:strokeWidth="2dp">
+                        <View android:layout_width="match_parent" android:layout_height="match_parent" />
+                    </com.google.android.material.card.MaterialCardView>
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvStudentName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Emily Chen"
+                        android:textColor="#071A3D"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvSubject"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mathematics"
+                        android:textColor="#8A2EFF"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#C0C0C0"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <!-- Topic -->
+            <TextView
+                android:id="@+id/tvTopic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Calculus II - Integration Techniques"
+                android:textColor="#4B5D7A"
+                android:textSize="13sp"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Date + Time row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginEnd="20dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📅 " android:textSize="13sp" android:textColor="#0062FF" />
+                    <TextView
+                        android:id="@+id/tvDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mar 12"
+                        android:textColor="#4B5D7A"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🕒 " android:textSize="13sp" android:textColor="#00C853" />
+                    <TextView
+                        android:id="@+id/tvTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="14:00 (60m)"
+                        android:textColor="#4B5D7A"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Token pill + earnings placeholder row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="#00C853"
+                    app:cardElevation="0dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="7dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙 " android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/tvTokens"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="150 Tokens"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- View Earnings placeholder — shown for completed sessions -->
+                <TextView
+                    android:id="@+id/tvViewEarnings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="💰 View Earnings"
+                    android:textColor="#8A2EFF"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Inline Accept / Decline buttons — shown only for PENDING (requested) sessions -->
+            <LinearLayout
+                android:id="@+id/layoutActionButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btnAccept"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="✓ Accept"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#089A3C"
+                    android:textAllCaps="false"
+                    app:cornerRadius="22dp" />
+
+                <Button
+                    android:id="@+id/btnDecline"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="✗ Decline"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#FF3B30"
+                    android:textAllCaps="false"
+                    app:cornerRadius="22dp" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

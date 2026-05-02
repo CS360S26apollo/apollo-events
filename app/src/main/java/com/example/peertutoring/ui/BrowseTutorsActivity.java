@@ -207,6 +207,25 @@ public class BrowseTutorsActivity extends AppCompatActivity {
                 tvInitials.setText(initials.toUpperCase());
             }
 
+            // Load tutor profile photo if they allow it to be shown
+            Boolean profileVisible = doc.getBoolean("profileVisible");
+            String photoUrl = doc.getString("profilePhotoUrl");
+            android.widget.ImageView ivPhoto = itemView.findViewById(R.id.ivTutorPhoto);
+            if (ivPhoto != null && photoUrl != null && !photoUrl.isEmpty()
+                    && !Boolean.FALSE.equals(profileVisible)) {
+                ivPhoto.setVisibility(android.view.View.VISIBLE);
+                if (tvInitials != null) tvInitials.setVisibility(android.view.View.GONE);
+                if (photoUrl.startsWith("data:image")) {
+                    String b64 = photoUrl.substring(photoUrl.indexOf(",") + 1);
+                    byte[] bytes = android.util.Base64.decode(b64, android.util.Base64.NO_WRAP);
+                    com.bumptech.glide.Glide.with(BrowseTutorsActivity.this)
+                            .load(bytes).circleCrop().into(ivPhoto);
+                } else {
+                    com.bumptech.glide.Glide.with(BrowseTutorsActivity.this)
+                            .load(photoUrl).circleCrop().into(ivPhoto);
+                }
+            }
+
             if (badgeVerified != null) {
                 badgeVerified.setVisibility(Boolean.TRUE.equals(isVerified) ? View.VISIBLE : View.GONE);
             }

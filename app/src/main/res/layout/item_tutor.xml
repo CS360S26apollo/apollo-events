@@ -1,64 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp"
-    android:clickable="true" android:focusable="true">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
+    app:cardCornerRadius="20dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardElevation="2dp">
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:gravity="center_vertical" android:padding="16dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
 
-        <!-- Avatar -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="56dp" android:layout_height="56dp" android:layout_marginEnd="14dp"
-            app:cardCornerRadius="28dp" app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
-            <TextView android:id="@+id/tvTutorInitials"
-                android:layout_width="match_parent" android:layout_height="match_parent"
-                android:gravity="center" android:text="T" android:textColor="#8A2EFF"
-                android:textSize="20sp" android:textStyle="bold"/>
-        </com.google.android.material.card.MaterialCardView>
+        <FrameLayout android:layout_width="60dp" android:layout_height="60dp" android:layout_marginEnd="14dp">
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="60dp" android:layout_height="60dp"
+                app:cardCornerRadius="30dp" app:cardBackgroundColor="#D0C4F7"
+                app:cardElevation="0dp">
+                <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/tvTutorInitials"
+                        android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:gravity="center" android:text="SJ" android:textColor="#FFFFFF"
+                        android:textSize="20sp" android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/ivTutorPhoto"
+                        android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:scaleType="centerCrop" android:visibility="gone"
+                        android:contentDescription="Tutor photo"/>
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/badgeVerified"
+                android:layout_width="20dp" android:layout_height="20dp"
+                android:layout_gravity="bottom|end" app:cardCornerRadius="10dp"
+                app:cardBackgroundColor="#0062FF" app:cardElevation="0dp"
+                android:visibility="gone">
+                <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
 
-        <!-- Info -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical">
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="center_vertical">
-                <TextView android:id="@+id/tvTutorName"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Tutor Name" android:textColor="#071A3D"
-                    android:textSize="15sp" android:textStyle="bold"/>
-                <com.google.android.material.card.MaterialCardView android:id="@+id/badgeVerified"
-                    android:layout_width="wrap_content" android:layout_height="20dp"
-                    android:layout_marginStart="8dp" android:visibility="gone"
-                    app:cardCornerRadius="10dp" app:cardBackgroundColor="#EAF9EE" app:cardElevation="0dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="match_parent"
-                        android:gravity="center" android:text="✓ Verified" android:textColor="#00C853"
-                        android:textSize="10sp" android:paddingHorizontal="8dp"/>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/tvTutorName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sarah Johnson" android:textColor="#071A3D" android:textSize="16sp" android:textStyle="bold" />
+            <TextView android:id="@+id/tvTutorSubjects" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mathematics" android:textColor="#8A2EFF" android:textSize="13sp" android:layout_marginTop="2dp" />
+
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="6dp">
+                <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="8dp" app:cardCornerRadius="12dp" app:cardBackgroundColor="#FFF8E1" app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="8dp" android:paddingVertical="4dp">
+                        <TextView android:id="@+id/tvRating" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⭐ 4.9" android:textColor="#E07B00" android:textSize="12sp" android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardBackgroundColor="#E8F5E9" app:cardElevation="0dp">
+                    <TextView android:id="@+id/tvTutorLevel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="8dp" android:paddingVertical="4dp" android:text="Expert" android:textColor="#089A3C" android:textSize="11sp" android:textStyle="bold" />
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-            <TextView android:id="@+id/tvTutorSubjects"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Subject" android:textColor="#4B5D7A" android:textSize="13sp"
-                android:layout_marginTop="2dp"/>
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginTop="4dp">
-                <TextView android:id="@+id/tvRating"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="⭐ 0.0" android:textColor="#071A3D" android:textSize="12sp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="  •  " android:textColor="#8B97A8" android:textSize="12sp"/>
-                <TextView android:id="@+id/tvTutorRate"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="0" android:textColor="#8A2EFF" android:textSize="12sp" android:textStyle="bold"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text=" tokens/hr" android:textColor="#8B97A8" android:textSize="12sp"/>
-            </LinearLayout>
+
+            <TextView android:id="@+id/tvStudentCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📖 127 students" android:textColor="#8B97A8" android:textSize="12sp" android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Arrow -->
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="›" android:textColor="#8B97A8" android:textSize="24sp"/>
+        <com.google.android.material.card.MaterialCardView android:layout_width="64dp" android:layout_height="64dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="#8A2EFF" app:cardElevation="0dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙" android:textSize="14sp" />
+                <TextView android:id="@+id/tvTutorRate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="45" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/hour" android:textColor="#CCFFFFFF" android:textSize="10sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

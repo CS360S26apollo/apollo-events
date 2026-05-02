@@ -24,6 +24,18 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="16dp">
 
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="44dp" android:layout_height="44dp"
+                android:layout_marginEnd="12dp"
+                app:cardCornerRadius="22dp" app:cardBackgroundColor="#33FFFFFF"
+                app:cardElevation="0dp">
+                <ImageButton android:id="@+id/btnBack"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="#FFFFFF" android:contentDescription="Back"/>
+            </com.google.android.material.card.MaterialCardView>
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -46,12 +58,13 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- Earnings shortcut -->
+            <!-- Bell with badge -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnOpenEarnings"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                app:cardCornerRadius="16dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="14dp"
                 app:cardBackgroundColor="#33FFFFFF"
                 app:cardElevation="0dp"
                 android:clickable="true"
@@ -63,6 +76,45 @@
                     android:text="🪙"
                     android:textSize="20sp" />
             </com.google.android.material.card.MaterialCardView>
+
+            <FrameLayout
+                android:layout_width="44dp"
+                android:layout_height="44dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardBackgroundColor="#33FFFFFF"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="🔔"
+                        android:textSize="20sp" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Badge count -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardNotifBadge"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="top|end"
+                    app:cardCornerRadius="9dp"
+                    app:cardBackgroundColor="#00C853"
+                    app:cardElevation="2dp">
+                    <TextView
+                        android:id="@+id/tvNotifCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="5"
+                        android:textColor="#FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
         </LinearLayout>
 
         <!-- Search bar -->
@@ -99,7 +151,7 @@
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-    <!-- ── STATUS FILTER CHIPS (horizontal scroll) ── -->
+    <!-- ── FILTER CHIPS (horizontal scroll) ── -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -133,7 +185,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/chipPending"
+                android:id="@+id/chipHighPriority"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="10dp"
@@ -147,13 +199,13 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
-                    android:text="Pending"
+                    android:text="High Priority"
                     android:textColor="#4B5D7A"
                     android:textSize="13sp" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/chipBooked"
+                android:id="@+id/chipMediumPriority"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="10dp"
@@ -167,33 +219,13 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
-                    android:text="Booked"
+                    android:text="Medium Priority"
                     android:textColor="#4B5D7A"
                     android:textSize="13sp" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/chipCompleted"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginEnd="10dp"
-                app:cardCornerRadius="18dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardElevation="2dp"
-                app:strokeColor="#E0E0E0"
-                app:strokeWidth="1dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:paddingHorizontal="16dp"
-                    android:text="Completed"
-                    android:textColor="#4B5D7A"
-                    android:textSize="13sp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/chipCancelled"
+                android:id="@+id/chipLowPriority"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 app:cardCornerRadius="18dp"
@@ -206,7 +238,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
-                    android:text="Cancelled"
+                    android:text="Low Priority"
                     android:textColor="#4B5D7A"
                     android:textSize="13sp" />
             </com.google.android.material.card.MaterialCardView>
@@ -235,9 +267,9 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="72dp"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="0dp"
         app:cardBackgroundColor="#FFFFFF"
-        app:cardElevation="2dp">
+        app:cardElevation="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
