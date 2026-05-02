@@ -128,7 +128,8 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    /** Binds all layout views to their respective member variables. */
+    // ── Bind views ────────────────────────────────────────────
+
     private void bindViews() {
         tvAvatarInitials      = findViewById(R.id.tvAvatarInitials);
         tvUserName            = findViewById(R.id.tvUserName);
@@ -160,34 +161,27 @@ public class EditProfileActivity extends AppCompatActivity {
         rowShowRate           = findViewById(R.id.rowShowRate);
         ivProfilePicture      = findViewById(R.id.ivProfilePicture);
 
-        // Profile picture click → choose source
+        // Profile picture click
         View avatarContainer = findViewById(R.id.avatarContainer);
-        if (avatarContainer != null) {
-            avatarContainer.setOnClickListener(v -> showPhotoSourceDialog());
-        }
-        if (ivProfilePicture != null) {
-            ivProfilePicture.setOnClickListener(v -> showPhotoSourceDialog());
-        }
+        if (avatarContainer != null) avatarContainer.setOnClickListener(v -> showPhotoSourceDialog());
+        if (ivProfilePicture != null) ivProfilePicture.setOnClickListener(v -> showPhotoSourceDialog());
 
-        // Verification panel
+        // Verification upload button
         View btnUploadID = findViewById(R.id.btnUploadID);
-        if (btnUploadID != null) {
-            btnUploadID.setOnClickListener(v -> openDocumentPicker());
-        }
+        if (btnUploadID != null) btnUploadID.setOnClickListener(v -> openDocumentPicker());
+
         Button btnSubmit = findViewById(R.id.btnSubmitVerification);
-        if (btnSubmit != null) {
-            btnSubmit.setOnClickListener(v -> submitVerificationDocument());
-        }
+        if (btnSubmit != null) btnSubmit.setOnClickListener(v -> submitVerificationDocument());
     }
 
-    /** Configures the tab selection listeners. */
+    // ── Tabs ──────────────────────────────────────────────────
+
     private void setupTabSwitcher() {
         if (tabEditProfile != null)  tabEditProfile.setOnClickListener(v -> showTab(0));
         if (tabPrivacy != null)      tabPrivacy.setOnClickListener(v -> showTab(1));
         if (tabVerification != null) tabVerification.setOnClickListener(v -> showTab(2));
     }
 
-    /** Toggles visibility between Edit, Privacy, and Verification panels. */
     private void showTab(int index) {
         if (panelEditProfile != null)  panelEditProfile.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
         if (panelPrivacy != null)      panelPrivacy.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
@@ -197,7 +191,6 @@ public class EditProfileActivity extends AppCompatActivity {
         updateTabStyle(tabVerification, index == 2);
     }
 
-    /** Updates the visual style of tabs based on selection. */
     private void updateTabStyle(Button btn, boolean selected) {
         if (btn == null) return;
         if (selected) {
@@ -209,11 +202,15 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
+    // ── Role UI ───────────────────────────────────────────────
 
-
-    /** Adjusts the visibility of role-specific input fields. */
     private void applyRoleUI(String role) {
         currentRole = role;
+
+        // Update read-only role badge
+        if (tvUserRoleBadge != null)
+            tvUserRoleBadge.setText("tutor".equals(role) ? "Tutor" : "Student");
+
         if (layoutInstitution != null)
             layoutInstitution.setVisibility(role.equals("student") ? View.VISIBLE : View.GONE);
         if (layoutBio != null)
@@ -234,61 +231,54 @@ public class EditProfileActivity extends AppCompatActivity {
                 btnManageAvailability.setVisibility(View.GONE);
             }
         }
-
-
     }
 
-    /** Sets up selection listeners for the subject chips. */
+    // ── Chips ─────────────────────────────────────────────────
+
     private void setupChips() {
         for (int id : CHIP_IDS) {
             Chip chip = findViewById(id);
             if (chip == null) continue;
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 chip.setChipBackgroundColor(ColorStateList.valueOf(
-                        isChecked ? Color.parseColor("#089A3C") : Color.parseColor("#E0E0E0")
-                ));
+                        isChecked ? Color.parseColor("#089A3C") : Color.parseColor("#E0E0E0")));
                 chip.setTextColor(isChecked ? Color.WHITE : Color.parseColor("#33476A"));
             });
         }
     }
 
-    /** Pre-selects chips based on data loaded from the database. */
     private void preSelectChips(List<String> subjects) {
         if (subjects == null) return;
         for (int i = 0; i < CHIP_IDS.length; i++) {
             Chip chip = findViewById(CHIP_IDS[i]);
-            if (chip != null && subjects.contains(CHIP_NAMES[i])) {
-                chip.setChecked(true);
-            }
+            if (chip != null && subjects.contains(CHIP_NAMES[i])) chip.setChecked(true);
         }
     }
 
-    /** @return List of strings representing the currently selected subjects. */
     private List<String> getSelectedSubjects() {
         List<String> selected = new ArrayList<>();
         for (int i = 0; i < CHIP_IDS.length; i++) {
             Chip chip = findViewById(CHIP_IDS[i]);
-            if (chip != null && chip.isChecked()) {
-                selected.add(CHIP_NAMES[i]);
-            }
+            if (chip != null && chip.isChecked()) selected.add(CHIP_NAMES[i]);
         }
         return selected;
     }
 
-    /** Monitors the bio field and updates the character counter. */
+    // ── Bio char count ────────────────────────────────────────
+
     private void setupBioCharCount() {
         if (etBio == null || tvCharCount == null) return;
         etBio.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
-                String count = s.length() + "/500 characters";
-                tvCharCount.setText(count);
+                tvCharCount.setText(s.length() + "/500 characters");
             }
             @Override public void afterTextChanged(Editable s) {}
         });
     }
 
-    /** Initializes the Save buttons for Profile and Privacy panels. */
+    // ── Save buttons ──────────────────────────────────────────
+
     private void setupSaveButtons() {
         View btnSaveProfile = findViewById(R.id.btnSaveProfile);
         View btnSavePrivacy = findViewById(R.id.btnSavePrivacy);
@@ -296,19 +286,18 @@ public class EditProfileActivity extends AppCompatActivity {
         if (btnSavePrivacy != null) btnSavePrivacy.setOnClickListener(v -> savePrivacy());
     }
 
-    /** Fetches the user's profile document from Firestore. */
+    // ── Load profile ──────────────────────────────────────────
+
     private void loadUserProfile(String uid) {
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
-                    if (doc.exists()) {
-                        populateUI(doc);
-                    }
+                    if (doc.exists()) populateUI(doc);
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(EditProfileActivity.this, "Failed to load profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to load profile: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
     }
 
-    /** Populates the UI widgets with data from a Firestore DocumentSnapshot. */
     @SuppressWarnings("unchecked")
     private void populateUI(DocumentSnapshot doc) {
         String savedRole = doc.getString("role") != null ? doc.getString("role") : "student";
@@ -330,13 +319,12 @@ public class EditProfileActivity extends AppCompatActivity {
         if (tvUserName != null) tvUserName.setText(fullName != null ? fullName : "");
         if (!savedRole.isEmpty()) {
             String roleText = Character.toUpperCase(savedRole.charAt(0)) + savedRole.substring(1);
-            if (tvUserRole != null)      tvUserRole.setText(roleText);
+            if (tvUserRole  != null) tvUserRole.setText(roleText);
             if (tvUserRoleBadge != null) tvUserRoleBadge.setText(roleText);
         }
 
-        if (etEmail != null && currentUser != null && currentUser.getEmail() != null) {
+        if (etEmail != null && currentUser != null && currentUser.getEmail() != null)
             etEmail.setText(currentUser.getEmail());
-        }
 
         String institution = doc.getString("institution");
         if (etInstitution != null && institution != null) etInstitution.setText(institution);
@@ -362,29 +350,98 @@ public class EditProfileActivity extends AppCompatActivity {
         if (switchShowRate        != null && showRate   != null) switchShowRate.setChecked(showRate);
         if (switchProfileVisible  != null && profileVis != null) switchProfileVisible.setChecked(profileVis);
 
-        // Load profile picture if stored
+        // Load profile picture
         String photoUrl = doc.getString("profilePhotoUrl");
         if (photoUrl != null && !photoUrl.isEmpty() && ivProfilePicture != null) {
             ivProfilePicture.setVisibility(View.VISIBLE);
             if (tvAvatarInitials != null) tvAvatarInitials.setVisibility(View.GONE);
             if (photoUrl.startsWith("data:image")) {
-                // Base64-encoded image stored in Firestore — decode to byte array for Glide
                 String base64Data = photoUrl.substring(photoUrl.indexOf(",") + 1);
                 byte[] bytes = android.util.Base64.decode(base64Data, android.util.Base64.NO_WRAP);
                 Glide.with(this).load(bytes).circleCrop().into(ivProfilePicture);
             } else {
-                // Legacy: plain HTTPS URL (Firebase Storage)
                 Glide.with(this).load(photoUrl).circleCrop().into(ivProfilePicture);
             }
         }
+
+        // ── Load verification status ──────────────────────────
+        String verifStatus = doc.getString("verificationStatus");
+        String verifDoc    = doc.getString("verificationDocBase64");
+        updateVerificationUI(verifStatus, verifDoc != null && !verifDoc.isEmpty());
     }
 
-    /** Validates and saves the general profile information back to Firestore. */
+    // ── Verification UI ───────────────────────────────────────
+
+    /**
+     * Updates the Verification panel based on status saved in Firestore.
+     * Called every time the profile loads — persists state across sessions.
+     */
+    private void updateVerificationUI(String status, boolean hasDocument) {
+        TextView tvTitle   = findViewById(R.id.tvVerificationTitle);
+        TextView tvDesc    = findViewById(R.id.tvVerificationDesc);
+        TextView tvLabel   = findViewById(R.id.tvUploadLabel);
+        Button   btnSubmit = findViewById(R.id.btnSubmitVerification);
+        View     btnUpload = findViewById(R.id.btnUploadID);
+
+        if ("pending".equals(status) && hasDocument) {
+            // Already submitted — show submitted state
+            if (tvTitle != null) tvTitle.setText("Document Submitted ✅");
+            if (tvDesc  != null) tvDesc.setText(
+                    "Your document is under review. You'll be notified once approved.");
+            if (tvLabel != null) {
+                tvLabel.setText("✅ Document already submitted");
+                tvLabel.setTextColor(0xFF00C853);
+            }
+            // Show Resubmit button
+            if (btnSubmit != null) {
+                btnSubmit.setText("Resubmit Document");
+                btnSubmit.setEnabled(false); // enabled only after picking a new file
+                btnSubmit.setAlpha(0.5f);
+            }
+            // Resubmit: tap upload area to pick a new file, then submit button enables
+            if (btnUpload != null) {
+                btnUpload.setOnClickListener(v -> {
+                    selectedDocumentUri = null;
+                    if (tvLabel != null) {
+                        tvLabel.setText("Tap to select new PDF document");
+                        tvLabel.setTextColor(0xFF8A2EFF);
+                    }
+                    if (btnSubmit != null) {
+                        btnSubmit.setEnabled(false);
+                        btnSubmit.setAlpha(0.5f);
+                    }
+                    openDocumentPicker();
+                });
+            }
+
+        } else if ("approved".equals(status)) {
+            // Approved
+            if (tvTitle != null) tvTitle.setText("Verified ✅");
+            if (tvDesc  != null) tvDesc.setText(
+                    "Congratulations! Your account is verified. Your badge is visible to students.");
+            if (tvLabel != null) {
+                tvLabel.setText("✅ Verification approved");
+                tvLabel.setTextColor(0xFF00C853);
+            }
+            if (btnSubmit != null) {
+                btnSubmit.setText("Verified");
+                btnSubmit.setEnabled(false);
+                btnSubmit.setAlpha(0.6f);
+            }
+
+        }
+        // If status is null — XML default state shown (upload prompt)
+    }
+
+    // ── Save profile ──────────────────────────────────────────
+
     private void saveProfile() {
         if (currentUser == null) return;
 
-        String firstName = etFirstName != null && etFirstName.getText() != null ? etFirstName.getText().toString().trim() : "";
-        String lastName  = etLastName  != null && etLastName.getText()  != null ? etLastName.getText().toString().trim()  : "";
+        String firstName = etFirstName != null && etFirstName.getText() != null
+                ? etFirstName.getText().toString().trim() : "";
+        String lastName  = etLastName  != null && etLastName.getText()  != null
+                ? etLastName.getText().toString().trim()  : "";
 
         if (TextUtils.isEmpty(firstName)) {
             if (etFirstName != null) etFirstName.setError("First name is required");
@@ -400,29 +457,32 @@ public class EditProfileActivity extends AppCompatActivity {
         updates.put("lastName",  lastName);
         updates.put("fullName",  firstName + " " + lastName);
         updates.put("subjects",  getSelectedSubjects());
-        // Role is NOT saved from UI — it was set at signup and never changes
-        // updates.put("role", currentRole);  // intentionally removed
+        // Role is NOT saved from UI — fixed at signup
 
         if (currentRole.equals("student")) {
-            String institution = etInstitution != null && etInstitution.getText() != null ? etInstitution.getText().toString().trim() : "";
+            String institution = etInstitution != null && etInstitution.getText() != null
+                    ? etInstitution.getText().toString().trim() : "";
             if (!TextUtils.isEmpty(institution)) updates.put("institution", institution);
         } else {
-            String bio     = etBio  != null && etBio.getText()  != null ? etBio.getText().toString().trim()  : "";
-            String rateStr = etRate != null && etRate.getText() != null ? etRate.getText().toString().trim() : "";
-            if (!TextUtils.isEmpty(bio)) updates.put("bio",  bio);
+            String bio     = etBio  != null && etBio.getText()  != null
+                    ? etBio.getText().toString().trim()  : "";
+            String rateStr = etRate != null && etRate.getText() != null
+                    ? etRate.getText().toString().trim() : "";
+            if (!TextUtils.isEmpty(bio)) updates.put("bio", bio);
             if (!TextUtils.isEmpty(rateStr)) {
-                try {
-                    updates.put("rate", Integer.parseInt(rateStr));
-                } catch (NumberFormatException ignored) {}
+                try { updates.put("rate", Integer.parseInt(rateStr)); }
+                catch (NumberFormatException ignored) {}
             }
         }
 
         db.collection("users").document(currentUser.getUid()).set(updates, SetOptions.merge())
-                .addOnSuccessListener(unused -> Toast.makeText(EditProfileActivity.this, "✅ Profile saved!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnSuccessListener(u ->
+                        Toast.makeText(this, "✅ Profile saved!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Save failed: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show());
     }
 
-    /** Saves only the privacy/visibility settings back to Firestore. */
     private void savePrivacy() {
         if (currentUser == null) return;
 
@@ -434,50 +494,55 @@ public class EditProfileActivity extends AppCompatActivity {
         if (switchProfileVisible  != null) privacy.put("profileVisible",  switchProfileVisible.isChecked());
 
         db.collection("users").document(currentUser.getUid()).set(privacy, SetOptions.merge())
-                .addOnSuccessListener(unused -> Toast.makeText(EditProfileActivity.this, " Privacy settings saved!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(EditProfileActivity.this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnSuccessListener(u ->
+                        Toast.makeText(this, "✅ Privacy settings saved!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Save failed: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show());
     }
-    // ── Activity result launchers ─────────────────────────────────────────
 
-    private Uri cameraImageUri = null; // URI for full-res camera photo
+    // ── Activity result launchers ─────────────────────────────
+
+    private Uri cameraImageUri = null;
 
     private void setupLaunchers() {
 
-        // ── Camera permission (Android 6+) ────────────────────────────────
         cameraPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 granted -> {
-                    if (granted) {
-                        openCamera();
-                    } else {
-                        Toast.makeText(this, "Camera permission is required to take photos.",
+                    if (granted) openCamera();
+                    else Toast.makeText(this,
+                            "Camera permission is required to take photos.",
+                            Toast.LENGTH_SHORT).show();
+                });
+
+        cameraLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() != RESULT_OK) return;
+                    try {
+                        Bitmap bitmap = null;
+                        if (cameraImageUri != null) {
+                            android.graphics.BitmapFactory.Options opts =
+                                    new android.graphics.BitmapFactory.Options();
+                            opts.inSampleSize = 2;
+                            java.io.InputStream is =
+                                    getContentResolver().openInputStream(cameraImageUri);
+                            bitmap = android.graphics.BitmapFactory.decodeStream(is, null, opts);
+                            if (is != null) is.close();
+                        } else if (result.getData() != null) {
+                            android.os.Bundle extras = result.getData().getExtras();
+                            if (extras != null) bitmap = (Bitmap) extras.get("data");
+                        }
+                        if (bitmap != null) uploadProfilePhoto(bitmap);
+                        else Toast.makeText(this, "Could not get photo.",
+                                Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Camera error: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        // ── Camera: uses FileProvider for full-res photo ──────────────────
-        cameraLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && cameraImageUri != null) {
-                        try {
-                            android.graphics.BitmapFactory.Options opts =
-                                    new android.graphics.BitmapFactory.Options();
-                            opts.inSampleSize = 2; // reduce memory usage
-                            java.io.InputStream is =
-                                    getContentResolver().openInputStream(cameraImageUri);
-                            Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(is, null, opts);
-                            if (is != null) is.close();
-                            if (bitmap != null) uploadProfilePhoto(bitmap);
-                        } catch (IOException e) {
-                            Toast.makeText(this,
-                                    "Could not read photo: " + e.getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-        // ── Gallery: ACTION_GET_CONTENT works on all Android versions ─────
         galleryLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -485,7 +550,6 @@ public class EditProfileActivity extends AppCompatActivity {
                         Uri uri = result.getData().getData();
                         if (uri == null) return;
                         try {
-                            // Take persistent permission so we can read the URI
                             getContentResolver().takePersistableUriPermission(
                                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         } catch (Exception ignored) {}
@@ -494,36 +558,30 @@ public class EditProfileActivity extends AppCompatActivity {
                                     new android.graphics.BitmapFactory.Options();
                             opts.inSampleSize = 2;
                             java.io.InputStream is = getContentResolver().openInputStream(uri);
-                            Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(is, null, opts);
+                            Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(
+                                    is, null, opts);
                             if (is != null) is.close();
-                            if (bitmap != null) {
-                                uploadProfilePhoto(bitmap);
-                            } else {
-                                Toast.makeText(this, "Could not decode image.", Toast.LENGTH_SHORT).show();
-                            }
+                            if (bitmap != null) uploadProfilePhoto(bitmap);
+                            else Toast.makeText(this, "Could not decode image.",
+                                    Toast.LENGTH_SHORT).show();
                         } catch (IOException e) {
-                            Toast.makeText(this,
-                                    "Failed to read image: " + e.getMessage(),
+                            Toast.makeText(this, "Failed to read image: " + e.getMessage(),
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
 
-        // ── Document (PDF only) ───────────────────────────────────────────
         documentLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri uri = result.getData().getData();
                         if (uri == null) return;
-
-                        // Take persistent permission
                         try {
                             getContentResolver().takePersistableUriPermission(
                                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         } catch (Exception ignored) {}
 
-                        // Validate MIME type — PDF only
                         String type = getContentResolver().getType(uri);
                         if (type == null || !type.equals("application/pdf")) {
                             Toast.makeText(this,
@@ -538,26 +596,27 @@ public class EditProfileActivity extends AppCompatActivity {
                             String name = uri.getLastPathSegment();
                             if (name != null && name.contains("/"))
                                 name = name.substring(name.lastIndexOf("/") + 1);
-                            tvLabel.setText("✅  " + name);
-                            tvLabel.setTextColor(0xFF00C853);
+                            tvLabel.setText("📄  " + name);
+                            tvLabel.setTextColor(0xFF8A2EFF);
                         }
                         Button btnSubmit = findViewById(R.id.btnSubmitVerification);
-                        if (btnSubmit != null) btnSubmit.setEnabled(true);
+                        if (btnSubmit != null) {
+                            btnSubmit.setEnabled(true);
+                            btnSubmit.setAlpha(1.0f);
+                        }
                     }
                 });
     }
 
-    // ── Profile photo ─────────────────────────────────────────────────────
+    // ── Profile photo ─────────────────────────────────────────
 
     private void showPhotoSourceDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Update Profile Photo")
                 .setItems(new String[]{"Take Photo", "Choose from Gallery", "Cancel"},
                         (dialog, which) -> {
-                            if (which == 0) {
-                                launchCamera();
-                            } else if (which == 1) {
-                                // ACTION_GET_CONTENT works on all Android versions incl. 13+
+                            if (which == 0) launchCamera();
+                            else if (which == 1) {
                                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                                 intent.setType("image/*");
                                 intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -585,7 +644,6 @@ public class EditProfileActivity extends AppCompatActivity {
                     this,
                     getApplicationContext().getPackageName() + ".fileprovider",
                     photoFile);
-
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -598,15 +656,9 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void uploadProfilePhoto(Bitmap bitmap) {
-        if (currentUser == null) {
-            Toast.makeText(this, "Not logged in.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (currentUser == null) return;
 
-        // Scale to 256px max — keeps base64 size well under Firestore's 1MB document limit
         Bitmap scaled = scaleBitmap(bitmap, 256);
-
-        // Show immediately in UI
         if (ivProfilePicture != null) {
             ivProfilePicture.setVisibility(View.VISIBLE);
             ivProfilePicture.setImageBitmap(scaled);
@@ -615,10 +667,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Saving photo...", Toast.LENGTH_SHORT).show();
 
-        // Compress to JPEG and encode as Base64 — saved directly in Firestore (no Storage needed)
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
         scaled.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-        String base64 = android.util.Base64.encodeToString(
+        String base64  = android.util.Base64.encodeToString(
                 baos.toByteArray(), android.util.Base64.NO_WRAP);
         String dataUrl = "data:image/jpeg;base64," + base64;
 
@@ -627,12 +678,13 @@ public class EditProfileActivity extends AppCompatActivity {
         db.collection("users").document(currentUser.getUid())
                 .set(update, SetOptions.merge())
                 .addOnSuccessListener(u ->
-                        Toast.makeText(this, "✅ Profile photo updated!", Toast.LENGTH_SHORT).show())
+                        Toast.makeText(this, "✅ Profile photo updated!",
+                                Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                        Toast.makeText(this, "Save failed: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show());
     }
 
-    /** Scales bitmap down so largest dimension == maxPx. Preserves aspect ratio. */
     private Bitmap scaleBitmap(Bitmap src, int maxPx) {
         int w = src.getWidth(), h = src.getHeight();
         if (w <= maxPx && h <= maxPx) return src;
@@ -640,18 +692,19 @@ public class EditProfileActivity extends AppCompatActivity {
         return Bitmap.createScaledBitmap(src, (int)(w * scale), (int)(h * scale), true);
     }
 
-    // ── Verification document (PDF only) ─────────────────────────────────
+    // ── Verification document ─────────────────────────────────
 
     private void openDocumentPicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("application/pdf"); // PDF only
+        intent.setType("application/pdf");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         documentLauncher.launch(intent);
     }
 
     private void submitVerificationDocument() {
         if (selectedDocumentUri == null) {
-            Toast.makeText(this, "Please select a PDF document first.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please select a PDF document first.",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
         if (currentUser == null) return;
@@ -660,13 +713,7 @@ public class EditProfileActivity extends AppCompatActivity {
         if (btnSubmit != null) { btnSubmit.setEnabled(false); btnSubmit.setText("Uploading..."); }
         TextView tvLabel = findViewById(R.id.tvUploadLabel);
 
-        // Upload to: verifications/{uid}/document.pdf
-        StorageReference ref = storage.getReference()
-                .child("verifications")
-                .child(currentUser.getUid())
-                .child("document.pdf");
-
-        // Read PDF bytes from URI — avoids "Object does not exist" path errors
+        // Read PDF bytes
         byte[] pdfBytes = null;
         try {
             java.io.InputStream is = getContentResolver().openInputStream(selectedDocumentUri);
@@ -690,48 +737,47 @@ public class EditProfileActivity extends AppCompatActivity {
             return;
         }
 
-        com.google.firebase.storage.StorageMetadata pdfMeta =
-                new com.google.firebase.storage.StorageMetadata.Builder()
-                        .setContentType("application/pdf")
-                        .build();
+        // Cap at 700KB — Firestore 1MB limit (Base64 adds ~33% overhead)
+        if (pdfBytes.length > 700 * 1024) {
+            Toast.makeText(this,
+                    "PDF too large (" + (pdfBytes.length / 1024) + " KB). Please use a PDF under 700 KB.",
+                    Toast.LENGTH_LONG).show();
+            if (btnSubmit != null) { btnSubmit.setEnabled(true); btnSubmit.setText("Submit for Review"); }
+            return;
+        }
 
-        final byte[] finalBytes = pdfBytes;
-        ref.putBytes(finalBytes, pdfMeta)
-                .addOnSuccessListener(snap ->
-                        ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                            Map<String, Object> verif = new HashMap<>();
-                            verif.put("verificationDocUrl", uri.toString());
-                            verif.put("verificationStatus", "pending");
-                            verif.put("submittedAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
+        // Convert to Base64 and save in Firestore (no Firebase Storage needed)
+        String base64Pdf = android.util.Base64.encodeToString(pdfBytes, android.util.Base64.NO_WRAP);
+        String dataUrl   = "data:application/pdf;base64," + base64Pdf;
 
-                            db.collection("users").document(currentUser.getUid())
-                                    .set(verif, SetOptions.merge())
-                                    .addOnSuccessListener(u -> {
-                                        Toast.makeText(this,
-                                                "✅ Document submitted! Under review.",
-                                                Toast.LENGTH_LONG).show();
-                                        if (tvLabel != null) tvLabel.setText("✅ Submitted — Under Review");
-                                        if (btnSubmit != null) {
-                                            btnSubmit.setText("Submitted");
-                                            btnSubmit.setEnabled(false);
-                                        }
-                                    });
-                        }))
+        Map<String, Object> verif = new HashMap<>();
+        verif.put("verificationDocBase64", dataUrl);
+        verif.put("verificationStatus",    "pending");
+        verif.put("submittedAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+        db.collection("users").document(currentUser.getUid())
+                .set(verif, SetOptions.merge())
+                .addOnSuccessListener(u -> {
+                    Toast.makeText(this, "✅ Document submitted! Under review.",
+                            Toast.LENGTH_LONG).show();
+                    // Update UI immediately — no need to reload from Firestore
+                    updateVerificationUI("pending", true);
+                })
                 .addOnFailureListener(e -> {
-                    String msg = e.getMessage() != null ? e.getMessage() : "Unknown error";
-                    Toast.makeText(this, "Upload failed: " + msg, Toast.LENGTH_LONG).show();
-                    if (btnSubmit != null) { btnSubmit.setEnabled(true); btnSubmit.setText("Submit for Review"); }
+                    Toast.makeText(this, "Submit failed: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                    if (btnSubmit != null) {
+                        btnSubmit.setEnabled(true);
+                        btnSubmit.setText("Submit for Review");
+                    }
                 });
     }
-
 
     // ── Logout ────────────────────────────────────────────────
 
     private void setupLogoutButton() {
         View btnLogout = findViewById(R.id.btnLogout);
-        if (btnLogout != null) {
-            btnLogout.setOnClickListener(v -> showLogoutConfirmation());
-        }
+        if (btnLogout != null) btnLogout.setOnClickListener(v -> showLogoutConfirmation());
     }
 
     private void showLogoutConfirmation() {
@@ -750,6 +796,4 @@ public class EditProfileActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-
 }
