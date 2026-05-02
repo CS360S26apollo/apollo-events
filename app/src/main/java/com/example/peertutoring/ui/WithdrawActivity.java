@@ -425,25 +425,44 @@ public class WithdrawActivity extends AppCompatActivity {
             });
 
         } else if (methodId.equals("paypal")) {
-            EditText etEmail = addInputField("PayPal Email Address", InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            EditText etEmail = addInputField("PayPal Email (e.g. user@gmail.com)", InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            etEmail.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+                @Override public void onTextChanged(CharSequence s, int st, int b, int c) {}
+                @Override public void afterTextChanged(android.text.Editable s) {
+                    etEmail.setError(validatePayPalEmail(s.toString().trim()));
+                }
+            });
             if (isChange) prefillField(etEmail, methodId, "email");
 
             Button btnSave = addSaveButton();
             btnSave.setOnClickListener(v -> {
-                String email = etEmail.getText().toString().trim();
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    etEmail.setError("Enter a valid email address.");
-                    return;
-                }
+                String email = etEmail.getText().toString().trim().toLowerCase();
+                String err = validatePayPalEmail(email);
+                if (err != null) { etEmail.setError(err); return; }
                 Map<String, Object> d = new HashMap<>();
                 d.put("email", email);
                 savePaymentDetail(methodId, d);
             });
 
         } else if (methodId.equals("bank")) {
-            EditText etIban  = addInputField("IBAN / Account Number", InputType.TYPE_CLASS_TEXT);
+            // IBAN field with real-time format validation
+            EditText etIban  = addInputField("Pakistani IBAN (PK + 22 digits = 24 chars)", InputType.TYPE_CLASS_TEXT);
+            etIban.setFilters(new InputFilter[]{
+                    new InputFilter.LengthFilter(24),
+                    (source, start, end, dest, dstart, dend) -> source.toString().toUpperCase()
+            });
+            etIban.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+                @Override public void onTextChanged(CharSequence s, int st, int b, int c) {}
+                @Override public void afterTextChanged(android.text.Editable s) {
+                    String err = validateIban(s.toString().trim());
+                    etIban.setError(err); // null clears the error
+                }
+            });
+
             EditText etTitle = addInputField("Account Title", InputType.TYPE_CLASS_TEXT);
-            EditText etBank  = addInputField("Bank Name", InputType.TYPE_CLASS_TEXT);
+            EditText etBank  = addBankDropdown(); // autocomplete bank selector
             if (isChange) {
                 prefillField(etIban,  methodId, "iban");
                 prefillField(etTitle, methodId, "title");
@@ -452,14 +471,18 @@ public class WithdrawActivity extends AppCompatActivity {
 
             Button btnSave = addSaveButton();
             btnSave.setOnClickListener(v -> {
-                String iban  = etIban.getText().toString().trim();
+                String iban  = etIban.getText().toString().trim().toUpperCase();
                 String title = etTitle.getText().toString().trim();
-                if (iban.length() < 10) { etIban.setError("Enter a valid account/IBAN number."); return; }
-                if (title.isEmpty())    { etTitle.setError("Enter account title."); return; }
+                String bank  = etBank.getText().toString().trim();
+                String ibanErr = validateIban(iban);
+                if (ibanErr != null)   { etIban.setError(ibanErr);                    return; }
+                if (title.isEmpty())   { etTitle.setError("Enter account title.");     return; }
+                String bankErr = validateBankName(bank);
+                if (bankErr != null)   { etBank.setError(bankErr);                    return; }
                 Map<String, Object> d = new HashMap<>();
                 d.put("iban",  iban);
                 d.put("title", title);
-                d.put("bank",  etBank.getText().toString().trim());
+                d.put("bank",  bank);
                 savePaymentDetail(methodId, d);
             });
 
@@ -830,6 +853,123 @@ public class WithdrawActivity extends AppCompatActivity {
 
     // ── Helpers ───────────────────────────────────────────────
 
+
+    // Pakistani bank list for autocomplete + validation
+    private static final String[] PAKISTANI_BANKS = {
+            "Allied Bank Limited (ABL)",
+            "Askari Bank",
+            "Bank Alfalah",
+            "Bank AL Habib",
+            "Bank Islami Pakistan",
+            "Dubai Islamic Bank Pakistan",
+            "Faysal Bank",
+            "First Women Bank",
+            "Habib Bank Limited (HBL)",
+            "Habib Metropolitan Bank",
+            "JS Bank",
+            "MCB Bank Limited",
+            "MCB Islamic Bank",
+            "Meezan Bank",
+            "National Bank of Pakistan (NBP)",
+            "NIB Bank",
+            "Samba Bank",
+            "Silkbank",
+            "Sindh Bank",
+            "SME Bank",
+            "Soneri Bank",
+            "Standard Chartered Bank Pakistan",
+            "Summit Bank",
+            "The Bank of Khyber",
+            "The Bank of Punjab (BOP)",
+            "United Bank Limited (UBL)",
+            "Zarai Taraqiati Bank (ZTBL)",
+            "Al Baraka Bank Pakistan",
+            "Burj Bank",
+            "Mobilink Microfinance Bank",
+            "Telenor Microfinance Bank (Easypaisa)",
+            "U Microfinance Bank",
+            "NRSP Microfinance Bank"
+    };
+
+    /**
+     * Adds an AutoCompleteTextView pre-filled with all Pakistani banks.
+     * User can type to filter or scroll the dropdown.
+     */
+    private EditText addBankDropdown() {
+        MaterialCardView card = new MaterialCardView(this);
+        LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        cp.setMargins(0, 0, 0, dp(10));
+        card.setLayoutParams(cp);
+        card.setRadius(dp(14));
+        card.setCardBackgroundColor(0xFFFFFFFF);
+        card.setCardElevation(dp(1));
+
+        android.widget.AutoCompleteTextView acTextView =
+                new android.widget.AutoCompleteTextView(this);
+        acTextView.setHint("Bank Name — type to search");
+        acTextView.setTextColor(0xFF071A3D);
+        acTextView.setTextSize(14f);
+        acTextView.setPadding(dp(14), dp(14), dp(14), dp(14));
+        acTextView.setBackground(null);
+        acTextView.setThreshold(1); // start suggesting after 1 char
+        acTextView.setDropDownHeight(dp(200));
+
+        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                PAKISTANI_BANKS);
+        acTextView.setAdapter(adapter);
+
+        // Validate on text change
+        acTextView.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void onTextChanged(CharSequence s, int st, int b, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                String err = validateBankName(s.toString().trim());
+                acTextView.setError(err);
+            }
+        });
+
+        card.addView(acTextView);
+        layoutPaymentDetails.addView(card);
+        return acTextView; // EditText is parent of AutoCompleteTextView
+    }
+
+    /**
+     * Validates bank name against the official list of Pakistani banks.
+     * Case-insensitive partial match — catches typos while being flexible.
+     */
+    private String validateBankName(String bank) {
+        if (bank.isEmpty()) return "Enter your bank name.";
+        if (bank.length() < 3) return "Enter at least 3 characters of the bank name.";
+        String lower = bank.toLowerCase();
+        for (String b : PAKISTANI_BANKS) {
+            if (b.toLowerCase().contains(lower) || lower.contains(b.toLowerCase().substring(0, Math.min(5, b.length())))) {
+                return null; // match found
+            }
+        }
+        // Check common abbreviations / alternate names
+        java.util.Map<String, String> aliases = new java.util.HashMap<>();
+        aliases.put("hbl", "Habib Bank Limited (HBL)");
+        aliases.put("ubl", "United Bank Limited (UBL)");
+        aliases.put("mcb", "MCB Bank Limited");
+        aliases.put("nbp", "National Bank of Pakistan (NBP)");
+        aliases.put("abl", "Allied Bank Limited (ABL)");
+        aliases.put("bop", "The Bank of Punjab (BOP)");
+        aliases.put("scb", "Standard Chartered Bank Pakistan");
+        aliases.put("bah", "Bank AL Habib");
+        aliases.put("bafl", "Bank Alfalah");
+        aliases.put("alfalah", "Bank Alfalah");
+        aliases.put("meezan", "Meezan Bank");
+        aliases.put("askari", "Askari Bank");
+        aliases.put("faysal", "Faysal Bank");
+        for (String alias : aliases.keySet()) {
+            if (lower.contains(alias)) return null;
+        }
+        return "Bank not recognised. Please select from the dropdown list or verify spelling.";
+    }
+
     private String hashPin(String pin) {
         // Simple SHA-256 hash — good enough for a PIN
         try {
@@ -850,8 +990,83 @@ public class WithdrawActivity extends AppCompatActivity {
 
     private String validatePhone(String phone) {
         String digits = phone.replaceAll("[^\\d]", "");
-        if (digits.length() != 11) return "Must be 11 digits (e.g. 03001234567).";
-        if (!digits.startsWith("03")) return "Must start with 03.";
+        if (digits.isEmpty())        return "Please enter your mobile number.";
+        if (!digits.startsWith("03")) return "Must start with 03 (e.g. 03001234567).";
+        if (digits.length() != 11)   return "Must be exactly 11 digits (e.g. 03001234567).";
+        // Check valid Pakistani operator prefixes
+        String op = digits.substring(0, 4);
+        java.util.Set<String> validOps = new java.util.HashSet<>(java.util.Arrays.asList(
+                "0300","0301","0302","0303","0304","0305","0306","0307","0308","0309", // Zong
+                "0310","0311","0312","0313","0314","0315","0316","0317","0318","0319", // Zong
+                "0320","0321","0322","0323","0324","0325","0326","0327","0328","0329", // Telenor
+                "0330","0331","0332","0333","0334","0335","0336","0337","0338","0339", // Telenor
+                "0340","0341","0342","0343","0344","0345","0346","0347","0348","0349", // Ufone
+                "0350","0351",                                                          // Ufone
+                "0360","0361","0362","0363","0364","0365","0366","0367","0368","0369", // Warid/Jazz
+                "0370","0371","0372","0373","0374","0375","0376","0377","0378","0379",
+                "0380","0381","0382","0383","0384","0385","0386","0387","0388","0389",
+                "0390","0391","0392","0393","0394","0395","0396","0397","0398","0399"
+        ));
+        if (!validOps.contains(op)) return "Invalid mobile operator prefix: " + op + ".";
+        return null;
+    }
+
+    /** IBAN validation — Pakistani IBANs are exactly 24 chars: PK + 2 check digits + 20 alphanumeric */
+    private String validateIban(String iban) {
+        if (iban.isEmpty()) return "Enter your IBAN.";
+        String clean = iban.replaceAll("\\s", "").toUpperCase();
+        if (!clean.startsWith("PK"))
+            return "Pakistani IBAN must start with PK (e.g. PK36SCBL0000001123456702).";
+        if (clean.length() != 24)
+            return "IBAN must be exactly 24 characters (PK + 22 digits). Yours: " + clean.length() + " chars.";
+        // Validate characters — only letters and digits after PK
+        if (!clean.substring(2).matches("[A-Z0-9]+"))
+            return "IBAN must contain only letters and numbers after PK.";
+        // Validate check digits using MOD-97 algorithm
+        if (!ibanMod97Check(clean))
+            return "IBAN check digits are invalid. Please verify your IBAN carefully.";
+        return null;
+    }
+
+    /** MOD-97 IBAN checksum validation — industry standard used by all banks */
+    private boolean ibanMod97Check(String iban) {
+        // Move first 4 chars to end, convert letters to numbers, check mod 97 == 1
+        String rearranged = iban.substring(4) + iban.substring(0, 4);
+        StringBuilder numericIban = new StringBuilder();
+        for (char c : rearranged.toCharArray()) {
+            if (Character.isLetter(c)) {
+                numericIban.append(c - 'A' + 10);
+            } else {
+                numericIban.append(c);
+            }
+        }
+        // Compute mod 97 in chunks to avoid overflow
+        String numStr = numericIban.toString();
+        int remainder = 0;
+        for (int i = 0; i < numStr.length(); i++) {
+            remainder = (remainder * 10 + (numStr.charAt(i) - '0')) % 97;
+        }
+        return remainder == 1;
+    }
+
+    /** PayPal email — valid email format + not a disposable/temp domain */
+    private String validatePayPalEmail(String email) {
+        if (email.isEmpty()) return "Enter your PayPal email address.";
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
+            return "Enter a valid email address.";
+        // Check domain part
+        String domain = email.contains("@") ? email.split("@")[1].toLowerCase() : "";
+        // Block known disposable email domains
+        java.util.Set<String> disposable = new java.util.HashSet<>(java.util.Arrays.asList(
+                "mailinator.com","guerrillamail.com","10minutemail.com","tempmail.com",
+                "throwaway.email","sharklasers.com","yopmail.com","trashmail.com",
+                "dispostable.com","fakeinbox.com","maildrop.cc","getairmail.com"
+        ));
+        if (disposable.contains(domain))
+            return "Disposable email addresses are not accepted for PayPal.";
+        // Must have a recognised TLD
+        if (!domain.contains("."))
+            return "Enter a valid email domain (e.g. gmail.com).";
         return null;
     }
 
