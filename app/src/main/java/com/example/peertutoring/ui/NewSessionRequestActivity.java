@@ -1,8 +1,12 @@
 package com.example.peertutoring.ui;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.app.TimePickerDialog;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,9 +19,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.chip.Chip;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.example.peertutoring.R;
@@ -29,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -67,6 +71,15 @@ public class NewSessionRequestActivity extends AppCompatActivity {
     private String tutorName;
     private int tutorRatePerHour = 100;
 
+    // Session type
+    private String sessionType = "online";
+    private static final float TAKEHOME_SURCHARGE = 0.25f;
+
+    // Location (take-home)
+    private double studentLat = 0, studentLng = 0;
+    private String studentAddress = null;
+    private static final int LOC_PERM = 1001;
+
     private static final String[] ALL_SUBJECTS = {
             "Mathematics", "Physics", "Chemistry", "Biology",
             "Computer Science", "English", "History", "Economics"
@@ -83,12 +96,6 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             currentUid      = FirebaseAuth.getInstance().getCurrentUser().getUid();
             currentUserName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
             if (currentUserName == null || currentUserName.isEmpty()) currentUserName = "Student";
-            // Fetch real name from Firestore (getDisplayName() is often not set)
-            db.collection("users").document(currentUid).get()
-                    .addOnSuccessListener(doc -> {
-                        String fullName = doc.getString("fullName");
-                        if (fullName != null && !fullName.isEmpty()) currentUserName = fullName;
-                    });
         } else {
             currentUid = "";
         }
@@ -118,41 +125,13 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             tvTutorSubjectsLabel.setText("Book with " + tutorName);
         }
 
+        setupSessionType();
         setupDateTimePickers();
         setupDurationButtons();
-        setupGoalChips();
 
         if (btnSubmit != null) btnSubmit.setOnClickListener(v -> { SoundManager.playClick(this); checkAndPost(); });
 
         loadTutorSubjects();
-    }
-
-    // ── Goal chips quick-select ───────────────────────────────────────────────
-
-    private void setupGoalChips() {
-        int[] chipIds = { R.id.chipExamPrep, R.id.chipHomework, R.id.chipConceptReview, R.id.chipProblemSolving };
-        String[] chipTexts = { "Exam Preparation", "Homework Help", "Concept Clarity", "Problem Solving" };
-
-        Chip[] chips = new Chip[chipIds.length];
-        for (int i = 0; i < chipIds.length; i++) {
-            chips[i] = findViewById(chipIds[i]);
-        }
-
-        for (int i = 0; i < chips.length; i++) {
-            if (chips[i] == null) continue;
-            final String text = chipTexts[i];
-            final int idx = i;
-            chips[i].setOnClickListener(v -> {
-                if (etGoals != null) etGoals.setText(text);
-                for (int j = 0; j < chips.length; j++) {
-                    if (chips[j] == null) continue;
-                    boolean selected = (j == idx);
-                    chips[j].setChipBackgroundColor(ColorStateList.valueOf(
-                            selected ? Color.parseColor("#8A2EFF") : Color.parseColor("#E0E0E0")));
-                    chips[j].setTextColor(selected ? Color.WHITE : Color.parseColor("#33476A"));
-                }
-            });
-        }
     }
 
     // ── Date / time pickers ──────────────────────────────────────────────────
@@ -280,11 +259,12 @@ public class NewSessionRequestActivity extends AppCompatActivity {
     private void updateCostPreview() {
         if (tvCostPreview == null) return;
         int cost = calculateTokenCost(selectedDuration);
-        tvCostPreview.setText("Cost: " + cost + " tokens  (" + tutorRatePerHour + " tokens/hr)");
+        String note = "takehome".equals(sessionType) ? " (+25% take-home)" : "";
+        tvCostPreview.setText("Cost: " + cost + " tokens  (" + tutorRatePerHour + " tokens/hr)" + note);
     }
 
     private int calculateTokenCost(int durationMinutes) {
-        return Math.max(1, (int) Math.ceil((durationMinutes * (double) tutorRatePerHour) / 60.0));
+        return Math.max(1, (int) Math.ceil(durationMinutes / 60.0) * tutorRatePerHour);
     }
 
     // ── Submit flow ───────────────────────────────────────────────────────────
@@ -324,6 +304,10 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             return;
         }
 
+        if ("takehome".equals(sessionType) && studentAddress == null) {
+            Toast.makeText(this, "Please capture your location for take-home sessions.", Toast.LENGTH_LONG).show();
+            return;
+        }
         final int    tokenCost = calculateTokenCost(finalDuration);
         final int    dur       = finalDuration;
         final String subFinal  = subject;
@@ -350,8 +334,7 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         db.collection("users").document(currentUid).get()
                 .addOnSuccessListener(doc -> {
                     Long bal = doc.getLong("tokens");
-                    // Default to 0 if field absent — avoids false "sufficient balance" check
-                    long currentTokens = (bal != null) ? bal : 0L;
+                    long currentTokens = (bal != null) ? bal : 100L;
                     if (currentTokens < tokenCost) {
                         SoundManager.playError(this);
                         Toast.makeText(this,
@@ -384,9 +367,18 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                     if (tutorUid  != null && !tutorUid.isEmpty())  req.setTutorUid(tutorUid);
                     if (tutorName != null && !tutorName.isEmpty()) req.setTutorName(tutorName);
 
+                    final java.util.Map<String,Object> extra = new java.util.HashMap<>();
+                    extra.put("sessionType", sessionType);
+                    if ("takehome".equals(sessionType) && studentAddress != null) {
+                        extra.put("studentAddress", studentAddress);
+                        extra.put("studentLat", studentLat);
+                        extra.put("studentLng", studentLng);
+                    }
+
                     db.collection("sessionRequests").add(req)
                             .addOnSuccessListener(docRef -> {
                                 docRef.update("requestId", docRef.getId());
+                                if (!extra.isEmpty()) docRef.update(extra);
                                 SoundManager.playSuccess(this);
                                 Toast.makeText(this,
                                         "Request sent! " + tokenCost + " tokens held in escrow.",
@@ -404,6 +396,136 @@ public class NewSessionRequestActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to deduct tokens.", Toast.LENGTH_SHORT).show();
                     resetSubmitButton();
                 });
+    }
+
+
+    // ── Session type ──────────────────────────────────────────────────────
+
+    private void setupSessionType() {
+        android.widget.Button btnOnline   = findViewById(R.id.btnSessionOnline);
+        android.widget.Button btnInPerson = findViewById(R.id.btnSessionInPerson);
+        android.widget.Button btnTakeHome = findViewById(R.id.btnSessionTakeHome);
+        View layoutLocation = findViewById(R.id.layoutLocationSection);
+        android.widget.Button[] btns = {btnOnline, btnInPerson, btnTakeHome};
+
+        View.OnClickListener l = v -> {
+            for (android.widget.Button b : btns) {
+                if (b == null) continue;
+                b.setBackgroundColor(android.graphics.Color.parseColor("#F3F4F6"));
+                b.setTextColor(android.graphics.Color.parseColor("#4B5D7A"));
+            }
+            ((android.widget.Button) v).setBackgroundColor(
+                    android.graphics.Color.parseColor("#8A2EFF"));
+            ((android.widget.Button) v).setTextColor(android.graphics.Color.WHITE);
+            if      (v.getId() == R.id.btnSessionOnline)   sessionType = "online";
+            else if (v.getId() == R.id.btnSessionInPerson) sessionType = "inperson";
+            else                                            sessionType = "takehome";
+            if (layoutLocation != null)
+                layoutLocation.setVisibility("takehome".equals(sessionType)
+                        ? View.VISIBLE : View.GONE);
+            updateCostPreview();
+        };
+
+        if (btnOnline   != null) { btnOnline.setOnClickListener(l); btnOnline.callOnClick(); }
+        if (btnInPerson != null) btnInPerson.setOnClickListener(l);
+        if (btnTakeHome != null) btnTakeHome.setOnClickListener(l);
+
+        android.widget.Button btnGetLoc = findViewById(R.id.btnGetLocation);
+        if (btnGetLoc != null) btnGetLoc.setOnClickListener(v -> requestLocation());
+
+        View btnMap = findViewById(R.id.btnViewOnMap);
+        if (btnMap != null) btnMap.setOnClickListener(v -> {
+            if (studentLat != 0) {
+                Uri uri = Uri.parse("geo:" + studentLat + "," + studentLng
+                        + "?q=" + studentLat + "," + studentLng + "(My+Location)");
+                android.content.Intent mi = new android.content.Intent(
+                        android.content.Intent.ACTION_VIEW, uri);
+                mi.setPackage("com.google.android.apps.maps");
+                if (mi.resolveActivity(getPackageManager()) != null) startActivity(mi);
+                else startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("https://maps.google.com/?q=" + studentLat + "," + studentLng)));
+            } else {
+                Toast.makeText(this, "Capture your location first.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // ── Location ──────────────────────────────────────────────────────────
+
+    private void requestLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION}, LOC_PERM);
+            return;
+        }
+        fetchLocation();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int code, String[] perms, int[] results) {
+        super.onRequestPermissionsResult(code, perms, results);
+        if (code == LOC_PERM && results.length > 0
+                && results[0] == PackageManager.PERMISSION_GRANTED) fetchLocation();
+        else Toast.makeText(this, "Location permission needed.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void fetchLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) return;
+        android.widget.Button btn = findViewById(R.id.btnGetLocation);
+        if (btn != null) { btn.setEnabled(false); btn.setText("Getting location..."); }
+        com.google.android.gms.location.FusedLocationProviderClient fused =
+                com.google.android.gms.location.LocationServices
+                        .getFusedLocationProviderClient(this);
+        fused.getLastLocation().addOnSuccessListener(loc -> {
+            if (loc != null) { onLocationReceived(loc); return; }
+            com.google.android.gms.location.LocationRequest req =
+                    com.google.android.gms.location.LocationRequest.create()
+                            .setPriority(com.google.android.gms.location.LocationRequest
+                                    .PRIORITY_HIGH_ACCURACY)
+                            .setNumUpdates(1).setInterval(0);
+            fused.requestLocationUpdates(req,
+                    new com.google.android.gms.location.LocationCallback() {
+                        @Override public void onLocationResult(
+                                com.google.android.gms.location.LocationResult r) {
+                            fused.removeLocationUpdates(this);
+                            if (r.getLastLocation() != null) onLocationReceived(r.getLastLocation());
+                            else Toast.makeText(NewSessionRequestActivity.this,
+                                    "Could not get location.", Toast.LENGTH_SHORT).show();
+                        }
+                    }, android.os.Looper.getMainLooper());
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Location error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            if (btn != null) { btn.setEnabled(true); btn.setText("📍 Get My Location"); }
+        });
+    }
+
+    private void onLocationReceived(android.location.Location loc) {
+        studentLat = loc.getLatitude();
+        studentLng = loc.getLongitude();
+        try {
+            Geocoder geo = new Geocoder(this, Locale.getDefault());
+            java.util.List<Address> addrs = geo.getFromLocation(studentLat, studentLng, 1);
+            if (addrs != null && !addrs.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i <= addrs.get(0).getMaxAddressLineIndex(); i++) {
+                    if (i > 0) sb.append(", ");
+                    sb.append(addrs.get(0).getAddressLine(i));
+                }
+                studentAddress = sb.toString();
+            } else { studentAddress = studentLat + ", " + studentLng; }
+        } catch (Exception e) { studentAddress = studentLat + ", " + studentLng; }
+
+        android.widget.TextView tvLoc = findViewById(R.id.tvStudentLocation);
+        if (tvLoc != null) {
+            tvLoc.setText("📍 " + studentAddress);
+            tvLoc.setTextColor(android.graphics.Color.parseColor("#071A3D"));
+        }
+        android.widget.Button btn = findViewById(R.id.btnGetLocation);
+        if (btn != null) { btn.setEnabled(true); btn.setText("🔄 Refresh Location"); }
+        Toast.makeText(this, "✅ Location captured!", Toast.LENGTH_SHORT).show();
     }
 
     private void setBtnState(boolean enabled, String text) {

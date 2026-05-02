@@ -2,6 +2,7 @@ package com.example.peertutoring.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -59,6 +60,9 @@ public class BrowseTutorsActivity extends AppCompatActivity {
 
         layoutTutorList = findViewById(R.id.layoutTutorList);
         tvResultCount = findViewById(R.id.tvResultCount);
+
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
         setupSearch();
         setupPreferencesButton();
@@ -161,7 +165,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
     private void displayTutors(List<DocumentSnapshot> tutors) {
         if (layoutTutorList == null) return;
         layoutTutorList.removeAllViews();
-        
+
         LayoutInflater inflater = LayoutInflater.from(this);
 
         int displayedCount = 0;
@@ -195,7 +199,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
             }
             if (tvRate != null && rate != null) tvRate.setText(String.valueOf(rate));
             if (tvRating != null) tvRating.setText("⭐ " + (rating != null ? rating : "0.0"));
-            
+
             if (tvInitials != null) {
                 String initials = "";
                 if (firstName != null && !firstName.isEmpty()) initials += firstName.charAt(0);
@@ -260,12 +264,12 @@ public class BrowseTutorsActivity extends AppCompatActivity {
             displayTutors(allTutors);
             return;
         }
-        
+
         List<DocumentSnapshot> filtered = new ArrayList<>();
         for (DocumentSnapshot doc : allTutors) {
             String name = doc.getString("fullName");
             List<String> subjects = (List<String>) doc.get("subjects");
-            
+
             boolean matchesName = name != null && name.toLowerCase().contains(query.toLowerCase());
             boolean matchesSubject = false;
             if (subjects != null) {
@@ -276,7 +280,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
                     }
                 }
             }
-            
+
             if (matchesName || matchesSubject) {
                 filtered.add(doc);
             }

@@ -45,6 +45,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebaseStorage)
 
+    // Google Play Services — GPS location for take-home sessions
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
     // Glide — profile photo loading & circular crop
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
