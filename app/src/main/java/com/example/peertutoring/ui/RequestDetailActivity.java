@@ -46,6 +46,7 @@ public class RequestDetailActivity extends AppCompatActivity {
     private String sessionStudentUid;
     private String sessionTutorUid;
     private String sessionStudentName;
+    private String sessionTutorName;
     private String sessionSubject;
     private Date   sessionScheduledDate;
     private int    sessionTokens;
@@ -127,6 +128,38 @@ public class RequestDetailActivity extends AppCompatActivity {
         Button btnMarkComplete = findViewById(R.id.btnMarkComplete);
         if (btnMarkComplete != null)
             btnMarkComplete.setOnClickListener(v -> onMarkCompleteClicked());
+
+        // Message button — available for both student and tutor
+        Button btnMessage = findViewById(R.id.btnMessageUser);
+        if (btnMessage != null)
+            btnMessage.setOnClickListener(v -> openChat());
+    }
+
+    /**
+     * Opens MessagingActivity with a stable convId built from
+     * both participant UIDs — same thread for both student and tutor.
+     */
+    private void openChat() {
+        if (sessionStudentUid == null || sessionTutorUid == null) {
+            Toast.makeText(this, "Cannot open chat yet.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Build stable convId — same algorithm as TutorDetailActivity
+        String convId = sessionStudentUid.compareTo(sessionTutorUid) < 0
+                ? sessionStudentUid + "_" + sessionTutorUid
+                : sessionTutorUid + "_" + sessionStudentUid;
+
+        // Determine other person's name
+        boolean iAmTutor = currentUid.equals(sessionTutorUid);
+        String otherName = iAmTutor ? sessionStudentName : sessionTutorName;
+
+        android.content.Intent intent = new android.content.Intent(
+                this, MessagingActivity.class);
+        intent.putExtra("requestId",       convId);       // stable convId
+        intent.putExtra("otherPersonName", otherName != null ? otherName : "User");
+        intent.putExtra("tutorUid",        sessionTutorUid);
+        intent.putExtra("studentUid",      sessionStudentUid);
+        startActivity(intent);
     }
 
     // ── Real-time snapshot ─────────────────────────────────��─────────────────
@@ -150,6 +183,7 @@ public class RequestDetailActivity extends AppCompatActivity {
 
                     // Update displayed provider name and status badge
                     String tutorName = doc.getString("tutorName");
+                    sessionTutorName = tutorName;
                     setText(R.id.tvProviderName, tutorName != null ? tutorName : "Searching...");
                     updateStatusUI(sessionStatus);
 
@@ -510,9 +544,9 @@ public class RequestDetailActivity extends AppCompatActivity {
             StringBuilder sb = new StringBuilder();
             if (proposedDate   != null) sb.append("Date: ").append(proposedDate);
             if (proposedTime   != null) sb.append("  ").append(proposedTime);
-            if (proposedDur    != null) sb.append("Duration: ").append(proposedDur).append(" min");
-            if (proposedTokens != null) sb.append("Tokens: ").append(proposedTokens);
-            if (message != null && !message.isEmpty()) sb.append("Message: ").append(message);
+            if (proposedDur    != null) sb.append(" Duration: ").append(proposedDur).append(" min");
+            if (proposedTokens != null) sb.append(" Tokens: ").append(proposedTokens);
+            if (message != null && !message.isEmpty()) sb.append(" Message: ").append(message);
 
             TextView tvDetails = new TextView(this);
             tvDetails.setText(sb.toString().trim());

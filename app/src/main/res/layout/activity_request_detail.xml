@@ -66,7 +66,7 @@
                             android:id="@+id/cardStatusBadge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:cardCornerRadius="16dp"
+                            app:cardCornerRadius="12dp"
                             app:cardBackgroundColor="#E6F2FF"
                             app:cardElevation="0dp">
                             <TextView
@@ -235,7 +235,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="2dp">
+                app:cardElevation="4dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -273,7 +273,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_button_gradient" app:backgroundTint="@null"
+                android:backgroundTint="#8A2EFF"
                 android:text="Reschedule Session"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
@@ -283,6 +283,18 @@
                 android:visibility="gone" />
 
             <!-- US 24: Tutor marks session complete to release escrow to their wallet -->
+            <Button
+                android:id="@+id/btnMessageUser"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="💬  Message"
+                android:textAllCaps="false"
+                android:textColor="#8A2EFF"
+                android:textSize="15sp"
+                android:background="@android:color/transparent"
+                app:backgroundTint="@null"
+                android:layout_marginBottom="8dp"/>
+
             <Button
                 android:id="@+id/btnMarkComplete"
                 android:layout_width="match_parent"
