@@ -97,6 +97,7 @@
 
         <!-- Legacy / unused but kept to avoid crash -->
         <activity android:name=".ui.TutorHomeActivity"      android:exported="false" />
+        <activity android:name=".ui.TutorChatListActivity"  android:exported="false" />
 
         <!-- FileProvider for camera photo URIs (Android 7+) -->
         <provider

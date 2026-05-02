@@ -23,10 +23,13 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,6 +40,7 @@ public class MessagingActivity extends AppCompatActivity {
     private String currentUserName;
     private String convId;
     private String otherPersonName;
+    private String otherUidResolved; // the other participant's UID (derived from convId)
 
     private LinearLayout layoutMessages;
     private ScrollView   scrollMessages;
@@ -62,17 +66,23 @@ public class MessagingActivity extends AppCompatActivity {
         currentUid      = user.getUid();
         currentUserName = getIntent().getStringExtra("currentUserName");
         if (currentUserName == null || currentUserName.isEmpty())
-            currentUserName = user.getDisplayName() != null ? user.getDisplayName() : "Me";
+            currentUserName = user.getDisplayName() != null ? user.getDisplayName() : "";
+
+        // Fetch real name from Firestore as fallback
+        if (currentUserName.isEmpty()) {
+            db.collection("users").document(currentUid).get()
+                    .addOnSuccessListener(doc -> {
+                        String fn = doc.getString("fullName");
+                        if (fn != null && !fn.isEmpty()) currentUserName = fn;
+                    });
+        }
 
         otherPersonName = getIntent().getStringExtra("otherPersonName");
 
         // --- Build convId ---
-        // Priority 1: explicit tutorUid + studentUid passed
         String tutorUid   = getIntent().getStringExtra("tutorUid");
         String studentUid = getIntent().getStringExtra("studentUid");
-        // Priority 2: otherUid passed directly
         String otherUid   = getIntent().getStringExtra("otherUid");
-        // Priority 3: requestId used as convId (from TutorDetailActivity)
         String requestId  = getIntent().getStringExtra("requestId");
 
         if (tutorUid != null && studentUid != null) {
@@ -80,11 +90,32 @@ public class MessagingActivity extends AppCompatActivity {
         } else if (otherUid != null) {
             convId = buildConvId(currentUid, otherUid);
         } else if (requestId != null && requestId.contains("_") && !requestId.startsWith("mock")) {
-            convId = requestId; // already a stable convId
+            convId = requestId;
         } else {
             Toast.makeText(this, "Cannot open chat: missing participants.", Toast.LENGTH_LONG).show();
             finish();
             return;
+        }
+
+        // Derive the other person's UID from the convId
+        String[] convParts = convId.split("_", 2);
+        otherUidResolved = convParts[0].equals(currentUid)
+                ? (convParts.length > 1 ? convParts[1] : "")
+                : convParts[0];
+
+        // Resolve other person's name from Firestore if not supplied
+        if ((otherPersonName == null || otherPersonName.isEmpty()
+                || "Student".equals(otherPersonName) || "Tutor".equals(otherPersonName))
+                && !otherUidResolved.isEmpty()) {
+            db.collection("users").document(otherUidResolved).get()
+                    .addOnSuccessListener(doc -> {
+                        String fn = doc.getString("fullName");
+                        if (fn != null && !fn.isEmpty()) {
+                            otherPersonName = fn;
+                            TextView tvTitle = findViewById(R.id.tvChatTitle);
+                            if (tvTitle != null) tvTitle.setText(fn);
+                        }
+                    });
         }
 
         // Bind views
@@ -96,13 +127,12 @@ public class MessagingActivity extends AppCompatActivity {
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
         TextView tvTitle = findViewById(R.id.tvChatTitle);
-        if (tvTitle != null && otherPersonName != null)
+        if (tvTitle != null && otherPersonName != null && !otherPersonName.isEmpty())
             tvTitle.setText(otherPersonName);
 
         View btnSend = findViewById(R.id.btnSend);
         if (btnSend != null) btnSend.setOnClickListener(v -> sendMessage());
 
-        // Also allow sending by keyboard action
         if (etMessage != null) {
             etMessage.setOnEditorActionListener((v, actionId, event) -> {
                 sendMessage();
@@ -125,10 +155,15 @@ public class MessagingActivity extends AppCompatActivity {
     private void ensureConversationDoc() {
         Map<String, Object> meta = new HashMap<>();
         String[] parts = convId.split("_", 2);
-        meta.put("participantA",    parts.length > 0 ? parts[0] : currentUid);
-        meta.put("participantB",    parts.length > 1 ? parts[1] : "");
-        meta.put("otherPersonName", otherPersonName != null ? otherPersonName : "");
-        meta.put("updatedAt",       FieldValue.serverTimestamp());
+        String pA = parts.length > 0 ? parts[0] : currentUid;
+        String pB = parts.length > 1 ? parts[1] : "";
+        boolean iAmA = currentUid.equals(pA);
+        meta.put("participantA", pA);
+        meta.put("participantB", pB);
+        meta.put(iAmA ? "participantAName" : "participantBName", currentUserName);
+        meta.put(iAmA ? "participantBName" : "participantAName",
+                otherPersonName != null ? otherPersonName : "");
+        meta.put("updatedAt", FieldValue.serverTimestamp());
         db.collection("conversations").document(convId).set(meta, SetOptions.merge());
     }
 
@@ -146,6 +181,7 @@ public class MessagingActivity extends AppCompatActivity {
         msg.put("senderName", currentUserName);
         msg.put("text",       text);
         msg.put("timestamp",  FieldValue.serverTimestamp());
+        msg.put("isRead",     false);
 
         db.collection("conversations").document(convId)
                 .collection("messages")
@@ -159,7 +195,6 @@ public class MessagingActivity extends AppCompatActivity {
                     }
                 });
 
-        // Update conversation last message
         Map<String, Object> last = new HashMap<>();
         last.put("lastMessage",   text);
         last.put("lastMessageAt", FieldValue.serverTimestamp());
@@ -170,8 +205,6 @@ public class MessagingActivity extends AppCompatActivity {
     // ── Listen ────────────────────────────────────────────────
 
     private void startListening() {
-        // No orderBy — avoids needing a Firestore composite index
-        // Messages are sorted client-side by timestamp
         messagesListener = db.collection("conversations")
                 .document(convId)
                 .collection("messages")
@@ -184,8 +217,7 @@ public class MessagingActivity extends AppCompatActivity {
                     }
                     if (snap == null || layoutMessages == null) return;
 
-                    // Sort by timestamp client-side (ascending)
-                    java.util.List<DocumentSnapshot> docs = new java.util.ArrayList<>(snap.getDocuments());
+                    List<DocumentSnapshot> docs = new ArrayList<>(snap.getDocuments());
                     docs.sort((a, b) -> {
                         com.google.firebase.Timestamp ta = a.getTimestamp("timestamp");
                         com.google.firebase.Timestamp tb = b.getTimestamp("timestamp");
@@ -202,15 +234,36 @@ public class MessagingActivity extends AppCompatActivity {
                         String msgText    = doc.getString("text");
                         Date   ts         = doc.getDate("timestamp");
                         boolean isMine    = currentUid.equals(senderUid);
-                        addBubble(senderName, msgText, ts, isMine);
+                        boolean isRead    = Boolean.TRUE.equals(doc.getBoolean("isRead"));
+                        addBubble(senderName, msgText, ts, isMine, isRead);
                     }
                     scrollToBottom();
+
+                    // Mark messages from the other person as read
+                    markMessagesAsRead(docs);
                 });
+    }
+
+    // Mark all unread messages sent by the other participant as read
+    private void markMessagesAsRead(List<DocumentSnapshot> docs) {
+        WriteBatch batch = db.batch();
+        boolean hasUpdates = false;
+        for (DocumentSnapshot doc : docs) {
+            String senderUid = doc.getString("senderUid");
+            Boolean isRead   = doc.getBoolean("isRead");
+            // Only mark messages from the OTHER person that aren't read yet
+            if (!currentUid.equals(senderUid) && !Boolean.TRUE.equals(isRead)) {
+                batch.update(doc.getReference(), "isRead", true);
+                hasUpdates = true;
+            }
+        }
+        if (hasUpdates) batch.commit();
     }
 
     // ── Bubble ────────────────────────────────────────────────
 
-    private void addBubble(String senderName, String text, Date ts, boolean isMine) {
+    private void addBubble(String senderName, String text, Date ts,
+                           boolean isMine, boolean isRead) {
         if (text == null || layoutMessages == null) return;
 
         LinearLayout row = new LinearLayout(this);
@@ -221,7 +274,7 @@ public class MessagingActivity extends AppCompatActivity {
         row.setLayoutParams(rp);
         row.setGravity(isMine ? Gravity.END : Gravity.START);
 
-        // Sender name for received messages
+        // Sender name label for received messages
         if (!isMine && senderName != null && !senderName.isEmpty()) {
             TextView tvName = new TextView(this);
             tvName.setText(senderName);
@@ -250,16 +303,36 @@ public class MessagingActivity extends AppCompatActivity {
         bubble.addView(tvText);
         row.addView(bubble);
 
-        // Timestamp
+        // Timestamp + read tick row
+        LinearLayout timeRow = new LinearLayout(this);
+        timeRow.setOrientation(LinearLayout.HORIZONTAL);
+        timeRow.setGravity(Gravity.CENTER_VERTICAL);
+        timeRow.setPadding(dp(6), dp(2), dp(6), 0);
+
         if (ts != null) {
             TextView tvTime = new TextView(this);
             tvTime.setText(TIME_FMT.format(ts));
             tvTime.setTextSize(10f);
             tvTime.setTextColor(0xFF8B97A8);
-            tvTime.setPadding(dp(6), dp(2), dp(6), 0);
-            row.addView(tvTime);
+            timeRow.addView(tvTime);
         }
 
+        // Blue tick indicator — only for messages I sent
+        if (isMine) {
+            TextView tvTick = new TextView(this);
+            tvTick.setTextSize(10f);
+            tvTick.setPadding(dp(4), 0, 0, 0);
+            if (isRead) {
+                tvTick.setText("✓✓");
+                tvTick.setTextColor(0xFF007AFF); // blue — seen by other person
+            } else {
+                tvTick.setText("✓");
+                tvTick.setTextColor(0xFF8B97A8); // grey — sent, not yet read
+            }
+            timeRow.addView(tvTick);
+        }
+
+        row.addView(timeRow);
         layoutMessages.addView(row);
     }
 

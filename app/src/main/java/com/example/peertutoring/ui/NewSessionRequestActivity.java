@@ -83,6 +83,12 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             currentUid      = FirebaseAuth.getInstance().getCurrentUser().getUid();
             currentUserName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
             if (currentUserName == null || currentUserName.isEmpty()) currentUserName = "Student";
+            // Fetch real name from Firestore (getDisplayName() is often not set)
+            db.collection("users").document(currentUid).get()
+                    .addOnSuccessListener(doc -> {
+                        String fullName = doc.getString("fullName");
+                        if (fullName != null && !fullName.isEmpty()) currentUserName = fullName;
+                    });
         } else {
             currentUid = "";
         }
