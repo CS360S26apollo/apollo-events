@@ -59,10 +59,7 @@ public class TutorDetailActivity extends AppCompatActivity {
 
         populateViews(tutorName, subject, rateStr, rating, students, isVerified);
         checkRoleAndSetupButtons();
-        if (tutorUid != null && !tutorUid.isEmpty()) {
-            loadTutorProfileDetails();
-            loadReviews();
-        }
+        if (tutorUid != null && !tutorUid.isEmpty()) loadReviews();
     }
 
     private void populateViews(String name, String subject, String rate,
@@ -155,29 +152,41 @@ public class TutorDetailActivity extends AppCompatActivity {
                     : safeTutorUid + "_" + currentUid;
 
             // Write conversation metadata to Firestore
-            Map<String, Object> convData = new HashMap<>();
-            convData.put("participantA", currentUid);
-            convData.put("participantB", safeTutorUid);
-            convData.put("tutorName", tutorName != null ? tutorName : "Tutor");
+            // Store both names so either participant can identify the other
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            String senderName = "Me";
 
             FirebaseFirestore.getInstance()
-                    .collection("conversations")
-                    .document(convId)
-                    .set(convData, SetOptions.merge());
+                    .collection("users").document(currentUid).get()
+                    .addOnSuccessListener(userDoc -> {
+                        String studentFullName = userDoc.exists()
+                                ? userDoc.getString("fullName") : null;
+                        if (studentFullName == null || studentFullName.isEmpty())
+                            studentFullName = user != null && user.getDisplayName() != null
+                                    ? user.getDisplayName() : "Student";
 
-            // Resolve sender display name
-            String senderName = "Me";
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user != null && user.getDisplayName() != null
-                    && !user.getDisplayName().isEmpty()) {
-                senderName = user.getDisplayName();
-            }
+                        Map<String, Object> convData = new HashMap<>();
+                        convData.put("participantA", currentUid);
+                        convData.put("participantB", safeTutorUid);
+                        convData.put("tutorUid",     safeTutorUid);
+                        convData.put("studentUid",   currentUid);
+                        convData.put("tutorName",    tutorName != null ? tutorName : "Tutor");
+                        convData.put("studentName",  studentFullName);
 
-            Intent intent = new Intent(TutorDetailActivity.this, MessagingActivity.class);
-            intent.putExtra("requestId",       convId);
-            intent.putExtra("otherPersonName", tutorName != null ? tutorName : "Tutor");
-            intent.putExtra("currentUserName", senderName);
-            startActivity(intent);
+                        FirebaseFirestore.getInstance()
+                                .collection("conversations")
+                                .document(convId)
+                                .set(convData, SetOptions.merge());
+
+                        Intent intent = new Intent(TutorDetailActivity.this, MessagingActivity.class);
+                        intent.putExtra("requestId",       convId);
+                        intent.putExtra("otherPersonName", tutorName != null ? tutorName : "Tutor");
+                        intent.putExtra("currentUserName", studentFullName);
+                        startActivity(intent);
+                    });
+            // Early return — intent launched inside callback above
+
+            // Intent launched inside Firestore callback above
         });
     }
 
@@ -236,36 +245,6 @@ public class TutorDetailActivity extends AppCompatActivity {
         intent.putExtra("tutorName", tutorName != null ? tutorName : "");
         intent.putExtra("tutorRate", tutorRate);
         startActivity(intent);
-    }
-
-    /**
-     * Fetches live tutor profile fields (bio, institution, level) from Firestore and
-     * replaces the hard-coded XML placeholder text. Called once after populateViews().
-     * Uses the same "users" collection path as the rest of the app.
-     */
-    private void loadTutorProfileDetails() {
-        FirebaseFirestore.getInstance()
-                .collection("users").document(tutorUid).get()
-                .addOnSuccessListener(doc -> {
-                    if (!doc.exists()) return;
-
-                    TextView tvBio = findViewById(R.id.tvBio);
-                    TextView tvLoc = findViewById(R.id.tvLocation);
-                    TextView tvExp = findViewById(R.id.tvExperience);
-
-                    String bio         = doc.getString("bio");
-                    String institution = doc.getString("institution");
-                    String level       = doc.getString("level");
-
-                    if (tvBio != null) tvBio.setText(bio != null && !bio.isEmpty()
-                            ? bio : "No bio available.");
-
-                    if (tvLoc != null) tvLoc.setText(institution != null && !institution.isEmpty()
-                            ? institution : "Location not set");
-
-                    if (tvExp != null) tvExp.setText(level != null && !level.isEmpty()
-                            ? level + " level" : "Experience not listed");
-                });
     }
 
     // ── US 19: Load and display public reviews ────────────────

@@ -15,6 +15,10 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
+    <!-- Location for take-home sessions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <!-- Hardware features — required="false" so app works on devices without them -->
     <uses-feature android:name="android.hardware.camera"         android:required="false" />
     <uses-feature android:name="android.hardware.camera.front"   android:required="false" />
@@ -95,9 +99,10 @@
         <activity android:name=".ui.MessagingActivity"      android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity android:name=".ui.TutorChatListActivity" android:exported="false"/>
+
         <!-- Legacy / unused but kept to avoid crash -->
         <activity android:name=".ui.TutorHomeActivity"      android:exported="false" />
-        <activity android:name=".ui.TutorChatListActivity"  android:exported="false" />
 
         <!-- FileProvider for camera photo URIs (Android 7+) -->
         <provider
