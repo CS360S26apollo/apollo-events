@@ -282,7 +282,7 @@ public class InstantBookActivity extends AppCompatActivity {
     }
 
     private int calculateTokenCost(int durationMinutes) {
-        return Math.max(1, (int) Math.ceil(durationMinutes / 60.0) * tutorRate);
+        return Math.max(1, (int) Math.ceil((durationMinutes * (double) tutorRate) / 60.0));
     }
 
     private void validateAndBook() {

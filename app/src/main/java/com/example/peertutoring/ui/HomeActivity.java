@@ -133,8 +133,16 @@ public class HomeActivity extends AppCompatActivity {
                     String fullName = doc.getString("fullName");
                     Long tokens = doc.getLong("tokens");
                     String role = doc.getString("role");
-                    
+
                     if (role != null) userRole = role;
+
+                    // Tutor landed here by mistake (e.g. network failure at login) — redirect
+                    if ("tutor".equals(role)) {
+                        startActivity(new Intent(HomeActivity.this, TutorHomeActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        finish();
+                        return;
+                    }
 
                     if (tvUserName != null) {
                         tvUserName.setText(fullName != null ? fullName : "User");

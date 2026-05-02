@@ -115,7 +115,10 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    startActivity(new Intent(this, HomeActivity.class));
+                    showToast("Could not load profile. Please sign in again.");
+                    auth.signOut();
+                    startActivity(new Intent(this, LoginActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     finish();
                 });
     }

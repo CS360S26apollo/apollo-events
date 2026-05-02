@@ -69,7 +69,10 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    startActivity(new Intent(this, HomeActivity.class));
+                    Toast.makeText(this, "Could not load profile. Please try again.", Toast.LENGTH_LONG).show();
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(this, LoginActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     finish();
                 });
     }

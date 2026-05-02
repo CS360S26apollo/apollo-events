@@ -2,6 +2,7 @@ package com.example.peertutoring.ui;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.chip.Chip;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -111,10 +114,39 @@ public class NewSessionRequestActivity extends AppCompatActivity {
 
         setupDateTimePickers();
         setupDurationButtons();
+        setupGoalChips();
 
         if (btnSubmit != null) btnSubmit.setOnClickListener(v -> { SoundManager.playClick(this); checkAndPost(); });
 
         loadTutorSubjects();
+    }
+
+    // ── Goal chips quick-select ───────────────────────────────────────────────
+
+    private void setupGoalChips() {
+        int[] chipIds = { R.id.chipExamPrep, R.id.chipHomework, R.id.chipConceptReview, R.id.chipProblemSolving };
+        String[] chipTexts = { "Exam Preparation", "Homework Help", "Concept Clarity", "Problem Solving" };
+
+        Chip[] chips = new Chip[chipIds.length];
+        for (int i = 0; i < chipIds.length; i++) {
+            chips[i] = findViewById(chipIds[i]);
+        }
+
+        for (int i = 0; i < chips.length; i++) {
+            if (chips[i] == null) continue;
+            final String text = chipTexts[i];
+            final int idx = i;
+            chips[i].setOnClickListener(v -> {
+                if (etGoals != null) etGoals.setText(text);
+                for (int j = 0; j < chips.length; j++) {
+                    if (chips[j] == null) continue;
+                    boolean selected = (j == idx);
+                    chips[j].setChipBackgroundColor(ColorStateList.valueOf(
+                            selected ? Color.parseColor("#8A2EFF") : Color.parseColor("#E0E0E0")));
+                    chips[j].setTextColor(selected ? Color.WHITE : Color.parseColor("#33476A"));
+                }
+            });
+        }
     }
 
     // ── Date / time pickers ──────────────────────────────────────────────────

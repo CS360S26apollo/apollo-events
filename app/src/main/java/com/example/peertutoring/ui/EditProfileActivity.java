@@ -81,6 +81,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> cameraLauncher;
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Intent> documentLauncher;
+    private ActivityResultLauncher<String> cameraPermissionLauncher;
     private Uri selectedDocumentUri = null;
     private FirebaseStorage storage;
     private TextView tvUserRoleBadge;
@@ -327,9 +328,10 @@ public class EditProfileActivity extends AppCompatActivity {
         if (tvAvatarInitials != null) tvAvatarInitials.setText(initials.toUpperCase());
 
         if (tvUserName != null) tvUserName.setText(fullName != null ? fullName : "");
-        if (tvUserRole != null && !savedRole.isEmpty()) {
+        if (!savedRole.isEmpty()) {
             String roleText = Character.toUpperCase(savedRole.charAt(0)) + savedRole.substring(1);
-            tvUserRole.setText(roleText);
+            if (tvUserRole != null)      tvUserRole.setText(roleText);
+            if (tvUserRoleBadge != null) tvUserRoleBadge.setText(roleText);
         }
 
         if (etEmail != null && currentUser != null && currentUser.getEmail() != null) {
@@ -365,7 +367,15 @@ public class EditProfileActivity extends AppCompatActivity {
         if (photoUrl != null && !photoUrl.isEmpty() && ivProfilePicture != null) {
             ivProfilePicture.setVisibility(View.VISIBLE);
             if (tvAvatarInitials != null) tvAvatarInitials.setVisibility(View.GONE);
-            Glide.with(this).load(photoUrl).circleCrop().into(ivProfilePicture);
+            if (photoUrl.startsWith("data:image")) {
+                // Base64-encoded image stored in Firestore — decode to byte array for Glide
+                String base64Data = photoUrl.substring(photoUrl.indexOf(",") + 1);
+                byte[] bytes = android.util.Base64.decode(base64Data, android.util.Base64.NO_WRAP);
+                Glide.with(this).load(bytes).circleCrop().into(ivProfilePicture);
+            } else {
+                // Legacy: plain HTTPS URL (Firebase Storage)
+                Glide.with(this).load(photoUrl).circleCrop().into(ivProfilePicture);
+            }
         }
     }
 
@@ -432,6 +442,18 @@ public class EditProfileActivity extends AppCompatActivity {
     private Uri cameraImageUri = null; // URI for full-res camera photo
 
     private void setupLaunchers() {
+
+        // ── Camera permission (Android 6+) ────────────────────────────────
+        cameraPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                granted -> {
+                    if (granted) {
+                        openCamera();
+                    } else {
+                        Toast.makeText(this, "Camera permission is required to take photos.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         // ── Camera: uses FileProvider for full-res photo ──────────────────
         cameraLauncher = registerForActivityResult(
@@ -546,8 +568,17 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void launchCamera() {
+        if (androidx.core.content.ContextCompat.checkSelfPermission(
+                this, android.Manifest.permission.CAMERA)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            openCamera();
+        } else {
+            cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+        }
+    }
+
+    private void openCamera() {
         try {
-            // Create a temp file in app cache — no FileProvider needed for cache dir
             java.io.File photoFile = java.io.File.createTempFile(
                     "profile_", ".jpg", getCacheDir());
             cameraImageUri = androidx.core.content.FileProvider.getUriForFile(
@@ -557,7 +588,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
-            // Grant URI permission to camera app
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             cameraLauncher.launch(intent);
@@ -573,8 +603,8 @@ public class EditProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // Scale to 512px max — reduce upload size
-        Bitmap scaled = scaleBitmap(bitmap, 512);
+        // Scale to 256px max — keeps base64 size well under Firestore's 1MB document limit
+        Bitmap scaled = scaleBitmap(bitmap, 256);
 
         // Show immediately in UI
         if (ivProfilePicture != null) {
@@ -583,78 +613,23 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         if (tvAvatarInitials != null) tvAvatarInitials.setVisibility(View.GONE);
 
-        Toast.makeText(this, "Uploading photo...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Saving photo...", Toast.LENGTH_SHORT).show();
 
-        // Compress to JPEG
+        // Compress to JPEG and encode as Base64 — saved directly in Firestore (no Storage needed)
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        scaled.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-        byte[] data = baos.toByteArray();
+        scaled.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+        String base64 = android.util.Base64.encodeToString(
+                baos.toByteArray(), android.util.Base64.NO_WRAP);
+        String dataUrl = "data:image/jpeg;base64," + base64;
 
-        // Build metadata
-        com.google.firebase.storage.StorageMetadata metadata =
-                new com.google.firebase.storage.StorageMetadata.Builder()
-                        .setContentType("image/jpeg")
-                        .build();
-
-        // Upload to: profilePhotos/{uid}.jpg
-        // NOTE: This path must match your Firebase Storage Rules
-        StorageReference ref = storage.getReference()
-                .child("profilePhotos")
-                .child(currentUser.getUid() + ".jpg");
-
-        ref.putBytes(data, metadata)
-                .addOnSuccessListener(taskSnapshot ->
-                        ref.getDownloadUrl()
-                                .addOnSuccessListener(uri -> {
-                                    String url = uri.toString();
-                                    // Save to Firestore
-                                    Map<String, Object> update = new HashMap<>();
-                                    update.put("profilePhotoUrl", url);
-                                    db.collection("users").document(currentUser.getUid())
-                                            .set(update, SetOptions.merge())
-                                            .addOnSuccessListener(u ->
-                                                    Toast.makeText(this,
-                                                            "✅ Profile photo updated!",
-                                                            Toast.LENGTH_SHORT).show())
-                                            .addOnFailureListener(e ->
-                                                    Toast.makeText(this,
-                                                            "Photo uploaded but URL not saved: "
-                                                                    + e.getMessage(),
-                                                            Toast.LENGTH_SHORT).show());
-                                })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(this,
-                                                "Upload done but URL fetch failed: " + e.getMessage(),
-                                                Toast.LENGTH_SHORT).show()))
-                .addOnFailureListener(e -> {
-                    String msg = e.getMessage() != null ? e.getMessage() : "Unknown error";
-                    // Friendly error messages
-                    if (msg.contains("User does not have permission")
-                            || msg.contains("unauthorized")
-                            || msg.contains("403")) {
-                        new androidx.appcompat.app.AlertDialog.Builder(this)
-                                .setTitle("Storage Permission Denied")
-                                .setMessage("Firebase Storage is blocking the upload.\n\n"
-                                        + "Ask your friend to update Firebase Storage Rules to:\n\n"
-                                        + "rules_version = '2';\n"
-                                        + "service firebase.storage {\n"
-                                        + "  match /b/{bucket}/o {\n"
-                                        + "    match /{allPaths=**} {\n"
-                                        + "      allow read, write: if request.auth != null;\n"
-                                        + "    }\n"
-                                        + "  }\n"
-                                        + "}")
-                                .setPositiveButton("OK", null)
-                                .show();
-                    } else if (msg.contains("Object does not exist")
-                            || msg.contains("404")) {
-                        Toast.makeText(this,
-                                "Storage path error. Check Firebase Storage is enabled.",
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(this, "Upload failed: " + msg, Toast.LENGTH_LONG).show();
-                    }
-                });
+        Map<String, Object> update = new HashMap<>();
+        update.put("profilePhotoUrl", dataUrl);
+        db.collection("users").document(currentUser.getUid())
+                .set(update, SetOptions.merge())
+                .addOnSuccessListener(u ->
+                        Toast.makeText(this, "✅ Profile photo updated!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
     /** Scales bitmap down so largest dimension == maxPx. Preserves aspect ratio. */
