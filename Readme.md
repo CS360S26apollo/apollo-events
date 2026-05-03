@@ -304,13 +304,12 @@ Sunday, April 05, 2026
 - [x] Close Sprint 3 by April 7, 2026
 ---
 
+## Meeting – Apr 10, 2026
 
-### Meeting – Apr 10, 2026
-
-#### Date
+### Date
 Friday, April 10, 2026
 
-#### Attendance
+### Attendance
 - Ali Iqbal  
 - Abdullah Khaliq  
 - M. Abdullah Iqbal  
@@ -319,36 +318,36 @@ Friday, April 10, 2026
 
 ---
 
-#### Key Takeaways
-- Discussed Phase 3 progress and identified weaknesses in booking validation and UI flow.
-- Planned overall strategy for Project Phase 4.
-- Finalized Sprint 1 user stories and responsibilities.
+### Key Takeaways
+- Discussed Phase 3 progress and identified weaknesses in booking validation and UI flow.  
+- Planned overall strategy for Project Phase 4.  
+- Finalized Sprint 1 user stories and responsibilities.  
 
 ---
 
-#### Discussion Points
-- Review of previous phase
-- Planning strategy for Phase 4
-- Improvements to booking and filtering systems
-- App fixes and optimization planning
+### Discussion Points
+- Review of previous phase  
+- Planning strategy for Phase 4  
+- Improvements to booking and filtering systems  
+- App fixes and optimization planning  
 
 ---
 
-#### Action Items
-- [x] Implement US 07 – Matching Preferences
-- [x] Implement US 11 – Auto Expire Requests
-- [x] Implement US 12 – Instant Booking
-- [x] Fix UI and validation issues
-- [x] Prepare Sprint 1 documentation
+### Action Items
+- [x] Implement US 07 – Matching Preferences  
+- [x] Implement US 11 – Auto Expire Requests  
+- [x] Implement US 12 – Instant Booking  
+- [x] Fix UI and validation issues  
+- [x] Prepare Sprint 1 documentation  
 
 ---
 
-### Meeting – Apr 17, 2026
+## Meeting – Apr 17, 2026
 
-#### Date
+### Date
 Friday, April 17, 2026
 
-#### Attendance
+### Attendance
 - Ali Iqbal  
 - Abdullah Khaliq  
 - M. Abdullah Iqbal  
@@ -357,37 +356,37 @@ Friday, April 17, 2026
 
 ---
 
-#### Key Takeaways
-- Successfully completed Sprint 1 with US 07, US 11, and US 12.
-- Discussed testing results and improvements.
-- Planned Sprint 2 implementation.
+### Key Takeaways
+- Successfully completed Sprint 1 with US 07, US 11, and US 12.  
+- Discussed testing results and improvements.  
+- Planned Sprint 2 implementation.  
 
 ---
 
-#### Discussion Points
-- Sprint 1 review
-- Improvements in booking workflow
-- Sprint 2 planning
-- General app fixes
+### Discussion Points
+- Sprint 1 review  
+- Improvements in booking workflow  
+- Sprint 2 planning  
+- General app fixes  
 
 ---
 
-#### Action Items
-- [x] Close Sprint 1
-- [x] Implement US 14 – Prevent Double Booking
-- [x] Implement US 15 – Reschedule/Cancel Sessions
-- [x] Implement US 17 – Session Notes
-- [x] Implement US 19 – Rate & Review
-- [x] Add test cases and bug fixes
+### Action Items
+- [x] Close Sprint 1  
+- [x] Implement US 14 – Prevent Double Booking  
+- [x] Implement US 15 – Reschedule/Cancel Sessions  
+- [x] Implement US 17 – Session Notes  
+- [x] Implement US 18 – Rate & Review  
+- [x] Add test cases and bug fixes  
 
 ---
 
-### Meeting – Apr 24, 2026
+## Meeting – Apr 24, 2026
 
-#### Date
+### Date
 Friday, April 24, 2026
 
-#### Attendance
+### Attendance
 - Ali Iqbal  
 - Abdullah Khaliq  
 - M. Abdullah Iqbal  
@@ -396,36 +395,36 @@ Friday, April 24, 2026
 
 ---
 
-#### Key Takeaways
-- Successfully completed Sprint 2 with US 14, US 15, US 17, and US 19.
-- Planned Sprint 3 focused on wallet and escrow features.
-- Improved app stability and navigation flow.
+### Key Takeaways
+- Successfully completed Sprint 2 with US 14, US 15, and US 17, US 18.  
+- Planned Sprint 3 focused on wallet and escrow features.  
+- Improved app stability and navigation flow.  
 
 ---
 
-#### Discussion Points
-- Sprint 2 review
-- Conflict handling and review system
-- Financial feature planning
-- Documentation updates
+### Discussion Points
+- Sprint 2 review  
+- Conflict handling and review system  
+- Financial feature planning  
+- Documentation updates  
 
 ---
 
-#### Action Items
-- [x] Close Sprint 2
-- [x] Implement US 23 – Buy Tokens
-- [x] Implement US 24 – Escrow Hold
-- [x] Implement US 25 – Token Withdrawal
-- [x] Improve transaction handling and app stability
+### Action Items
+- [x] Close Sprint 2  
+- [x] Implement US 19 – Buy Tokens  
+- [x] Implement US 20 – Escrow Hold  
+- [x] Implement US 21 – Token Withdrawal  
+- [x] Improve transaction handling and app stability  
 
 ---
 
-### Meeting – May 2, 2026
+## Meeting – May 2, 2026
 
-#### Date
+### Date
 Saturday, May 2, 2026
 
-#### Attendance
+### Attendance
 - Ali Iqbal  
 - Abdullah Khaliq  
 - M. Abdullah Iqbal  
@@ -434,27 +433,29 @@ Saturday, May 2, 2026
 
 ---
 
-#### Key Takeaways
-- Successfully completed Sprint 3 with US 23, US 24, and US 25.
-- Finalized Phase 4 implementation and testing.
-- Completed app fixes and documentation updates.
+### Key Takeaways
+- Successfully completed Sprint 3 with US 19, US 20, and US 21.  
+- Finalized Phase 4 implementation and testing.  
+- Completed app fixes and documentation updates.  
 
 ---
 
-#### Discussion Points
-- Sprint 3 review
-- Wallet and escrow verification
-- Final testing and bug fixing
-- Submission preparation
+### Discussion Points
+- Sprint 3 review  
+- Wallet and escrow verification  
+- Final testing and bug fixing  
+- Submission preparation  
 
 ---
 
-#### Action Items
-- [x] Close Sprint 3
-- [x] Complete final testing
-- [x] Apply final UI fixes
-- [x] Finalize documentation and UML
-- [x] Prepare project submission
+### Action Items
+- [x] Close Sprint 3  
+- [x] Complete final testing  
+- [x] Apply final UI fixes  
+- [x] Finalize documentation and UML  
+- [x] Prepare project submission  
+
+---
 
 ## UML Diagrams <a name="uml-diagrams"></a>
 
