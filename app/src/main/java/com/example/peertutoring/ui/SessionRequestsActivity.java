@@ -96,10 +96,15 @@ public class SessionRequestsActivity extends AppCompatActivity {
     /** Initializes the horizontal filter bar for categorizing session requests. */
     private void setupFilterChips() {
         findViewById(R.id.chipAll).setOnClickListener(v -> applyFilter("all"));
+        // "Requested" chip
         findViewById(R.id.chipPending).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_REQUESTED));
-        findViewById(R.id.chipCounter).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_BOOKED));
+        // "Booked" chip shows both booked (confirmed) AND counter_offered (needs student response)
+        findViewById(R.id.chipCounter).setOnClickListener(v -> applyFilter("active"));
+        // "Completed" chip
         findViewById(R.id.chipAccepted).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_COMPLETED));
+        // "Cancelled" chip
         findViewById(R.id.chipDeclined).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_CANCELLED));
+        // "Expired" chip
         findViewById(R.id.chipExpired).setOnClickListener(v -> applyFilter(SessionRequest.STATUS_EXPIRED));
     }
 
@@ -188,12 +193,19 @@ public class SessionRequestsActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
 
         for (SessionDoc doc : allSessions) {
-            if (!"all".equals(currentFilter) && !currentFilter.equals(doc.status)) continue;
-
+            if (!matchesFilter(doc.status)) continue;
             View card = inflater.inflate(R.layout.item_session_request, layoutRequestList, false);
             bindCard(card, doc);
             layoutRequestList.addView(card);
         }
+    }
+
+    private boolean matchesFilter(String status) {
+        if ("all".equals(currentFilter)) return true;
+        if ("active".equals(currentFilter)) {
+            return SessionRequest.STATUS_BOOKED.equals(status) || "counter_offered".equals(status);
+        }
+        return currentFilter.equals(status);
     }
 
     private void bindCard(View card, SessionDoc doc) {
@@ -233,29 +245,32 @@ public class SessionRequestsActivity extends AppCompatActivity {
         });
 
         if (tvStatusBadge != null && cardStatusBadge != null) {
-            String displayStatus = doc.status.toUpperCase();
-            tvStatusBadge.setText(displayStatus);
-
             if (SessionRequest.STATUS_REQUESTED.equals(doc.status)) {
+                tvStatusBadge.setText("Requested");
                 tvStatusBadge.setTextColor(Color.parseColor("#007AFF"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#E6F2FF"));
-                tvStatusBadge.setText("Requested");
+            } else if ("counter_offered".equals(doc.status)) {
+                tvStatusBadge.setText("Counter Offer!");
+                tvStatusBadge.setTextColor(Color.parseColor("#FF9500"));
+                cardStatusBadge.setCardBackgroundColor(Color.parseColor("#FFF3E0"));
             } else if (SessionRequest.STATUS_BOOKED.equals(doc.status)) {
+                tvStatusBadge.setText("Booked");
                 tvStatusBadge.setTextColor(Color.parseColor("#34C759"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#EAF9EE"));
-                tvStatusBadge.setText("Booked");
             } else if (SessionRequest.STATUS_COMPLETED.equals(doc.status)) {
+                tvStatusBadge.setText("Completed");
                 tvStatusBadge.setTextColor(Color.parseColor("#AF52DE"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#F3EEFF"));
-                tvStatusBadge.setText("Completed");
             } else if (SessionRequest.STATUS_CANCELLED.equals(doc.status)) {
+                tvStatusBadge.setText("Cancelled");
                 tvStatusBadge.setTextColor(Color.parseColor("#FF3B30"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#FFECEB"));
-                tvStatusBadge.setText("Cancelled");
             } else if (SessionRequest.STATUS_EXPIRED.equals(doc.status)) {
+                tvStatusBadge.setText("Expired");
                 tvStatusBadge.setTextColor(Color.parseColor("#8E8E93"));
                 cardStatusBadge.setCardBackgroundColor(Color.parseColor("#F2F2F7"));
-                tvStatusBadge.setText("Expired");
+            } else if (doc.status != null) {
+                tvStatusBadge.setText(doc.status.toUpperCase());
             }
         }
     }
@@ -265,6 +280,7 @@ public class SessionRequestsActivity extends AppCompatActivity {
         String id, topic, status, provider, category, tutorUid;
         int duration, tokens;
         Date scheduledDate;
+        boolean reviewSubmitted;
 
         SessionDoc(String t, String s, int d, int tok, String p, String c, Date date) {
             id = "mock_" + t; topic = t; status = s; duration = d; tokens = tok; provider = p; category = c; scheduledDate = date;
@@ -281,17 +297,18 @@ public class SessionRequestsActivity extends AppCompatActivity {
             Long tok = d.getLong("tokens");
             tokens = tok != null ? tok.intValue() : 0;
             scheduledDate = d.getDate("scheduledDate");
+            reviewSubmitted = Boolean.TRUE.equals(d.getBoolean("reviewSubmitted"));
         }
     }
 
     private void updateTabStyles(String activeFilter) {
-        int activeBg = Color.parseColor("#34C759");
-        setTabStyle(R.id.chipAll, "all".equals(activeFilter) ? activeBg : Color.WHITE);
-        setTabStyle(R.id.chipPending, SessionRequest.STATUS_REQUESTED.equals(activeFilter) ? activeBg : Color.WHITE);
-        setTabStyle(R.id.chipCounter, SessionRequest.STATUS_BOOKED.equals(activeFilter) ? activeBg : Color.WHITE);
+        int activeBg = Color.parseColor("#27AE60");
+        setTabStyle(R.id.chipAll,      "all".equals(activeFilter)                          ? activeBg : Color.WHITE);
+        setTabStyle(R.id.chipPending,  SessionRequest.STATUS_REQUESTED.equals(activeFilter) ? activeBg : Color.WHITE);
+        setTabStyle(R.id.chipCounter,  "active".equals(activeFilter)                        ? activeBg : Color.WHITE);
         setTabStyle(R.id.chipAccepted, SessionRequest.STATUS_COMPLETED.equals(activeFilter) ? activeBg : Color.WHITE);
         setTabStyle(R.id.chipDeclined, SessionRequest.STATUS_CANCELLED.equals(activeFilter) ? activeBg : Color.WHITE);
-        setTabStyle(R.id.chipExpired, SessionRequest.STATUS_EXPIRED.equals(activeFilter) ? activeBg : Color.WHITE);
+        setTabStyle(R.id.chipExpired,  SessionRequest.STATUS_EXPIRED.equals(activeFilter)   ? activeBg : Color.WHITE);
     }
 
     private void setTabStyle(int id, int bgColor) {

@@ -115,30 +115,34 @@ public class InstantBookActivity extends AppCompatActivity {
             return;
         }
 
+        // Load tutor subjects from user doc
         db.collection("users").document(tutorUid).get()
-                .addOnSuccessListener(doc -> {
+                .addOnSuccessListener(userDoc -> {
                     List<String> subjects = null;
-                    if (doc.exists()) {
+                    if (userDoc.exists()) {
                         //noinspection unchecked
-                        subjects = (List<String>) doc.get("subjects");
+                        subjects = (List<String>) userDoc.get("subjects");
                     }
                     if (subjects == null || subjects.isEmpty()) subjects = getAllSubjectsList();
                     setupSubjectDropdown(subjects);
+                })
+                .addOnFailureListener(e -> setupSubjectDropdown(getAllSubjectsList()));
 
-                    if (doc.exists()) {
+        // Load weekly availability from tutorAvailability collection (where WeeklyScheduleActivity saves)
+        db.collection("tutorAvailability").document(tutorUid).get()
+                .addOnSuccessListener(availDoc -> {
+                    if (availDoc.exists()) {
                         //noinspection unchecked
-                        Map<String, Object> avail = (Map<String, Object>) doc.get("availability");
-                        if (avail != null && !avail.isEmpty()) {
-                            displaySlots(avail);
+                        Map<String, Object> scheduleMap =
+                                (Map<String, Object>) availDoc.get("schedule");
+                        if (scheduleMap != null && !scheduleMap.isEmpty()) {
+                            displaySlots(scheduleMap);
                             return;
                         }
                     }
                     showNoSlots();
                 })
-                .addOnFailureListener(e -> {
-                    setupSubjectDropdown(getAllSubjectsList());
-                    showNoSlots();
-                });
+                .addOnFailureListener(e -> showNoSlots());
     }
 
     private void displaySlots(Map<String, Object> avail) {
@@ -323,7 +327,12 @@ public class InstantBookActivity extends AppCompatActivity {
                 (hasConflict, reason) -> {
                     if (hasConflict) {
                         SoundManager.playError(this);
-                        Toast.makeText(this, "Scheduling conflict: " + reason, Toast.LENGTH_LONG).show();
+                        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                                .setTitle("Instant Booking Unavailable")
+                                .setMessage("This time slot cannot be booked right now.\n\n" + reason
+                                        + "\n\nPlease choose a different time slot.")
+                                .setPositiveButton("OK", null)
+                                .show();
                         resetBookButton();
                         return;
                     }

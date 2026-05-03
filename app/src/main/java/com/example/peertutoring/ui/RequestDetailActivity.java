@@ -540,7 +540,6 @@ public class RequestDetailActivity extends AppCompatActivity {
             Long   proposedTokens = doc.getLong("proposedTokens");
             String message        = doc.getString("message");
 
-            // Build card
             com.google.android.material.card.MaterialCardView card =
                     new com.google.android.material.card.MaterialCardView(this);
             android.widget.LinearLayout.LayoutParams cp =
@@ -568,12 +567,19 @@ public class RequestDetailActivity extends AppCompatActivity {
             inner.addView(tvHeader);
 
             // Details
+            int counterTokenAmount = proposedTokens != null ? proposedTokens.intValue() : sessionTokens;
+            int originalTokens = sessionTokens;
             StringBuilder sb = new StringBuilder();
             if (proposedDate   != null) sb.append("Date: ").append(proposedDate);
             if (proposedTime   != null) sb.append("  ").append(proposedTime);
-            if (proposedDur    != null) sb.append(" Duration: ").append(proposedDur).append(" min");
-            if (proposedTokens != null) sb.append(" Tokens: ").append(proposedTokens);
-            if (message != null && !message.isEmpty()) sb.append(" Message: ").append(message);
+            if (proposedDur    != null) sb.append("\nDuration: ").append(proposedDur).append(" min");
+            sb.append("\nNew amount: ").append(counterTokenAmount).append(" tokens");
+            if (counterTokenAmount > originalTokens) {
+                sb.append(" (+").append(counterTokenAmount - originalTokens).append(" extra)");
+            } else if (counterTokenAmount < originalTokens) {
+                sb.append(" (").append(counterTokenAmount - originalTokens).append(" refund)");
+            }
+            if (message != null && !message.isEmpty()) sb.append("\nMessage: ").append(message);
 
             TextView tvDetails = new TextView(this);
             tvDetails.setText(sb.toString().trim());
@@ -587,9 +593,15 @@ public class RequestDetailActivity extends AppCompatActivity {
             tvDetails.setLayoutParams(dlp);
             inner.addView(tvDetails);
 
-            // Accept button
+            // Button row: Accept + Reject
+            android.widget.LinearLayout btnRow = new android.widget.LinearLayout(this);
+            btnRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            btnRow.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+
             android.widget.Button btnAccept = new android.widget.Button(this);
-            btnAccept.setText("Accept This Offer");
+            btnAccept.setText("Accept");
             btnAccept.setAllCaps(false);
             btnAccept.setTextColor(android.graphics.Color.WHITE);
             btnAccept.setTextSize(14f);
@@ -598,71 +610,170 @@ public class RequestDetailActivity extends AppCompatActivity {
                         androidx.core.content.ContextCompat.getDrawable(
                                 this, R.drawable.bg_button_gradient));
             } catch (Exception ignored) {}
-            android.widget.LinearLayout.LayoutParams blp =
-                    new android.widget.LinearLayout.LayoutParams(
-                            android.view.ViewGroup.LayoutParams.MATCH_PARENT, dp(48));
-            btnAccept.setLayoutParams(blp);
+            android.widget.LinearLayout.LayoutParams blpAccept =
+                    new android.widget.LinearLayout.LayoutParams(0, dp(48), 1f);
+            blpAccept.setMargins(0, 0, dp(8), 0);
+            btnAccept.setLayoutParams(blpAccept);
 
-            final int    fTokens = proposedTokens != null ? proposedTokens.intValue() : sessionTokens;
-            final int    fDur    = proposedDur    != null ? proposedDur.intValue()    : sessionDuration;
+            android.widget.Button btnReject = new android.widget.Button(this);
+            btnReject.setText("Decline");
+            btnReject.setAllCaps(false);
+            btnReject.setTextColor(0xFFFF3B30);
+            btnReject.setTextSize(14f);
+            btnReject.setBackgroundColor(0xFFFFECEB);
+            android.widget.LinearLayout.LayoutParams blpReject =
+                    new android.widget.LinearLayout.LayoutParams(0, dp(48), 1f);
+            btnReject.setLayoutParams(blpReject);
+
+            final int    fTokens = counterTokenAmount;
+            final int    fDur    = proposedDur != null ? proposedDur.intValue() : sessionDuration;
             final String fDate   = proposedDate;
             final String fTime   = proposedTime;
-            btnAccept.setOnClickListener(v ->
-                    acceptCounterOffer(offerId, fDate, fTime, fDur, fTokens, btnAccept));
+            final String fId     = offerId;
 
-            inner.addView(btnAccept);
+            btnAccept.setOnClickListener(v ->
+                    acceptCounterOffer(fId, fDate, fTime, fDur, fTokens, btnAccept));
+            btnReject.setOnClickListener(v ->
+                    rejectCounterOffer(fId, btnReject));
+
+            btnRow.addView(btnAccept);
+            btnRow.addView(btnReject);
+            inner.addView(btnRow);
             card.addView(inner);
             layoutOfferContainer.addView(card);
         }
     }
 
     /**
-     * Student accepts a counter offer:
-     * 1. Marks offer doc status → "accepted" (pending filter removes it from view instantly)
-     * 2. Updates session status → "booked" with proposed schedule
-     *    (session automatically moves to booked list in SessionRequestsActivity)
+     * Student accepts a counter offer.
+     * Adjusts escrow atomically: refund original amount, charge counter amount,
+     * then marks session as booked with the new terms.
      */
     private void acceptCounterOffer(String offerId, String proposedDate, String proposedTime,
-                                    int durationMinutes, int tokens, android.widget.Button btn) {
+                                    int durationMinutes, int counterTokens, android.widget.Button btn) {
         if (requestId == null) return;
-        if (btn != null) { btn.setEnabled(false); btn.setText("Accepting..."); }
+        if (btn != null) { btn.setEnabled(false); btn.setText("Processing..."); }
 
-        // Step 1: mark this specific offer as accepted → disappears from pending filter
+        // Mark offer accepted first
         db.collection("sessionRequests").document(requestId)
                 .collection("counterOffers").document(offerId)
                 .update("status", "accepted")
-                .addOnSuccessListener(u -> {
-                    // Step 2: update session to BOOKED with proposed details
-                    java.util.Map<String, Object> updates = new java.util.HashMap<>();
-                    updates.put("status",          "booked");
-                    updates.put("durationMinutes", durationMinutes);
-                    updates.put("tokens",          tokens);
-                    if (proposedDate != null) updates.put("sessionDate", proposedDate);
-                    if (proposedTime != null) updates.put("sessionTime", proposedTime);
+                .addOnSuccessListener(u -> adjustTokensForCounter(offerId, proposedDate, proposedTime,
+                        durationMinutes, counterTokens, btn))
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (btn != null) { btn.setEnabled(true); btn.setText("Accept"); }
+                });
+    }
 
-                    db.collection("sessionRequests").document(requestId)
-                            .update(updates)
-                            .addOnSuccessListener(u2 -> {
-                                Toast.makeText(this,
-                                        "Offer accepted! Session is now booked.",
-                                        Toast.LENGTH_LONG).show();
-                                finish(); // return to session list — it will show as Booked
-                            })
-                            .addOnFailureListener(e2 -> {
-                                Toast.makeText(this, "Error: " + e2.getMessage(),
+    private void adjustTokensForCounter(String offerId, String proposedDate, String proposedTime,
+                                         int durationMinutes, int counterTokens, android.widget.Button btn) {
+        final int originalEscrow = sessionTokens; // tokens originally held for this session
+
+        db.collection("users").document(sessionStudentUid).get()
+                .addOnSuccessListener(userDoc -> {
+                    Long currentBal    = userDoc.getLong("tokens");
+                    Long currentEscrow = userDoc.getLong("escrowBalance");
+                    long balance = currentBal    != null ? currentBal    : 0L;
+                    long escrow  = currentEscrow != null ? currentEscrow : 0L;
+
+                    // Available = current balance + what we'll release from original escrow
+                    long availableForCounter = balance + originalEscrow;
+                    if (availableForCounter < counterTokens) {
+                        Toast.makeText(this,
+                                "Insufficient tokens. Counter offer needs " + counterTokens
+                                + " tokens but you only have " + availableForCounter + " available.",
+                                Toast.LENGTH_LONG).show();
+                        // Revert offer status back to pending
+                        db.collection("sessionRequests").document(requestId)
+                                .collection("counterOffers").document(offerId)
+                                .update("status", "pending");
+                        if (btn != null) { btn.setEnabled(true); btn.setText("Accept"); }
+                        return;
+                    }
+
+                    // newBalance = balance + originalEscrow - counterTokens
+                    // newEscrow  = escrow  - originalEscrow + counterTokens
+                    long newBalance = balance + originalEscrow - counterTokens;
+                    long newEscrow  = Math.max(0, escrow - originalEscrow) + counterTokens;
+
+                    java.util.Map<String, Object> userUpdates = new java.util.HashMap<>();
+                    userUpdates.put("tokens",        newBalance);
+                    userUpdates.put("escrowBalance", newEscrow);
+
+                    db.collection("users").document(sessionStudentUid)
+                            .update(userUpdates)
+                            .addOnSuccessListener(u2 -> finalizeCounterAcceptance(
+                                    proposedDate, proposedTime, durationMinutes, counterTokens, btn))
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Error updating balance: " + e.getMessage(),
                                         Toast.LENGTH_SHORT).show();
-                                if (btn != null) {
-                                    btn.setEnabled(true);
-                                    btn.setText("Accept This Offer");
-                                }
+                                if (btn != null) { btn.setEnabled(true); btn.setText("Accept"); }
                             });
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    if (btn != null) {
-                        btn.setEnabled(true);
-                        btn.setText("Accept This Offer");
-                    }
+                    if (btn != null) { btn.setEnabled(true); btn.setText("Accept"); }
+                });
+    }
+
+    private void finalizeCounterAcceptance(String proposedDate, String proposedTime,
+                                            int durationMinutes, int tokens, android.widget.Button btn) {
+        java.util.Map<String, Object> updates = new java.util.HashMap<>();
+        updates.put("status",          "booked");
+        updates.put("durationMinutes", durationMinutes);
+        updates.put("tokens",          tokens);
+        updates.put("escrowBalance",   tokens);
+        if (proposedDate != null) updates.put("sessionDate", proposedDate);
+        if (proposedTime != null) updates.put("sessionTime", proposedTime);
+
+        db.collection("sessionRequests").document(requestId)
+                .update(updates)
+                .addOnSuccessListener(u -> {
+                    Toast.makeText(this,
+                            "Offer accepted! " + tokens + " tokens held. Session is now booked.",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (btn != null) { btn.setEnabled(true); btn.setText("Accept"); }
+                });
+    }
+
+    /**
+     * Student rejects a counter offer: marks offer rejected, cancels session, refunds original escrow.
+     */
+    private void rejectCounterOffer(String offerId, android.widget.Button btn) {
+        if (requestId == null) return;
+        if (btn != null) { btn.setEnabled(false); btn.setText("Declining..."); }
+
+        db.collection("sessionRequests").document(requestId)
+                .collection("counterOffers").document(offerId)
+                .update("status", "rejected")
+                .addOnSuccessListener(u ->
+                        db.collection("sessionRequests").document(requestId)
+                                .update("status", "cancelled")
+                                .addOnSuccessListener(u2 -> {
+                                    if (sessionStudentUid != null && sessionTokens > 0) {
+                                        EscrowManager.refundToStudent(db, requestId, sessionStudentUid,
+                                                sessionTokens, () -> {
+                                                    Toast.makeText(this,
+                                                            "Counter offer declined. "
+                                                            + sessionTokens + " tokens refunded.",
+                                                            Toast.LENGTH_LONG).show();
+                                                    finish();
+                                                });
+                                    } else {
+                                        Toast.makeText(this, "Counter offer declined.",
+                                                Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                })
+                )
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (btn != null) { btn.setEnabled(true); btn.setText("Decline"); }
                 });
     }
 

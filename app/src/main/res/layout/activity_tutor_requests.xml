@@ -185,7 +185,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/chipHighPriority"
+                android:id="@+id/chipPending"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="10dp"
@@ -199,13 +199,13 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
-                    android:text="High Priority"
+                    android:text="Pending"
                     android:textColor="#4B5D7A"
                     android:textSize="13sp" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/chipMediumPriority"
+                android:id="@+id/chipCountered"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="10dp"
@@ -219,13 +219,53 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
-                    android:text="Medium Priority"
+                    android:text="Countered"
                     android:textColor="#4B5D7A"
                     android:textSize="13sp" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/chipLowPriority"
+                android:id="@+id/chipConfirmed"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="18dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp"
+                app:strokeColor="#E0E0E0"
+                app:strokeWidth="1dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Confirmed"
+                    android:textColor="#4B5D7A"
+                    android:textSize="13sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/chipCompleted"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="18dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp"
+                app:strokeColor="#E0E0E0"
+                app:strokeWidth="1dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Completed"
+                    android:textColor="#4B5D7A"
+                    android:textSize="13sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/chipCancelled"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 app:cardCornerRadius="18dp"
@@ -238,7 +278,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
-                    android:text="Low Priority"
+                    android:text="Cancelled"
                     android:textColor="#4B5D7A"
                     android:textSize="13sp" />
             </com.google.android.material.card.MaterialCardView>

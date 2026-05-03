@@ -10,7 +10,9 @@ import com.example.peertutoring.R;
 import com.example.peertutoring.utils.ExpirationUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 public class TutorHomeActivity extends AppCompatActivity {
 
@@ -18,6 +20,9 @@ public class TutorHomeActivity extends AppCompatActivity {
     private String tutorUid;
 
     private TextView tvGreeting, tvTutorName, tvPendingCount, tvEarningsCount, tvRating, tvRequestsBadge;
+
+    private ListenerRegistration userDocListener;
+    private ListenerRegistration requestCountListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +50,23 @@ public class TutorHomeActivity extends AppCompatActivity {
         super.onResume();
         if (!tutorUid.isEmpty()) {
             ExpirationUtils.expireStaleRequestsForTutor(tutorUid, db);
-            loadTutorData();
+            startListeners();
         }
     }
 
-    private void loadTutorData() {
-        db.collection("users").document(tutorUid).get()
-                .addOnSuccessListener(doc -> {
-                    if (!doc.exists()) return;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopListeners();
+    }
+
+    private void startListeners() {
+        stopListeners();
+
+        // Real-time user doc: name, rating, available tokens
+        userDocListener = db.collection("users").document(tutorUid)
+                .addSnapshotListener((doc, e) -> {
+                    if (e != null || doc == null || !doc.exists()) return;
 
                     String name = doc.getString("fullName");
                     if (name != null && !name.isEmpty()) {
@@ -61,25 +75,33 @@ public class TutorHomeActivity extends AppCompatActivity {
                     }
 
                     Double rating = doc.getDouble("rating");
-                    if (rating != null) {
+                    if (rating != null && rating > 0) {
                         tvRating.setText(String.format("%.1f", rating));
+                    } else {
+                        tvRating.setText("—");
                     }
 
-                    Long earnings = doc.getLong("totalEarnings");
-                    if (earnings != null) {
-                        tvEarningsCount.setText(String.valueOf(earnings));
-                    }
+                    // Show available token balance (consistent with Earnings tab)
+                    Long tokens = doc.getLong("tokens");
+                    tvEarningsCount.setText(tokens != null ? String.valueOf(tokens) : "0");
                 });
 
-        db.collection("sessionRequests")
+        // Pending = only "requested" sessions (tutor needs to respond: accept/decline/counter)
+        // "counter_offered" is NOT pending — tutor already acted, student is deciding
+        requestCountListener = db.collection("sessionRequests")
                 .whereEqualTo("tutorUid", tutorUid)
                 .whereEqualTo("status", "requested")
-                .get()
-                .addOnSuccessListener(snap -> {
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null || snap == null) return;
                     int count = snap.size();
                     tvPendingCount.setText(String.valueOf(count));
                     tvRequestsBadge.setText(count > 0 ? count + " new" : "Up to date");
                 });
+    }
+
+    private void stopListeners() {
+        if (userDocListener != null) { userDocListener.remove(); userDocListener = null; }
+        if (requestCountListener != null) { requestCountListener.remove(); requestCountListener = null; }
     }
 
     private void setupQuickActions() {
@@ -101,7 +123,6 @@ public class TutorHomeActivity extends AppCompatActivity {
         findViewById(R.id.cardProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, EditProfileActivity.class)));
 
-        // Crash Courses — tutors manage/create their own courses
         findViewById(R.id.cardMyCourses).setOnClickListener(v ->
                 startActivity(new Intent(this, CoursesActivity.class)));
 
