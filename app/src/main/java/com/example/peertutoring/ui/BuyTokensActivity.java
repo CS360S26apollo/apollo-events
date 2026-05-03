@@ -303,7 +303,7 @@ public class BuyTokensActivity extends AppCompatActivity {
 
             MaterialCardView card = new MaterialCardView(this);
             LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
-                    0, dp(90), 1f);
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             if (i % 2 == 0) cp.setMarginEnd(dp(8));
             card.setLayoutParams(cp);
             card.setRadius(dp(16));

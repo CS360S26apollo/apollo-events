@@ -59,7 +59,7 @@ public class WithdrawActivity extends AppCompatActivity {
 
     public static final int    TOKENS_PER_DOLLAR  = 10;
     public static final int    MINIMUM_WITHDRAWAL  = 100;
-    public static final int[]  QUICK_AMOUNTS       = {500, 1000, 2500, 5000};
+    public static final int[]  QUICK_AMOUNTS       = {100, 500, 1000, 5000};
 
     // {id, label, subtitle, fee, emoji, color}
     private static final String[][] METHODS = {
@@ -164,16 +164,16 @@ public class WithdrawActivity extends AppCompatActivity {
         for (int amount : QUICK_AMOUNTS) {
             Button chip = new Button(this);
             chip.setText(String.valueOf(amount));
-            chip.setTextSize(14f);
+            chip.setTextSize(13f);
             chip.setAllCaps(false);
             chip.setBackgroundTintList(
                     android.content.res.ColorStateList.valueOf(Color.parseColor("#EEF2FF")));
             chip.setTextColor(Color.parseColor("#8A2EFF"));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.setMarginEnd(dp(10));
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+            lp.setMarginEnd(dp(8));
             chip.setLayoutParams(lp);
-            chip.setPadding(dp(16), dp(6), dp(16), dp(6));
+            chip.setPadding(dp(4), dp(6), dp(4), dp(6));
             chip.setOnClickListener(v -> {
                 if (etAmount != null) etAmount.setText(String.valueOf(amount));
                 selectedAmount = amount;
@@ -222,7 +222,7 @@ public class WithdrawActivity extends AppCompatActivity {
             }
 
             MaterialCardView card = new MaterialCardView(this);
-            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, dp(90), 1f);
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             if (i % 2 == 0) cp.setMarginEnd(dp(8));
             card.setLayoutParams(cp);
             card.setRadius(dp(16));
@@ -784,9 +784,11 @@ public class WithdrawActivity extends AppCompatActivity {
         boolean balanceLoaded = currentBalance >= 0;
         boolean hasDetails    = selectedMethodIndex >= 0
                 && getSavedSummary(METHODS[selectedMethodIndex][0]) != null;
+        int fee = selectedMethodIndex >= 0
+                ? Integer.parseInt(METHODS[selectedMethodIndex][3]) : 0;
         boolean valid = balanceLoaded
                 && selectedAmount >= MINIMUM_WITHDRAWAL
-                && selectedAmount <= currentBalance
+                && (selectedAmount + fee) <= currentBalance
                 && selectedMethodIndex >= 0
                 && hasDetails;
 

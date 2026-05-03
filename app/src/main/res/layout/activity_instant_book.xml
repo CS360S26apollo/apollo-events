@@ -131,6 +131,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Subject"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:hintTextColor="#8B97A8"
                         android:layout_marginBottom="12dp">
 
                         <AutoCompleteTextView
@@ -138,6 +139,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="none"
+                            android:textColor="#071A3D"
                             android:paddingHorizontal="16dp"
                             android:paddingVertical="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -147,26 +149,30 @@
                         android:layout_height="wrap_content"
                         android:hint="Topic (e.g. Integration by Parts)"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:hintTextColor="#8B97A8"
                         android:layout_marginBottom="12dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etTopic"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:textColor="#071A3D" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Goals (optional)"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:hintTextColor="#8B97A8">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etGoals"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:minLines="2"
-                            android:gravity="top" />
+                            android:gravity="top"
+                            android:textColor="#071A3D" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

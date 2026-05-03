@@ -103,6 +103,7 @@
                         android:layout_weight="1" android:hint="Enter token amount"
                         android:inputType="number" android:textSize="16sp"
                         android:textColor="#071A3D"
+                        android:textColorHint="#8B97A8"
                         android:background="@android:color/transparent"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

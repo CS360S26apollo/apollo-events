@@ -147,8 +147,25 @@ public class TutorRequestsActivity extends AppCompatActivity {
                         if (tsB == null) return -1;
                         return tsB.compareTo(tsA);
                     });
+                    updateNotifBadge();
                     refreshDisplay();
                 });
+    }
+
+    private void updateNotifBadge() {
+        int pendingCount = 0;
+        for (DocumentSnapshot doc : allRequests) {
+            if ("requested".equals(doc.getString("status"))) pendingCount++;
+        }
+        View badge = findViewById(R.id.cardNotifBadge);
+        TextView tvCount = findViewById(R.id.tvNotifCount);
+        if (badge == null || tvCount == null) return;
+        if (pendingCount > 0) {
+            badge.setVisibility(View.VISIBLE);
+            tvCount.setText(String.valueOf(pendingCount));
+        } else {
+            badge.setVisibility(View.GONE);
+        }
     }
 
     private int statusPriority(String status) {

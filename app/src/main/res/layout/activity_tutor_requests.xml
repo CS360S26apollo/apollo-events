@@ -101,6 +101,7 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_gravity="top|end"
+                    android:visibility="gone"
                     app:cardCornerRadius="9dp"
                     app:cardBackgroundColor="#00C853"
                     app:cardElevation="2dp">
@@ -109,7 +110,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="5"
+                        android:text=""
                         android:textColor="#FFFFFF"
                         android:textSize="9sp"
                         android:textStyle="bold" />

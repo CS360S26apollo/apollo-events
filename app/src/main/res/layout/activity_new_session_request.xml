@@ -292,13 +292,11 @@
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/bg_button_gradient"
                             android:text="60m"
                             android:textAllCaps="false"
                             android:textSize="13sp"
-                            android:textColor="#FFFFFF"
-                            android:textStyle="bold"
-                            app:backgroundTint="@null"
+                            android:textColor="#4B5D7A"
+                            android:backgroundTint="#F3F4F6"
                             app:cornerRadius="12dp" />
 
                         <Button
@@ -363,14 +361,20 @@
                 <Button android:id="@+id/btnSessionOnline"
                     android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
                     android:layout_marginEnd="6dp" android:text="💻 Online"
-                    android:textAllCaps="false" android:textSize="12sp"/>
+                    android:textAllCaps="false" android:textSize="12sp"
+                    android:textColor="#4B5D7A"
+                    android:backgroundTint="#F3F4F6"/>
                 <Button android:id="@+id/btnSessionInPerson"
                     android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
                     android:layout_marginEnd="6dp" android:text="🏫 In-Person"
-                    android:textAllCaps="false" android:textSize="12sp"/>
+                    android:textAllCaps="false" android:textSize="12sp"
+                    android:textColor="#4B5D7A"
+                    android:backgroundTint="#F3F4F6"/>
                 <Button android:id="@+id/btnSessionTakeHome"
                     android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
-                    android:text="🏠 Take-Home" android:textAllCaps="false" android:textSize="12sp"/>
+                    android:text="🏠 Take-Home" android:textAllCaps="false" android:textSize="12sp"
+                    android:textColor="#4B5D7A"
+                    android:backgroundTint="#F3F4F6"/>
             </LinearLayout>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="🏠 Take-home adds 25% extra — tutor travels to you"

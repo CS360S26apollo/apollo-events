@@ -18,7 +18,7 @@ public class CancellationUtils {
     public static final long PARTIAL_REFUND_CUTOFF_MS = 12L * 60 * 60 * 1000;
 
     /**
-     * Returns the number of tokens to refund for a student cancellation.
+ * Returns the number of tokens to refund for a student cancellation.//
      *
      * @param scheduledDate The session's scheduled start time (null → full refund)
      * @param totalTokens   Full token cost of the session

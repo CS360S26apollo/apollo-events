@@ -59,7 +59,10 @@ public class TutorDetailActivity extends AppCompatActivity {
 
         populateViews(tutorName, subject, rateStr, rating, students, isVerified);
         checkRoleAndSetupButtons();
-        if (tutorUid != null && !tutorUid.isEmpty()) loadReviews();
+        if (tutorUid != null && !tutorUid.isEmpty()) {
+            loadReviews();
+            loadTutorProfile();
+        }
     }
 
     private void populateViews(String name, String subject, String rate,
@@ -81,6 +84,20 @@ public class TutorDetailActivity extends AppCompatActivity {
         setText(R.id.tvRating,       rating);
         setText(R.id.tvStudents,     students);
         setText(R.id.tvRate,         rate);
+    }
+
+    private void loadTutorProfile() {
+        FirebaseFirestore.getInstance()
+                .collection("users").document(tutorUid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) return;
+                    String bio = doc.getString("bio");
+                    TextView tvBio = findViewById(R.id.tvBio);
+                    if (tvBio != null) {
+                        tvBio.setText(bio != null && !bio.isEmpty() ? bio : "No bio provided.");
+                    }
+                });
     }
 
     /**

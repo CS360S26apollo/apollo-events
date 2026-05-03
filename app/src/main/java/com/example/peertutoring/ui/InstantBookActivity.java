@@ -71,6 +71,19 @@ public class InstantBookActivity extends AppCompatActivity {
             currentUid      = FirebaseAuth.getInstance().getCurrentUser().getUid();
             currentUserName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
             if (currentUserName == null || currentUserName.isEmpty()) currentUserName = "Student";
+            // Load real name from Firestore profile
+            db.collection("users").document(currentUid).get()
+                    .addOnSuccessListener(userDoc -> {
+                        String firstName = userDoc.getString("firstName");
+                        String lastName  = userDoc.getString("lastName");
+                        String fullName  = userDoc.getString("fullName");
+                        if (fullName != null && !fullName.isEmpty()) {
+                            currentUserName = fullName;
+                        } else if (firstName != null && !firstName.isEmpty()) {
+                            currentUserName = lastName != null && !lastName.isEmpty()
+                                    ? firstName + " " + lastName : firstName;
+                        }
+                    });
         } else {
             currentUid = "";
         }

@@ -211,6 +211,25 @@ public class RequestDetailActivity extends AppCompatActivity {
                     setText(R.id.tvProviderName, tutorName != null ? tutorName : "Searching...");
                     updateStatusUI(sessionStatus);
 
+                    // Populate details (topic, goals)
+                    String topic  = doc.getString("topic");
+                    String goals  = doc.getString("goals");
+                    StringBuilder details = new StringBuilder();
+                    if (topic != null && !topic.isEmpty()) details.append(topic);
+                    if (goals != null && !goals.isEmpty()) {
+                        if (details.length() > 0) details.append("\n");
+                        details.append("Goals: ").append(goals);
+                    }
+                    setText(R.id.tvDetails, details.length() > 0 ? details.toString() : "No details provided.");
+
+                    // Set created date from Firestore timestamp
+                    com.google.firebase.Timestamp createdTs = doc.getTimestamp("createdAt");
+                    if (createdTs != null) {
+                        SimpleDateFormat createdSdf =
+                                new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+                        setText(R.id.tvCreated, createdSdf.format(createdTs.toDate()));
+                    }
+
                     // Show scheduled time in the location row if set
                     if (sessionScheduledDate != null) {
                         SimpleDateFormat sdf =

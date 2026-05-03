@@ -96,6 +96,19 @@ public class NewSessionRequestActivity extends AppCompatActivity {
             currentUid      = FirebaseAuth.getInstance().getCurrentUser().getUid();
             currentUserName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
             if (currentUserName == null || currentUserName.isEmpty()) currentUserName = "Student";
+            // Load real name from Firestore profile (overrides Firebase Auth displayName)
+            db.collection("users").document(currentUid).get()
+                    .addOnSuccessListener(userDoc -> {
+                        String firstName = userDoc.getString("firstName");
+                        String lastName  = userDoc.getString("lastName");
+                        String fullName  = userDoc.getString("fullName");
+                        if (fullName != null && !fullName.isEmpty()) {
+                            currentUserName = fullName;
+                        } else if (firstName != null && !firstName.isEmpty()) {
+                            currentUserName = lastName != null && !lastName.isEmpty()
+                                    ? firstName + " " + lastName : firstName;
+                        }
+                    });
         } else {
             currentUid = "";
         }
@@ -243,14 +256,14 @@ public class NewSessionRequestActivity extends AppCompatActivity {
 
     private void selectBtn(Button btn) {
         if (btn == null) return;
-        btn.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_button_gradient));
+        btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                Color.parseColor("#8A2EFF")));
         btn.setTextColor(Color.WHITE);
     }
 
     private void resetDurationButtons() {
         for (Button b : new Button[]{btn30, btn45, btn60, btn90}) {
             if (b == null) continue;
-            b.setBackground(null);
             b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
                     Color.parseColor("#F3F4F6")));
             b.setTextColor(Color.parseColor("#4B5D7A"));
@@ -412,11 +425,13 @@ public class NewSessionRequestActivity extends AppCompatActivity {
         View.OnClickListener l = v -> {
             for (android.widget.Button b : btns) {
                 if (b == null) continue;
-                b.setBackgroundColor(android.graphics.Color.parseColor("#F3F4F6"));
+                b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                        android.graphics.Color.parseColor("#F3F4F6")));
                 b.setTextColor(android.graphics.Color.parseColor("#4B5D7A"));
             }
-            ((android.widget.Button) v).setBackgroundColor(
-                    android.graphics.Color.parseColor("#8A2EFF"));
+            ((android.widget.Button) v).setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            android.graphics.Color.parseColor("#8A2EFF")));
             ((android.widget.Button) v).setTextColor(android.graphics.Color.WHITE);
             if      (v.getId() == R.id.btnSessionOnline)   sessionType = "online";
             else if (v.getId() == R.id.btnSessionInPerson) sessionType = "inperson";
