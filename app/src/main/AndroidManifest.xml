@@ -99,7 +99,11 @@
         <activity android:name=".ui.MessagingActivity"      android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".ui.TutorChatListActivity" android:exported="false"/>
+        <activity android:name=".ui.TutorChatListActivity"  android:exported="false"/>
+        <activity android:name=".ui.CoursesActivity"          android:exported="false"/>
+        <activity android:name=".ui.CoursesDetailActivity"     android:exported="false"/>
+        <activity android:name=".ui.CreateCourseActivity"     android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
         <!-- Legacy / unused but kept to avoid crash -->
         <activity android:name=".ui.TutorHomeActivity"      android:exported="false" />

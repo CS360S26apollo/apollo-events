@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- ── Gradient thumbnail header ── -->
+    <LinearLayout
+        android:id="@+id/courseDetailHeader"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="@drawable/bg_button_gradient"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="48dp"
+        android:paddingBottom="20dp"
+        android:paddingHorizontal="20dp">
+
+        <!-- Back button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="44dp" android:layout_height="44dp"
+                app:cardCornerRadius="22dp" app:cardBackgroundColor="#33FFFFFF"
+                app:cardElevation="0dp">
+                <ImageButton android:id="@+id/btnBack"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="#FFFFFF" android:contentDescription="Back"/>
+            </com.google.android.material.card.MaterialCardView>
+            <android.widget.Space android:layout_width="0dp" android:layout_height="1dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <!-- Big emoji -->
+        <TextView
+            android:id="@+id/tvCourseDetailEmoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📚"
+            android:textSize="56sp"
+            android:gravity="center"/>
+
+        <!-- Level badge -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#33FFFFFF"
+            app:cardElevation="0dp">
+            <TextView
+                android:id="@+id/tvCourseDetailLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A-Level"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="5dp"/>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <!-- ── Scrollable content ── -->
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+
+            <!-- Title + tutor -->
+            <TextView android:id="@+id/tvCourseDetailTitle"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Course Title" android:textColor="#071A3D"
+                android:textSize="22sp" android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+                <TextView android:id="@+id/tvCourseDetailTutor"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="👤 Tutor Name" android:textColor="#8B97A8"
+                    android:textSize="14sp" android:layout_marginEnd="12dp"/>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp" app:cardBackgroundColor="#F3EEFF"
+                    app:cardElevation="0dp">
+                    <TextView android:id="@+id/tvCourseDetailSubject"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Mathematics" android:textColor="#8A2EFF"
+                        android:textSize="12sp" android:textStyle="bold"
+                        android:paddingHorizontal="10dp" android:paddingVertical="4dp"/>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Stats cards row -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="20dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_weight="1" android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:orientation="vertical" android:gravity="center">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="📅" android:textSize="20sp"/>
+                        <TextView android:id="@+id/tvCourseDetailDuration"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="30 days" android:textColor="#071A3D"
+                            android:textSize="13sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Duration" android:textColor="#8B97A8" android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_weight="1" android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:orientation="vertical" android:gravity="center">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="🔁" android:textSize="20sp"/>
+                        <TextView android:id="@+id/tvCourseDetailSessions"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="5/week" android:textColor="#071A3D"
+                            android:textSize="13sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Sessions" android:textColor="#8B97A8" android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                        android:orientation="vertical" android:gravity="center">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="⏱" android:textSize="20sp"/>
+                        <TextView android:id="@+id/tvCourseDetailMinutes"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="60 min" android:textColor="#071A3D"
+                            android:textSize="13sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Per session" android:textColor="#8B97A8" android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Description -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="About This Course" android:textColor="#071A3D"
+                        android:textSize="15sp" android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+                    <TextView android:id="@+id/tvCourseDetailDescription"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="" android:textColor="#4B5D7A"
+                        android:textSize="14sp" android:lineSpacingExtra="4dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Topics covered -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="📋 Topics Covered" android:textColor="#071A3D"
+                        android:textSize="15sp" android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+                    <TextView android:id="@+id/tvCourseDetailTopics"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#4B5D7A"
+                        android:textSize="13sp" android:lineSpacingExtra="4dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Seats remaining -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="👥 " android:textSize="18sp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Available Seats" android:textColor="#071A3D"
+                            android:textSize="14sp" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvCourseDetailSeats"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="10 / 10 remaining" android:textColor="#8B97A8"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Zoom link (shown only when available) -->
+            <LinearLayout android:id="@+id/layoutZoomLink"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:visibility="gone"
+                android:layout_marginBottom="16dp">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#EFF6FF"
+                    app:strokeColor="#2563EB" app:strokeWidth="1dp" app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="🎥  " android:textSize="20sp"/>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Zoom Meeting Link" android:textColor="#1D4ED8"
+                                android:textSize="13sp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvCourseZoomLink"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Tap to join session"
+                                android:textColor="#2563EB" android:textSize="13sp"
+                                android:clickable="true" android:focusable="true"/>
+                        </LinearLayout>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Join →" android:textColor="#2563EB"
+                            android:textSize="13sp" android:textStyle="bold"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ── Enroll button ── -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="#FFFFFF" android:elevation="8dp" android:padding="16dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp" app:cardBackgroundColor="#F9F5FF"
+            app:strokeColor="#8A2EFF" app:strokeWidth="1dp" app:cardElevation="0dp"
+            android:layout_marginBottom="10dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:padding="12dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🪙 Total Cost" android:textColor="#8B97A8" android:textSize="13sp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView android:id="@+id/tvCourseDetailTokens"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="500 tokens" android:textColor="#8A2EFF"
+                    android:textSize="18sp" android:textStyle="bold"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Button android:id="@+id/btnEnrollCourse"
+            android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="Enroll Now" android:textAllCaps="false"
+            android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"
+            android:background="@drawable/bg_button_gradient"
+            app:backgroundTint="@null"/>
+    </LinearLayout>
+
+</LinearLayout>

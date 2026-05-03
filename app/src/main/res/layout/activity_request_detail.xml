@@ -47,6 +47,7 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <!-- Status + Topic Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +62,10 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/cardStatusBadge"
                             android:layout_width="wrap_content"
@@ -86,6 +90,7 @@
                             android:layout_height="24dp"
                             android:layout_alignParentEnd="true"
                             android:src="@android:drawable/ic_menu_recent_history"
+                            android:contentDescription="History icon"
                             app:tint="#007AFF" />
                     </RelativeLayout>
 
@@ -110,6 +115,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Provider Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,6 +156,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:src="@android:drawable/ic_menu_gallery"
+                                android:contentDescription="Provider image"
                                 android:scaleType="centerCrop" />
                         </com.google.android.material.card.MaterialCardView>
 
@@ -166,15 +173,32 @@
                                 android:textColor="#071A3D"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
-                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="4dp">
-                                <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@android:drawable/ic_menu_mylocation" app:tint="#8B97A8" />
-                                <TextView android:id="@+id/tvLocation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" Campus Library" android:textColor="#4B5D7A" android:textSize="14sp" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="4dp">
+                                <ImageView
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
+                                    android:src="@android:drawable/ic_menu_mylocation"
+                                    android:contentDescription="Location icon"
+                                    app:tint="#8B97A8" />
+                                <TextView
+                                    android:id="@+id/tvLocation"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" Campus Library"
+                                    android:textColor="#4B5D7A"
+                                    android:textSize="14sp" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Details Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -208,28 +232,90 @@
                         android:textSize="15sp"
                         android:lineSpacingExtra="4dp" />
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="20dp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0"
+                        android:layout_marginVertical="20dp" />
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#007AFF" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Duration" android:textColor="#8B97A8" android:textSize="12sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:src="@android:drawable/ic_menu_recent_history"
+                                    android:contentDescription="Duration icon"
+                                    app:tint="#007AFF" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="Duration"
+                                    android:textColor="#8B97A8"
+                                    android:textSize="12sp" />
                             </LinearLayout>
-                            <TextView android:id="@+id/tvDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="0 mins" android:textColor="#071A3D" android:textSize="15sp" android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tvDuration"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0 mins"
+                                android:textColor="#071A3D"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_today" app:tint="#AF52DE" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Created" android:textColor="#8B97A8" android:textSize="12sp" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:src="@android:drawable/ic_menu_today"
+                                    android:contentDescription="Calendar icon"
+                                    app:tint="#AF52DE" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="Created"
+                                    android:textColor="#8B97A8"
+                                    android:textSize="12sp" />
                             </LinearLayout>
-                            <TextView android:id="@+id/tvCreated" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Mar 8, 2026" android:textColor="#071A3D" android:textSize="15sp" android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tvCreated"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Mar 8, 2026"
+                                android:textColor="#071A3D"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Token Amount Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -242,17 +328,49 @@
                     android:orientation="vertical"
                     android:background="@drawable/bg_button_gradient"
                     android:padding="20dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Total Amount" android:textColor="#CCFFFFFF" android:textSize="14sp" />
-                    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
-                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪙" android:textSize="24sp" />
-                            <TextView android:id="@+id/tvTokens" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="0" android:textColor="#FFFFFF" android:textSize="36sp" android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Amount"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="14sp" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🪙"
+                                android:textSize="24sp" />
+                            <TextView
+                                android:id="@+id/tvTokens"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:text="0"
+                                android:textColor="#FFFFFF"
+                                android:textSize="36sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:layout_centerVertical="true" android:text="Tokens" android:textColor="#CCFFFFFF" android:textSize="14sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:text="Tokens"
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="14sp" />
                     </RelativeLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Cancel Button (US-15) -->
             <Button
                 android:id="@+id/btnCancelRequest"
                 android:layout_width="match_parent"
@@ -267,7 +385,7 @@
                 app:cornerRadius="32dp"
                 android:visibility="gone" />
 
-            <!-- US-15: Reschedule — shown for student when session is booked -->
+            <!-- Reschedule Button (US-15) -->
             <Button
                 android:id="@+id/btnReschedule"
                 android:layout_width="match_parent"
@@ -282,24 +400,12 @@
                 app:cornerRadius="28dp"
                 android:visibility="gone" />
 
-            <!-- US 24: Tutor marks session complete to release escrow to their wallet -->
-            <Button
-                android:id="@+id/btnMessageUser"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="💬  Message"
-                android:textAllCaps="false"
-                android:textColor="#8A2EFF"
-                android:textSize="15sp"
-                android:background="@android:color/transparent"
-                app:backgroundTint="@null"
-                android:layout_marginBottom="8dp"/>
-
+            <!-- Mark Complete Button (US-24) -->
             <Button
                 android:id="@+id/btnMarkComplete"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="12dp"
                 android:backgroundTint="#089A3C"
                 android:text="✓  Mark as Complete"
                 android:textAllCaps="false"
@@ -309,6 +415,82 @@
                 app:cornerRadius="28dp"
                 android:visibility="gone" />
 
+            <!-- Message Button (available for both student and tutor) -->
+            <Button
+                android:id="@+id/btnMessageUser"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="#007AFF"
+                android:text="💬  Message"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="28dp" />
+
+            <!-- Zoom Link Section -->
+            <LinearLayout
+                android:id="@+id/layoutZoomSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="12dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#EFF6FF"
+                    app:strokeColor="#2563EB"
+                    app:strokeWidth="1dp"
+                    app:cardElevation="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎥  "
+                            android:textSize="20sp" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Zoom Meeting"
+                                android:textColor="#1D4ED8"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tvZoomLink"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tap to join"
+                                android:textColor="#2563EB"
+                                android:textSize="13sp"
+                                android:clickable="true"
+                                android:focusable="true" />
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Join →"
+                            android:textColor="#2563EB"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Counter Offers Section (student only) -->
             <LinearLayout
                 android:id="@+id/layoutProviderList"
                 android:layout_width="match_parent"
@@ -331,18 +513,33 @@
                     android:orientation="vertical" />
             </LinearLayout>
 
+            <!-- Tutor Actions (accept / counter / decline) -->
             <LinearLayout
                 android:id="@+id/layoutTutorActions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
-                <Button android:id="@+id/btnAcceptRequest" android:layout_width="match_parent" android:layout_height="56dp" android:text="Accept" android:layout_marginBottom="8dp" />
-                <Button android:id="@+id/btnCounterOffer" android:layout_width="match_parent" android:layout_height="56dp" android:text="Counter" android:layout_marginBottom="8dp" />
-                <Button android:id="@+id/btnDeclineRequest" android:layout_width="match_parent" android:layout_height="56dp" android:text="Decline" />
+                <Button
+                    android:id="@+id/btnAcceptRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Accept"
+                    android:layout_marginBottom="8dp" />
+                <Button
+                    android:id="@+id/btnCounterOffer"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Counter"
+                    android:layout_marginBottom="8dp" />
+                <Button
+                    android:id="@+id/btnDeclineRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Decline" />
             </LinearLayout>
 
-            <!-- US 17: Tutor adds session notes after completion -->
+            <!-- US-17: Tutor adds session notes after completion -->
             <Button
                 android:id="@+id/btnAddNotes"
                 android:layout_width="match_parent"
@@ -358,7 +555,7 @@
                 app:backgroundTint="@null"
                 app:cornerRadius="28dp" />
 
-            <!-- US 19: Student rates and reviews tutor after completion -->
+            <!-- US-19: Student rates and reviews tutor after completion -->
             <Button
                 android:id="@+id/btnRateReview"
                 android:layout_width="match_parent"
@@ -374,4 +571,5 @@
 
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

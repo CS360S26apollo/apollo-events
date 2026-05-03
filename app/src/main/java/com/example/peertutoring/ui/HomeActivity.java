@@ -26,7 +26,7 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
     private String userRole = "student";
-    
+
     private TextView tvUserName, tvTokenBalance, tvGreeting;
     private TextView tvUpcomingSubject, tvUpcomingTime;
     private ListenerRegistration userListener;
@@ -76,6 +76,15 @@ public class HomeActivity extends AppCompatActivity {
             cardMyRequests.setOnClickListener(v -> {
                 SoundManager.playClick(this);
                 startActivity(new Intent(this, SessionRequestsActivity.class));
+            });
+        }
+
+        // Crash Courses card — browse/enroll in tutor crash courses
+        View cardCourses = findViewById(R.id.cardCrashCourses);
+        if (cardCourses != null) {
+            cardCourses.setOnClickListener(v -> {
+                SoundManager.playClick(this);
+                startActivity(new Intent(this, CoursesActivity.class));
             });
         }
 
@@ -136,7 +145,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     if (role != null) userRole = role;
 
-                    // Tutor landed here by mistake (e.g. network failure at login) — redirect
+                    // Tutor landed here by mistake — redirect
                     if ("tutor".equals(role)) {
                         startActivity(new Intent(HomeActivity.this, TutorHomeActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -152,7 +161,7 @@ public class HomeActivity extends AppCompatActivity {
                         long bal = tokens != null ? tokens : 0;
                         tvTokenBalance.setText(NumberFormat.getNumberInstance(Locale.getDefault()).format(bal));
                     }
-                    
+
                     if (tvGreeting != null && name != null) {
                         tvGreeting.setText("Welcome back, " + name + " 👋");
                     }
@@ -178,8 +187,8 @@ public class HomeActivity extends AppCompatActivity {
         if (navMessages != null) {
             navMessages.setOnClickListener(v -> {
                 SoundManager.playClick(this);
-                startActivity(new Intent(this, 
-                    "tutor".equals(userRole) ? TutorRequestsActivity.class : SessionRequestsActivity.class));
+                startActivity(new Intent(this,
+                        "tutor".equals(userRole) ? TutorRequestsActivity.class : SessionRequestsActivity.class));
                 overridePendingTransition(0, 0);
             });
         }

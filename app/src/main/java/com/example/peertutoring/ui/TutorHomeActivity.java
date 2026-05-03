@@ -101,6 +101,10 @@ public class TutorHomeActivity extends AppCompatActivity {
         findViewById(R.id.cardProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, EditProfileActivity.class)));
 
+        // Crash Courses — tutors manage/create their own courses
+        findViewById(R.id.cardMyCourses).setOnClickListener(v ->
+                startActivity(new Intent(this, CoursesActivity.class)));
+
         findViewById(R.id.btnEarnings).setOnClickListener(v ->
                 startActivity(new Intent(this, TutorEarningsActivity.class)));
 

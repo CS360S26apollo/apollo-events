@@ -176,6 +176,27 @@ public class RequestDetailActivity extends AppCompatActivity {
                     sessionStudentUid   = doc.getString("studentUid");
                     sessionTutorUid     = doc.getString("tutorUid");
                     sessionStudentName  = doc.getString("studentName");
+                    // Show Zoom link if available (for both student and tutor)
+                    String zl = doc.getString("zoomLink");
+                    android.view.View zoomSection = findViewById(R.id.layoutZoomSection);
+                    android.widget.TextView tvZoom = findViewById(R.id.tvZoomLink);
+                    if (zl != null && !zl.isEmpty()) {
+                        if (zoomSection != null) zoomSection.setVisibility(android.view.View.VISIBLE);
+                        if (tvZoom != null) {
+                            tvZoom.setText("🎥 Join Zoom: " + zl);
+                            final String fZl = zl;
+                            tvZoom.setOnClickListener(v -> {
+                                try {
+                                    startActivity(new android.content.Intent(
+                                            android.content.Intent.ACTION_VIEW,
+                                            android.net.Uri.parse(fZl)));
+                                } catch (Exception ex) {
+                                    Toast.makeText(RequestDetailActivity.this,
+                                            "Cannot open link.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
                     sessionSubject      = doc.getString("subject");
                     sessionScheduledDate = doc.getDate("scheduledDate");
                     Long tok = doc.getLong("tokens");
@@ -653,16 +674,71 @@ public class RequestDetailActivity extends AppCompatActivity {
 
     private void updateFirestoreStatus(String status) {
         if (requestId == null || requestId.startsWith("mock_")) return;
+        // When tutor accepts → offer Zoom link
+        if ("booked".equals(status) && currentUid.equals(sessionTutorUid)) {
+            showZoomLinkDialog();
+            return;
+        }
+        doUpdateStatus(status, null);
+    }
+
+    /** Tutor optionally provides a Zoom meeting link when accepting. */
+    private void showZoomLinkDialog() {
+        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
+        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+        layout.setPadding(dpR(24), dpR(16), dpR(24), dpR(8));
+
+        android.widget.TextView tvMsg = new android.widget.TextView(this);
+        tvMsg.setText("Add a Zoom meeting link so the student can join at session time. You can skip and add it later.");
+                tvMsg.setTextColor(0xFF4B5D7A);
+        tvMsg.setTextSize(14f);
+        tvMsg.setPadding(0, 0, 0, dpR(14));
+        layout.addView(tvMsg);
+
+        android.widget.EditText etZoom = new android.widget.EditText(this);
+        etZoom.setHint("https://zoom.us/j/your-meeting-id");
+        etZoom.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        etZoom.setTextSize(13f);
+        layout.addView(etZoom);
+
+        android.widget.TextView tvTip = new android.widget.TextView(this);
+        tvTip.setText("💡 Create a meeting at zoom.us and paste the join link here.");
+        tvTip.setTextColor(0xFF8B97A8);
+        tvTip.setTextSize(12f);
+        tvTip.setPadding(0, dpR(8), 0, 0);
+        layout.addView(tvTip);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("🎥 Add Zoom Link (Optional)")
+                .setView(layout)
+                .setPositiveButton("Accept & Save", (d, w) -> {
+                    String link = etZoom.getText().toString().trim();
+                    doUpdateStatus("booked", link.isEmpty() ? null : link);
+                })
+                .setNegativeButton("Skip for now", (d, w) -> doUpdateStatus("booked", null))
+                .show();
+    }
+
+    private void doUpdateStatus(String status, String zoomLink) {
+        if (requestId == null) return;
+        java.util.Map<String, Object> updates = new java.util.HashMap<>();
+        updates.put("status", status);
+        if (zoomLink != null && !zoomLink.isEmpty()) updates.put("zoomLink", zoomLink);
+
         db.collection("sessionRequests").document(requestId)
-                .update("status", status)
+                .update(updates)
                 .addOnSuccessListener(u -> {
                     updateStatusUI(status);
-                    Toast.makeText(this,
-                            "booked".equals(status) ? "Session accepted!" : "Request updated.",
-                            Toast.LENGTH_SHORT).show();
+                    String msg = "booked".equals(status) ? "Session accepted!" : "Request updated.";
+                    if (zoomLink != null) msg += " ✅ Zoom link saved.";
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private int dpR(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
     private void updateStatusUI(String status) {
