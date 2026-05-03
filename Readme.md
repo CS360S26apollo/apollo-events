@@ -1,7 +1,7 @@
 # Project Documentation
 
 ## TA Feedback <a name="ta-feedback"></a>
-> **Status:** No major feedback to be incorporated, received from TA on Phase 2. The project is proceeding according to the original design with minor refinements to the onboarding flow.
+> **Status:** No major feedback to be incorporated, received from TA on Phase 3. The project is proceeding according to the original design with minor refinements to the onboarding flow.
 
 - [Team Information](#team-information)
 - [Project Structure & Documentation](#project-structure)
@@ -13,6 +13,10 @@
   - [Meeting – Mar 26, 2026](#meeting--mar-26-2026)
   - [Meeting – Apr 01, 2026](#meeting--apr-01-2026)
   - [Meeting – Apr 05, 2026](#meeting--apr-05-2026)
+  - [Meeting – Apr 10, 2026](#meeting--apr-10-2026)
+  - [Meeting – Apr 17, 2026](#meeting--apr-17-2026)
+  - [Meeting – Apr 24, 2026](#meeting--apr-24-2026)
+  - [Meeting – May 2, 2026](#meeting--may-2-2026)
 
 - [UML Diagrams](#uml-diagrams)
 
@@ -22,13 +26,15 @@
   - [Product Backlog – Project Part 1](#product-backlog--project-part-1)
   - [Product Backlog – Project Part 2](#product-backlog--project-part-2)
   - [Product Backlog – Project Part 3](#product-backlog--project-part-3)
+  - [Product Backlog – Project Part 4](#product-backlog--project-part-4)
 
 - [Sprint Planning & Reviews](#sprint-planning-reviews)
 
 - [Wireframes](#wireframes)
   - [Wireframes – Project Part 1](#wireframes--project-part-1)
-  - [Wireframes – Project Part 2 (Figma)](#wireframes--project-part-2) 
+  - [Wireframes – Project Part 2 (Figma)](#wireframes--project-part-2)
   - [Wireframes – Project Part 3](#wireframes--project-part-3)
+  - [Wireframes – Project Part 4](#wireframes--project-part-4)
 
 ---
 
