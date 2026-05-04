@@ -85,7 +85,7 @@ public class RateReviewIntentTest {
         sleep(1000);
 
         // Do NOT tap any star — submit immediately
-        onView(withId(R.id.btnSubmitReview)).perform(scrollTo(), click());
+        onView(withId(R.id.btnSubmitReview)).perform(click());
         sleep(500);
 
         // Must still be on the review screen
@@ -128,7 +128,6 @@ public class RateReviewIntentTest {
         sleep(1000);
 
         onView(withId(R.id.btnSubmitReview))
-                .perform(scrollTo())
                 .check(matches(isDisplayed()));
     }
 
@@ -152,7 +151,7 @@ public class RateReviewIntentTest {
         sleep(300);
 
         // Do NOT fill review text
-        onView(withId(R.id.btnSubmitReview)).perform(scrollTo(), click());
+        onView(withId(R.id.btnSubmitReview)).perform(click());
         sleep(500);
 
         // Label should now say "Excellent" (star 5 was selected — validation passed)

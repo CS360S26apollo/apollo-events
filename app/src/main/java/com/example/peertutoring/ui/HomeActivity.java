@@ -17,10 +17,6 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-/**
- * Main landing screen of the application.
- * Synchronized with the updated dashboard layout.
- */
 public class HomeActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -53,7 +49,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        // Search bar opens Browse
         View searchBar = findViewById(R.id.tvSearchHint);
         if (searchBar != null) {
             searchBar.setOnClickListener(v -> {
@@ -62,7 +57,6 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
-        // Quick Actions
         View cardBrowse = findViewById(R.id.cardBrowseTutors);
         if (cardBrowse != null) {
             cardBrowse.setOnClickListener(v -> {
@@ -97,7 +91,6 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
-        // "Need more tokens?" CTA card at the bottom — same destination (US-23)
         View cardBuyTokens = findViewById(R.id.cardBuyTokens);
         if (cardBuyTokens != null) {
             cardBuyTokens.setOnClickListener(v -> {
@@ -106,7 +99,6 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
-        // View All Sessions
         View tvViewAll = findViewById(R.id.tvViewAll);
         if (tvViewAll != null) {
             tvViewAll.setOnClickListener(v -> {

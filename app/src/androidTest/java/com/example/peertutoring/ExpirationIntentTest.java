@@ -6,8 +6,6 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.containsString;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -72,12 +70,9 @@ public class ExpirationIntentTest {
         ActivityScenario.launch(SessionRequestsActivity.class);
         sleep(500);
 
-        // Match the inner TextView by text, not the MaterialCardView by ID.
-        // Clicking the card container by ID gets swallowed by MaterialCardView's
-        // ripple touch handler; matching by text targets the child TextView and
-        // the event bubbles up to the card's OnClickListener — the same pattern
-        // used by every other chip/button click in this test suite.
-        onView(withText("Expired")).perform(scrollTo(), click());
+        // Use the card's ID to avoid ambiguity with "Expired" status badges
+        // that may appear inside loaded session request cards.
+        onView(withId(R.id.chipExpired)).perform(scrollTo(), click());
         sleep(500);
 
         // App must still be running — list container visible (even if empty)
@@ -95,8 +90,8 @@ public class ExpirationIntentTest {
         ActivityScenario.launch(SessionRequestsActivity.class);
         sleep(500);
 
-        onView(withText(containsString("Cancelled"))).perform(scrollTo()).check(matches(isDisplayed()));
-        onView(withText(containsString("Expired"))).perform(scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.chipDeclined)).perform(scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.chipExpired)).perform(scrollTo()).check(matches(isDisplayed()));
     }
 
     // ── Helper ─────────────────────────────────────────────────────

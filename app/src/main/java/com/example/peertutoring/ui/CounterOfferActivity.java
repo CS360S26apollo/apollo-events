@@ -21,18 +21,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Activity for tutors to propose a counter offer to a student's session request.
- * Role: Negotiation View for User Story 09 (Tutor Response).
- * Purpose: Allows tutors to suggest alternative dates, times, durations, or token
- * amounts if they cannot fulfill the student's original request.
- *
- * Design Pattern: Command pattern for submitting the offer to Firestore.
- *
- * Outstanding Issues:
- * - Does not check for tutor's own availability conflicts during selection.
- * - Minimum duration and token steps are currently hardcoded constants.
- */
 public class CounterOfferActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -43,9 +31,7 @@ public class CounterOfferActivity extends AppCompatActivity {
     private int counterDuration;
     private int counterTokens;
 
-    // Session type for counter offer
     private String counterSessionType = "online"; // "online" or "takehome"
-    // Student location passed in from RequestDetailActivity
     private String studentAddress;
     private double studentLat, studentLng;
 
@@ -139,7 +125,6 @@ public class CounterOfferActivity extends AppCompatActivity {
         }
     }
 
-    /** Displays the system date picker dialog and updates state on selection. */
     private void showDatePicker() {
         DatePickerDialog dialog = new DatePickerDialog(
                 this,
@@ -156,7 +141,6 @@ public class CounterOfferActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    /** Displays the system time picker dialog and updates state on selection. */
     private void showTimePicker() {
         TimePickerDialog dialog = new TimePickerDialog(
                 this,
@@ -266,7 +250,6 @@ public class CounterOfferActivity extends AppCompatActivity {
             return;
         }
 
-        // Build proposed date for conflict check
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.set(pickedYear, pickedMonth, pickedDay, pickedHour, pickedMinute, 0);
         cal.set(java.util.Calendar.MILLISECOND, 0);
@@ -315,18 +298,12 @@ public class CounterOfferActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Tutor picks whether they want to go to student's home or do online.
-     * Student's location is shown if they picked take-home originally.
-     * No Google Maps needed — just show the address the student captured.
-     */
     private void setupSessionTypeSelector() {
         android.widget.Button btnOnline   = findViewById(R.id.btnCounterOnline);
         android.widget.Button btnTakeHome = findViewById(R.id.btnCounterTakeHome);
         android.view.View     layoutLoc   = findViewById(R.id.layoutStudentLocation);
         android.widget.TextView tvAddr    = findViewById(R.id.tvStudentLocationAddr);
 
-        // Show student's location if they provided one
         if (layoutLoc != null && studentAddress != null && !studentAddress.isEmpty()) {
             layoutLoc.setVisibility(android.view.View.VISIBLE);
             if (tvAddr != null) tvAddr.setText("📍 Student: " + studentAddress);

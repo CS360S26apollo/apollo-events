@@ -25,18 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Activity for tutors to manage specific calendar dates where they are unavailable.
- * Role: Calendar Management View for User Story 13 (Tutor Availability).
- * Purpose: Allows tutors to block off entire days (e.g., for holidays or personal breaks)
- * by interacting with a custom-rendered calendar interface.
- * 
- * Design Pattern: Custom View Rendering / State Management.
- * 
- * Outstanding Issues:
- * - Does not currently support recurring blocked dates (e.g., every Monday).
- * - Performance may degrade if hundreds of dates are blocked over multiple years.
- */
 public class BlockedDatesActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -82,19 +70,11 @@ public class BlockedDatesActivity extends AppCompatActivity {
         loadBlockedDates();
     }
 
-    /**
-     * Changes the currently displayed month in the calendar.
-     * @param delta Number of months to add (positive) or subtract (negative).
-     */
     private void changeMonth(int delta) {
         displayedMonth.add(Calendar.MONTH, delta);
         buildCalendar();
     }
 
-    /**
-     * Dynamically constructs the calendar grid for the selected month.
-     * Logic maps the 1st of the month to its correct Day of Week.
-     */
     private void buildCalendar() {
         if (layoutCalendarGrid == null) return;
         layoutCalendarGrid.removeAllViews();
@@ -182,10 +162,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Toggles the blocked status of a specific date and persists the change.
-     * @param dateKey The date string in "yyyy-MM-dd" format.
-     */
     private void toggleDate(String dateKey) {
         if (blockedDates.contains(dateKey)) {
             blockedDates.remove(dateKey);
@@ -199,9 +175,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
         saveBlockedDates();
     }
 
-    /**
-     * Removes all blocked dates from the tutor's schedule.
-     */
     private void clearAll() {
         blockedDates.clear();
         updateBlockedCount();
@@ -211,9 +184,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
         Toast.makeText(this, "All blocked dates cleared", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Generates a list of recently blocked dates for quick reference below the calendar.
-     */
     private void buildRecentList() {
         if (layoutRecentDates == null) return;
         layoutRecentDates.removeAllViews();
@@ -314,7 +284,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
         if (tvBlockedCount != null) tvBlockedCount.setText(String.valueOf(blockedDates.size()));
     }
 
-    /** Saves the current list of blocked dates to the Firestore availability collection. */
     private void saveBlockedDates() {
         if (currentUser == null) return;
         Map<String, Object> data = new HashMap<>();
@@ -324,7 +293,6 @@ public class BlockedDatesActivity extends AppCompatActivity {
                 .set(data, SetOptions.merge());
     }
 
-    /** Fetches the tutor's blocked dates from Firestore upon initialization. */
     @SuppressWarnings("unchecked")
     private void loadBlockedDates() {
         if (currentUser == null) {

@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Represents a Tutor user in the Peer Tutoring system.
- * Updated for US 06: Includes rating, responsiveness, and availability for ranking.
- */
 public class Tutor extends User {
 
     private String firstName;
@@ -23,7 +19,6 @@ public class Tutor extends User {
     private double responsivenessScore; // (0.0 - 1.0) based on reply time
     private Map<String, List<Integer>> availability; // e.g., {"mon": [9, 10], "tue": [14]}
 
-    /** Default constructor for Firestore. */
     public Tutor() {
         super();
         this.availability = new HashMap<>();
@@ -44,7 +39,6 @@ public class Tutor extends User {
         this.availability = new HashMap<>();
     }
 
-    // -- Getters and Setters --
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
     public String getFullName() { return fullName; }

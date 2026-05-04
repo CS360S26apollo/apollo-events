@@ -25,16 +25,8 @@ public class ConflictChecker {
     }
 
     /**
-     * Checks for scheduling conflicts for both the tutor (with buffer) and the student
-     * (exact overlap). Calls the callback on the calling thread (Firestore main-thread callback).
-     *
-     * @param db                Firestore instance
-     * @param tutorUid          Tutor's UID
-     * @param studentUid        Student's UID
-     * @param proposedStart     Proposed session start time
-     * @param durationMinutes   Proposed session duration in minutes
-     * @param excludeRequestId  Request ID to skip in the check (for reschedule; null for new sessions)
-     * @param callback          Delivers (hasConflict, reason) — reason is null when no conflict
+     * @param excludeRequestId  Request to skip — pass the current requestId on reschedule so
+     *                          the existing booking doesn't conflict with itself.
      */
     public static void checkConflict(
             FirebaseFirestore db,
@@ -82,7 +74,7 @@ public class ConflictChecker {
                                 excludeRequestId, studentUid, callback));
     }
 
-    // ── helpers ──────────────────────────────────────────────────────────────
+    // Helpers
 
     private static void runTutorCheck(
             FirebaseFirestore db,
@@ -161,7 +153,6 @@ public class ConflictChecker {
                 .addOnFailureListener(e -> callback.onResult(false, null));
     }
 
-    /** Returns true if the session status is 'requested' or 'booked'. */
     private static boolean isActive(DocumentSnapshot doc) {
         String status = doc.getString("status");
         return "requested".equals(status) || "booked".equals(status);

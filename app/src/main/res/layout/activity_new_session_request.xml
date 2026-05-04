@@ -359,20 +359,23 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:layout_marginBottom="6dp">
                 <Button android:id="@+id/btnSessionOnline"
-                    android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+                    android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1"
                     android:layout_marginEnd="6dp" android:text="💻 Online"
-                    android:textAllCaps="false" android:textSize="12sp"
+                    android:textAllCaps="false" android:textSize="11sp"
+                    android:paddingStart="4dp" android:paddingEnd="4dp"
                     android:textColor="#4B5D7A"
                     android:backgroundTint="#F3F4F6"/>
                 <Button android:id="@+id/btnSessionInPerson"
-                    android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
-                    android:layout_marginEnd="6dp" android:text="🏫 In-Person"
-                    android:textAllCaps="false" android:textSize="12sp"
+                    android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1"
+                    android:layout_marginEnd="6dp" android:text="🏫 Campus"
+                    android:textAllCaps="false" android:textSize="11sp"
+                    android:paddingStart="4dp" android:paddingEnd="4dp"
                     android:textColor="#4B5D7A"
                     android:backgroundTint="#F3F4F6"/>
                 <Button android:id="@+id/btnSessionTakeHome"
-                    android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
-                    android:text="🏠 Take-Home" android:textAllCaps="false" android:textSize="12sp"
+                    android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1"
+                    android:text="🏠 Home" android:textAllCaps="false" android:textSize="11sp"
+                    android:paddingStart="4dp" android:paddingEnd="4dp"
                     android:textColor="#4B5D7A"
                     android:backgroundTint="#F3F4F6"/>
             </LinearLayout>
@@ -402,14 +405,14 @@
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:orientation="horizontal">
                             <Button android:id="@+id/btnGetLocation"
-                                android:layout_width="0dp" android:layout_height="44dp"
+                                android:layout_width="0dp" android:layout_height="56dp"
                                 android:layout_weight="1" android:layout_marginEnd="8dp"
                                 android:text="📍 Get My Location" android:textAllCaps="false"
                                 android:textSize="12sp" android:textColor="#FFFFFF"
                                 android:background="@drawable/bg_button_gradient"
                                 app:backgroundTint="@null"/>
                             <Button android:id="@+id/btnViewOnMap"
-                                android:layout_width="0dp" android:layout_height="44dp"
+                                android:layout_width="0dp" android:layout_height="56dp"
                                 android:layout_weight="1"
                                 android:text="🗺 View Map" android:textAllCaps="false"
                                 android:textSize="12sp" android:textColor="#8A2EFF"

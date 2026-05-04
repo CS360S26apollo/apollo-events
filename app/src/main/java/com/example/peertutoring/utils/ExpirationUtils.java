@@ -16,7 +16,6 @@ public class ExpirationUtils {
 
     public static final long THREE_DAYS_MS = 3L * 24 * 60 * 60 * 1000;
 
-    /** Expires stale requests where the given field equals uid. */
     private static void expireStale(String filterField, String uid, FirebaseFirestore db) {
         if (uid == null || uid.isEmpty()) return;
 
@@ -35,12 +34,10 @@ public class ExpirationUtils {
                 });
     }
 
-    /** Run from SessionRequestsActivity (student view). */
     public static void expireStaleRequestsForStudent(String studentUid, FirebaseFirestore db) {
         expireStale("studentUid", studentUid, db);
     }
 
-    /** Run from TutorRequestsActivity (tutor view). */
     public static void expireStaleRequestsForTutor(String tutorUid, FirebaseFirestore db) {
         expireStale("tutorUid", tutorUid, db);
     }

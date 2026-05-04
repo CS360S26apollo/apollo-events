@@ -17,13 +17,6 @@ public class CancellationUtils {
     public static final long FULL_REFUND_CUTOFF_MS    = 24L * 60 * 60 * 1000;
     public static final long PARTIAL_REFUND_CUTOFF_MS = 12L * 60 * 60 * 1000;
 
-    /**
- * Returns the number of tokens to refund for a student cancellation.//
-     *
-     * @param scheduledDate The session's scheduled start time (null → full refund)
-     * @param totalTokens   Full token cost of the session
-     * @return Tokens to refund: totalTokens, totalTokens/2, or 0
-     */
     public static int calculateRefund(Date scheduledDate, int totalTokens) {
         if (scheduledDate == null) return totalTokens;
         long msUntil = scheduledDate.getTime() - System.currentTimeMillis();
@@ -32,14 +25,6 @@ public class CancellationUtils {
         return 0;
     }
 
-    /**
-     * Returns a user-facing one-liner describing the applicable refund.
-     * Used in the cancellation confirmation dialog.
-     *
-     * @param scheduledDate Session's scheduled start time
-     * @param totalTokens   Full token cost
-     * @return e.g. "Full refund (100 tokens) — more than 24h before session"
-     */
     public static String refundDescription(Date scheduledDate, int totalTokens) {
         if (scheduledDate == null)
             return "Full refund (" + totalTokens + " tokens)";

@@ -76,6 +76,17 @@ public class RequestDetailActivity extends AppCompatActivity {
 
         if (requestId != null && !requestId.startsWith("mock_")) {
             loadRequestData();
+        } else {
+            // For mock requests, derive button visibility from intent status
+            String intentStatus = getIntent().getStringExtra("status");
+            sessionStatus = intentStatus != null ? intentStatus : "";
+            Button btnCancel = findViewById(R.id.btnCancelRequest);
+            if (btnCancel != null && ("requested".equals(intentStatus) || "booked".equals(intentStatus))) {
+                int tokens = getIntent().getIntExtra("tokens", 0);
+                int refund = CancellationUtils.calculateRefund(null, tokens);
+                btnCancel.setText("✕  Cancel  (" + refund + " tokens back)");
+                btnCancel.setVisibility(android.view.View.VISIBLE);
+            }
         }
     }
 

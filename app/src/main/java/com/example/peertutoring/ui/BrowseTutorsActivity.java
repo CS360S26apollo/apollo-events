@@ -26,18 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Activity for browsing and searching available tutors in the marketplace.
- * Role: Search and Discovery View for User Story 05 (Recommended Tutors).
- * Purpose: Allows students to find tutors based on their learning preferences
- * and search queries. Displays tutor ratings, rates, and verification status.
- *
- * Design Pattern: View-Controller with preference-based data fetching.
- *
- * Implementation Details:
- * - Automatically loads recommendations based on the student's saved subjects.
- * - Provides real-time filtering of the tutor list as the user types in the search bar.
- */
 public class BrowseTutorsActivity extends AppCompatActivity {
 
     private UserRepository userRepository;
@@ -72,7 +60,7 @@ public class BrowseTutorsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Re-fetch every time we come back (picks up preference changes from wizard)
+        // Re-fetch on resume to pick up preference changes from the wizard
         if (currentUser != null) {
             loadRecommendations();
         } else {
@@ -80,10 +68,6 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * US 5 & 6: Loads recommended tutors based on student's subjects and preferences,
-     * then ranks them using the RankingEngine.
-     */
     @SuppressWarnings("unchecked")
     private void loadRecommendations() {
         userRepository.getUserProfile(currentUser.getUid(), new UserRepository.LoadCallback<DocumentSnapshot>() {
@@ -114,7 +98,6 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         userRepository.getRecommendedTutors(preferences, new UserRepository.LoadCallback<List<DocumentSnapshot>>() {
             @Override
             public void onSuccess(List<DocumentSnapshot> docs) {
-                // Convert DocumentSnapshots to Tutor models for ranking
                 List<Tutor> tutorModels = new ArrayList<>();
                 for (DocumentSnapshot doc : docs) {
                     Tutor t = doc.toObject(Tutor.class);
@@ -124,11 +107,9 @@ public class BrowseTutorsActivity extends AppCompatActivity {
                     }
                 }
 
-                // Apply US 06 ranking
                 List<Tutor> ranked = RankingEngine.rankTutors(
                         tutorModels, studentSubjects, studentPreferredHours);
 
-                // Re-order docs to match ranked order
                 List<DocumentSnapshot> rankedDocs = new ArrayList<>();
                 java.util.Set<String> rankedIds = new java.util.HashSet<>();
                 for (Tutor t : ranked) {
@@ -158,10 +139,6 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Renders the tutor cards into the UI container.
-     * Includes handling for initials generation and verified badge visibility.
-     */
     private void displayTutors(List<DocumentSnapshot> tutors) {
         if (layoutTutorList == null) return;
         layoutTutorList.removeAllViews();
@@ -260,7 +237,6 @@ public class BrowseTutorsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, StudentPreferencesActivity.class)));
     }
 
-    /** Initializes the search bar with a text watcher for real-time filtering. */
     private void setupSearch() {
         EditText etSearch = findViewById(R.id.etSearchTutor);
         if (etSearch != null) {
@@ -274,10 +250,6 @@ public class BrowseTutorsActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Filters the local list of tutors based on a search query.
-     * @param query The string to match against tutor names or subjects.
-     */
     private void filterTutors(String query) {
         if (query.isEmpty()) {
             displayTutors(allTutors);

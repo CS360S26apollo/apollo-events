@@ -68,7 +68,6 @@ public class CoursesDetailActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
-        // Load user role, then course
         if (currentUser != null) {
             db.collection("users").document(currentUser.getUid()).get()
                     .addOnSuccessListener(doc -> {
@@ -127,7 +126,6 @@ public class CoursesDetailActivity extends AppCompatActivity {
                     enrolledCount = enrolled != null ? enrolled : 0;
                     maxStudents   = max      != null ? max      : 10;
 
-                    // Populate views
                     if (tvEmoji   != null) tvEmoji.setText(emoji != null ? emoji : "📚");
                     if (tvTitle   != null) tvTitle.setText(title);
                     if (tvTutor   != null) tvTutor.setText("👤 " + (tutor != null ? tutor : ""));
@@ -144,7 +142,6 @@ public class CoursesDetailActivity extends AppCompatActivity {
                     if (topics != null && !topics.isEmpty() && tvTopics != null)
                         tvTopics.setText(String.join(" • ", topics));
 
-                    // Apply thumbnail color to header
                     if (color != null) {
                         View header = findViewById(R.id.courseDetailHeader);
                         if (header != null) {
@@ -158,7 +155,6 @@ public class CoursesDetailActivity extends AppCompatActivity {
                         }
                     }
 
-                    // Zoom link
                     if ("online".equals(sessionType) && zoomLink != null && !zoomLink.isEmpty()) {
                         if (layoutZoom != null) layoutZoom.setVisibility(View.VISIBLE);
                         if (tvZoomLink != null) {
@@ -189,7 +185,6 @@ public class CoursesDetailActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if full
         if ("full".equals(courseStatus) || enrolledCount >= maxStudents) {
             btnEnroll.setText("Course Full");
             btnEnroll.setEnabled(false);
@@ -197,7 +192,6 @@ public class CoursesDetailActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if already enrolled
         if (currentUser != null) {
             db.collection("enrollments")
                     .whereEqualTo("courseId", courseId)
@@ -246,10 +240,8 @@ public class CoursesDetailActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Deduct tokens
                     EscrowManager.deductFromStudent(db, currentUser.getUid(), (int) totalTokens,
                             () -> {
-                                // Record enrollment
                                 Map<String, Object> enrollment = new HashMap<>();
                                 enrollment.put("courseId",    courseId);
                                 enrollment.put("studentUid",  currentUser.getUid());
@@ -262,11 +254,9 @@ public class CoursesDetailActivity extends AppCompatActivity {
 
                                 db.collection("enrollments").add(enrollment)
                                         .addOnSuccessListener(ref -> {
-                                            // Increment enrolled count
                                             db.collection("courses").document(courseId)
                                                     .update("enrolledCount",
                                                             FieldValue.increment(1));
-                                            // Mark full if needed
                                             if (enrolledCount + 1 >= maxStudents) {
                                                 db.collection("courses").document(courseId)
                                                         .update("status", "full");

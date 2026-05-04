@@ -8,24 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * US 06: Ranking Logic.
- * Implementation of the system requirement to rank tutors based on multiple factors:
- * - Subject Relevance (Match)
- * - Tutor Rating
- * - Responsiveness
- * - Availability Compatibility
- */
 public class RankingEngine {
 
-    /**
-     * Ranks a list of tutors based on student preferences.
-     * 
-     * @param tutors List of tutors to rank.
-     * @param studentSubjects List of subjects the student is interested in.
-     * @param preferredHours Map of student's preferred hours (e.g., {"mon": [9, 10]})
-     * @return Sorted list of tutors.
-     */
     public static List<Tutor> rankTutors(List<Tutor> tutors, 
                                          List<String> studentSubjects, 
                                          Map<String, List<Integer>> preferredHours) {

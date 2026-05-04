@@ -21,51 +21,34 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Activity for tutors to configure their professional service parameters.
- * Role: Configuration View for User Story 13 (Tutor Availability/Pricing).
- * Purpose: Allows tutors to set hourly rates, buffer times between sessions, 
- * default session lengths, and minimum booking notice periods.
- * 
- * Design Pattern: View (Activity) interacting with Firestore (Data Layer).
- * 
- * Outstanding Issues:
- * - Local currency symbol is hardcoded to "Tokens".
- * - Earnings calculation assumes a fixed number of hours per day/week/month.
- */
 public class BufferPricingActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
 
-    // State
     private int selectedRate    = 100;
     private int selectedBuffer  = 15;
     private int selectedSession = 60;
     private int selectedNotice  = 24;
 
-    // Rate buttons
     private static final int[] RATE_BTN_IDS = {
             R.id.btnRate50, R.id.btnRate75, R.id.btnRate100,
             R.id.btnRate150, R.id.btnRate200, R.id.btnRate300
     };
     private static final int[] RATE_VALUES = {50, 75, 100, 150, 200, 300};
 
-    // Buffer buttons
     private static final int[] BUFFER_BTN_IDS = {
             R.id.btnBuffer5, R.id.btnBuffer10, R.id.btnBuffer15,
             R.id.btnBuffer30, R.id.btnBuffer45, R.id.btnBuffer60
     };
     private static final int[] BUFFER_VALUES = {5, 10, 15, 30, 45, 60};
 
-    // Session buttons
     private static final int[] SESSION_BTN_IDS = {
             R.id.btnSession30, R.id.btnSession45, R.id.btnSession60,
             R.id.btnSession90, R.id.btnSession120
     };
     private static final int[] SESSION_VALUES = {30, 45, 60, 90, 120};
 
-    // Notice buttons
     private static final int[] NOTICE_BTN_IDS = {
             R.id.btnNotice2, R.id.btnNotice6, R.id.btnNotice12,
             R.id.btnNotice24, R.id.btnNotice48, R.id.btnNotice72
@@ -94,8 +77,6 @@ public class BufferPricingActivity extends AppCompatActivity {
 
         loadSettings();
     }
-
-    // ── Rate ──────────────────────────────────────────────────
 
     private void setupRateButtons() {
         for (int i = 0; i < RATE_BTN_IDS.length; i++) {
@@ -145,8 +126,6 @@ public class BufferPricingActivity extends AppCompatActivity {
         setTextIfExists(R.id.tvEarningsMonthlyLabel,  "Monthly (80h)");
     }
 
-    // ── Buffer SeekBar ────────────────────────────────────────
-
     private void setupBufferSeekBar() {
         SeekBar seekBar = findViewById(R.id.seekBarBuffer);
         if (seekBar == null) return;
@@ -179,7 +158,6 @@ public class BufferPricingActivity extends AppCompatActivity {
                 selectedBuffer = val;
                 updateBufferUI();
                 updateBufferButtonStyles();
-                // Sync seekbar
                 SeekBar sb = findViewById(R.id.seekBarBuffer);
                 if (sb != null) sb.setProgress(val - 5);
             });
@@ -208,8 +186,6 @@ public class BufferPricingActivity extends AppCompatActivity {
         }
     }
 
-    // ── Session buttons ───────────────────────────────────────
-
     private void setupSessionButtons() {
         for (int i = 0; i < SESSION_BTN_IDS.length; i++) {
             final int val = SESSION_VALUES[i];
@@ -235,8 +211,6 @@ public class BufferPricingActivity extends AppCompatActivity {
             }
         }
     }
-
-    // ── Notice buttons ────────────────────────────────────────
 
     private void setupNoticeButtons() {
         for (int i = 0; i < NOTICE_BTN_IDS.length; i++) {
@@ -266,8 +240,6 @@ public class BufferPricingActivity extends AppCompatActivity {
         }
     }
 
-    // ── Save ──────────────────────────────────────────────────
-
     private void saveSettings() {
         Map<String, Object> data = new HashMap<>();
         data.put("hourlyRate",      selectedRate);
@@ -288,8 +260,6 @@ public class BufferPricingActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
-
-    // ── Load ──────────────────────────────────────────────────
 
     private void loadSettings() {
         if (currentUser == null) {

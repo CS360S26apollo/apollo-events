@@ -27,8 +27,6 @@ public class EscrowManager {
     public interface OnSuccess { void run(); }
     public interface OnFailure { void run(); }
 
-    // ── Deduct from student (booking) ─────────────────────────
-
     /**
      * Atomically deducts tokens from the student's balance and moves them into escrow.
      * Uses a Firestore transaction so concurrent booking attempts cannot both pass the
@@ -67,15 +65,6 @@ public class EscrowManager {
         .addOnFailureListener(e -> onFailure.run());
     }
 
-    // ── Release to tutor (session completed) ──────────────────
-
-    /**
-     * Called by RequestDetailActivity when a tutor marks a session complete.
-     * Reads the token amount from the session doc, credits the tutor,
-     * clears the student's escrow, and marks payment as RELEASED.
-     *
-     * Signature: (db, requestId, tutorUid, onSuccess)
-     */
     public static void releaseToTutor(FirebaseFirestore db,
                                       String requestId,
                                       String tutorUid,
@@ -85,14 +74,12 @@ public class EscrowManager {
             return;
         }
 
-        // Read session to get token amount and studentUid
         db.collection("sessionRequests").document(requestId).get()
                 .addOnSuccessListener(sessionDoc -> {
                     Long tokLong    = sessionDoc.getLong("tokens");
                     int  tokenCost  = (tokLong != null) ? tokLong.intValue() : 0;
                     String studentUid = sessionDoc.getString("studentUid");
 
-                    // Credit tutor
                     if (tutorUid != null && !tutorUid.isEmpty() && tokenCost > 0) {
                         db.collection("users").document(tutorUid).get()
                                 .addOnSuccessListener(doc -> {
@@ -103,7 +90,6 @@ public class EscrowManager {
                                 });
                     }
 
-                    // Clear student escrow
                     if (studentUid != null && !studentUid.isEmpty() && tokenCost > 0) {
                         db.collection("users").document(studentUid).get()
                                 .addOnSuccessListener(doc -> {
@@ -115,7 +101,6 @@ public class EscrowManager {
                                 });
                     }
 
-                    // Mark payment released
                     db.collection("sessionRequests").document(requestId)
                             .update("paymentStatus", PAYMENT_RELEASED)
                             .addOnSuccessListener(u -> {
@@ -130,17 +115,11 @@ public class EscrowManager {
                 });
     }
 
-    /**
-     * Overload used by TutorEarningsActivity / other places that already know
-     * studentUid and tokenCost.
-     * Signature: (db, studentUid, tutorUid, tokenCost, requestId)
-     */
     public static void releaseToTutor(FirebaseFirestore db,
                                       String studentUid,
                                       String tutorUid,
                                       int tokenCost,
                                       String requestId) {
-        // Credit tutor
         if (tutorUid != null && !tutorUid.isEmpty()) {
             db.collection("users").document(tutorUid).get()
                     .addOnSuccessListener(doc -> {
@@ -150,7 +129,6 @@ public class EscrowManager {
                     });
         }
 
-        // Clear student escrow
         if (studentUid != null && !studentUid.isEmpty()) {
             db.collection("users").document(studentUid).get()
                     .addOnSuccessListener(doc -> {
@@ -161,22 +139,12 @@ public class EscrowManager {
                     });
         }
 
-        // Mark released
         if (requestId != null && !requestId.isEmpty()) {
             db.collection("sessionRequests").document(requestId)
                     .update("paymentStatus", PAYMENT_RELEASED);
         }
     }
 
-    // ── Refund to student (cancel / decline) ──────────────────
-
-    /**
-     * Called by RequestDetailActivity on cancel or tutor decline.
-     * Reads token amount from the session doc, refunds to student,
-     * clears escrow, marks REFUNDED, then calls onSuccess.
-     *
-     * Signature: (db, requestId, studentUid, tokensToRefund, onSuccess)
-     */
     public static void refundToStudent(FirebaseFirestore db,
                                        String requestId,
                                        String studentUid,
@@ -202,7 +170,6 @@ public class EscrowManager {
                     db.collection("users").document(studentUid)
                             .set(updates, SetOptions.merge())
                             .addOnSuccessListener(u -> {
-                                // Mark session payment as refunded
                                 if (requestId != null && !requestId.isEmpty()) {
                                     db.collection("sessionRequests").document(requestId)
                                             .update("paymentStatus", PAYMENT_REFUNDED);
@@ -217,8 +184,6 @@ public class EscrowManager {
                     if (onSuccess != null) onSuccess.run();
                 });
     }
-
-    // ── Atomic refund (no callback — used for booking failure) ─
 
     /**
      * Fire-and-forget refund. Used when an instant book fails after

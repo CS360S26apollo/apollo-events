@@ -51,10 +51,8 @@ public class CoursesActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
-        // FAB for tutors to create a course
         View fabCreate = findViewById(R.id.fabCreateCourse);
 
-        // Load role then decide what to show
         if (currentUser != null) {
             db.collection("users").document(currentUser.getUid()).get()
                     .addOnSuccessListener(doc -> {
@@ -82,8 +80,6 @@ public class CoursesActivity extends AppCompatActivity {
         if (coursesListener != null) coursesListener.remove();
     }
 
-    // ── Load courses ──────────────────────────────────────────
-
     private void loadCourses() {
         // Students see all open courses; tutors see their own courses
         if ("tutor".equals(userRole) && currentUser != null) {
@@ -100,8 +96,6 @@ public class CoursesActivity extends AppCompatActivity {
                     });
         }
     }
-
-    // ── Render ────────────────────────────────────────────────
 
     private void renderCourses(java.util.List<DocumentSnapshot> courses) {
         if (layoutCourses == null) return;
@@ -121,7 +115,6 @@ public class CoursesActivity extends AppCompatActivity {
             return;
         }
 
-        // Two-column grid
         LinearLayout row = null;
         for (int i = 0; i < courses.size(); i++) {
             if (i % 2 == 0) {
@@ -175,27 +168,23 @@ public class CoursesActivity extends AppCompatActivity {
         LinearLayout inner = new LinearLayout(this);
         inner.setOrientation(LinearLayout.VERTICAL);
 
-        // ── Thumbnail (gradient header) ───────────────────────
         LinearLayout thumb = new LinearLayout(this);
         thumb.setOrientation(LinearLayout.VERTICAL);
         thumb.setGravity(Gravity.CENTER);
         thumb.setPadding(dp(16), dp(20), dp(16), dp(16));
 
-        // Create a gradient-like background using the color
         android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable(
                 android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
                 new int[]{parsedColor, darken(parsedColor, 0.7f)});
         gd.setCornerRadii(new float[]{dp(20), dp(20), dp(20), dp(20), 0, 0, 0, 0});
         thumb.setBackground(gd);
 
-        // Big emoji
         TextView tvEmoji = new TextView(this);
         tvEmoji.setText(emoji);
         tvEmoji.setTextSize(42f);
         tvEmoji.setGravity(Gravity.CENTER);
         thumb.addView(tvEmoji);
 
-        // Level badge
         MaterialCardView levelBadge = new MaterialCardView(this);
         LinearLayout.LayoutParams lbp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -215,7 +204,6 @@ public class CoursesActivity extends AppCompatActivity {
 
         inner.addView(thumb);
 
-        // ── Course info ───────────────────────────────────────
         LinearLayout info = new LinearLayout(this);
         info.setOrientation(LinearLayout.VERTICAL);
         info.setPadding(dp(12), dp(12), dp(12), dp(14));
@@ -323,7 +311,6 @@ public class CoursesActivity extends AppCompatActivity {
         inner.addView(info);
         card.addView(inner);
 
-        // Click → course detail
         final String fCourseId = courseId;
         card.setOnClickListener(v -> {
             Intent intent = new Intent(this, CoursesDetailActivity.class);

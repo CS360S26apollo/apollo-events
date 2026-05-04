@@ -92,7 +92,7 @@ public class SessionNotesIntentTest {
         sleep(1000);
 
         // Leave all fields empty and tap send
-        onView(withId(R.id.btnSendNotes)).perform(scrollTo(), click());
+        onView(withId(R.id.btnSendNotes)).perform(click());
         sleep(500);
 
         // Must still be on screen (validation blocked the submission)
@@ -122,7 +122,7 @@ public class SessionNotesIntentTest {
 
         // Takeaways and Action Items intentionally left empty
         // Tap send — should not show validation error (may fail on Firebase write, that's OK)
-        onView(withId(R.id.btnSendNotes)).perform(scrollTo(), click());
+        onView(withId(R.id.btnSendNotes)).perform(click());
         sleep(800);
 
         // The button text changes to "Sending..." when validation passes
@@ -148,7 +148,6 @@ public class SessionNotesIntentTest {
         sleep(1000);
 
         onView(withId(R.id.btnSendNotes))
-                .perform(scrollTo())
                 .check(matches(isDisplayed()));
     }
 

@@ -138,7 +138,6 @@ public class CreateCourseActivity extends AppCompatActivity {
 
         if (totalTokens < 1)  { etTotalTokens.setError("Enter total tokens");       return; }
 
-        // Determine thumbnail theme from subject
         int themeIdx = subjectThemeIndex(subject);
         String emoji     = SUBJECT_THEMES[themeIdx][0];
         String color     = SUBJECT_THEMES[themeIdx][1];
@@ -146,7 +145,6 @@ public class CreateCourseActivity extends AppCompatActivity {
 
         if (btnCreate != null) { btnCreate.setEnabled(false); btnCreate.setText("Creating..."); }
 
-        // Fetch tutor name
         db.collection("users").document(currentUser.getUid()).get()
                 .addOnSuccessListener(doc -> {
                     String tutorName = doc.getString("fullName");
@@ -172,7 +170,6 @@ public class CreateCourseActivity extends AppCompatActivity {
                     course.put("createdAt",        FieldValue.serverTimestamp());
                     if (!zoomLink.isEmpty()) course.put("zoomLink", zoomLink);
 
-                    // Topics: split by comma
                     if (!topics.isEmpty()) {
                         course.put("topics", Arrays.asList(topics.split("\\s*,\\s*")));
                     }

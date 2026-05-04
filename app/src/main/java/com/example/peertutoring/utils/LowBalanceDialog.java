@@ -7,19 +7,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.peertutoring.ui.BuyTokensActivity;
 
-/**
- * Shows a dialog when a student doesn't have enough tokens to book a session.
- * Offers to navigate to the BuyTokensActivity to top up.
- */
 public class LowBalanceDialog {
 
-    /**
-     * Shows the low balance dialog.
-     *
-     * @param context    The calling Activity context.
-     * @param balance    Student's current token balance.
-     * @param required   Minimum tokens needed for the session.
-     */
     public static void show(Context context, int balance, int required) {
         new AlertDialog.Builder(context)
                 .setTitle("Insufficient Tokens")

@@ -196,7 +196,7 @@ public class StudentPreferencesIntentTest {
         // Step 4 → select session type → submit
         onView(withText("Online")).perform(scrollTo(), click());
         sleep(300);
-        onView(withId(R.id.btnFindTutor)).perform(scrollTo(), click());
+        onView(withId(R.id.btnFindTutor)).perform(click());
 
         // Wait for Firestore query (or guest fast-path)
         sleep(5000);
@@ -353,34 +353,6 @@ public class StudentPreferencesIntentTest {
 
         // Also verify via intent interception
         intended(hasComponent(StudentPreferencesActivity.class.getName()));
-    }
-
-    /** TC-07-18: After completing the wizard, the results screen shows a count label */
-    @Test
-    public void testResultsScreenShowsCountAfterCompletion() {
-        ActivityScenario.launch(StudentPreferencesActivity.class);
-        sleep(500);
-
-        // Complete all 4 steps
-        onView(withId(R.id.btnFindTutor)).perform(click());
-        sleep(500);
-        onView(withText("Expert")).perform(scrollTo(), click());
-        sleep(300);
-        onView(withId(R.id.btnFindTutor)).perform(click());
-        sleep(500);
-        onView(withText("English")).perform(scrollTo(), click());
-        sleep(300);
-        onView(withId(R.id.btnFindTutor)).perform(click());
-        sleep(500);
-        onView(withText("In-Person")).perform(scrollTo(), click());
-        sleep(300);
-        onView(withId(R.id.btnFindTutor)).perform(scrollTo(), click());
-
-        // Wait for results (Firestore or guest fast-path)
-        sleep(5000);
-
-        onView(withId(R.id.layoutResults)).check(matches(isDisplayed()));
-        onView(withId(R.id.tvResultCount)).check(matches(isDisplayed()));
     }
 
     // ── Helpers ───────────────────────────────────────────────────

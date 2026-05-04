@@ -1,10 +1,5 @@
 package com.example.peertutoring.models;
 
-/**
- * Represents a generic user in the Peer Tutoring system.
- * This class serves as a base for specific user types like Students and Tutors.
- * Role: Model class for Firestore persistence.
- */
 public class User {
     protected String uid;
     protected String email;
@@ -14,16 +9,8 @@ public class User {
     protected String idDocumentUrl;
     protected int tokens; // Starting balance awarded on signup
 
-    /** Default constructor required for Firestore serialization. */
     public User() {}
 
-    /**
-     * Constructs a new User. All new users start with 100 tokens.
-     * @param uid Unique identifier from Firebase Auth
-     * @param email User's email address
-     * @param role User's role ("student" or "tutor")
-     * @param profileVisible Initial privacy setting
-     */
     public User(String uid, String email, String role, boolean profileVisible) {
         this.uid            = uid;
         this.email          = email;

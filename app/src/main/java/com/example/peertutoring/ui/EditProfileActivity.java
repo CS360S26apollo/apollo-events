@@ -44,39 +44,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Activity for users to view and modify their profile information and privacy settings.
- * Role: View component for User Story 3 (Edit Profile & Privacy) and User Story 4 (Verification).
- */
 public class EditProfileActivity extends AppCompatActivity {
 
-    // -- Firebase
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
 
-    // -- Header views
     private TextView tvAvatarInitials, tvUserName, tvUserRole;
 
-    // -- Tab views
     private Button tabEditProfile, tabPrivacy, tabVerification;
     private LinearLayout panelEditProfile, panelPrivacy, panelVerification;
 
-    // -- Role (read-only, fixed at signup)
+    // Role is NOT saved from UI — fixed at signup
     private String currentRole = "student";
 
-    // -- Edit Profile fields
     private TextInputEditText etFirstName, etLastName, etEmail,
             etInstitution, etBio, etRate;
     private TextView tvCharCount;
     private LinearLayout layoutInstitution, layoutBio, layoutRate;
     private Button btnManageAvailability;
 
-    // -- Privacy switches
     private SwitchMaterial switchShowName, switchShowInstitution,
             switchShowSubjects, switchShowRate, switchProfileVisible;
     private LinearLayout rowShowInstitution, rowShowRate;
 
-    // -- Profile photo
     private ImageView ivProfilePicture;
     private ActivityResultLauncher<Intent> cameraLauncher;
     private ActivityResultLauncher<Intent> galleryLauncher;
@@ -86,7 +76,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private TextView tvUserRoleBadge;
 
-    // -- Subject chip IDs and names
     private static final int[] CHIP_IDS = {
             R.id.chipMathematics, R.id.chipPhysics, R.id.chipChemistry,
             R.id.chipBiology, R.id.chipComputerScience, R.id.chipEnglish,
@@ -128,8 +117,6 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    // ── Bind views ────────────────────────────────────────────
-
     private void bindViews() {
         tvAvatarInitials      = findViewById(R.id.tvAvatarInitials);
         tvUserName            = findViewById(R.id.tvUserName);
@@ -161,20 +148,16 @@ public class EditProfileActivity extends AppCompatActivity {
         rowShowRate           = findViewById(R.id.rowShowRate);
         ivProfilePicture      = findViewById(R.id.ivProfilePicture);
 
-        // Profile picture click
         View avatarContainer = findViewById(R.id.avatarContainer);
         if (avatarContainer != null) avatarContainer.setOnClickListener(v -> showPhotoSourceDialog());
         if (ivProfilePicture != null) ivProfilePicture.setOnClickListener(v -> showPhotoSourceDialog());
 
-        // Verification upload button
         View btnUploadID = findViewById(R.id.btnUploadID);
         if (btnUploadID != null) btnUploadID.setOnClickListener(v -> openDocumentPicker());
 
         Button btnSubmit = findViewById(R.id.btnSubmitVerification);
         if (btnSubmit != null) btnSubmit.setOnClickListener(v -> submitVerificationDocument());
     }
-
-    // ── Tabs ──────────────────────────────────────────────────
 
     private void setupTabSwitcher() {
         if (tabEditProfile != null)  tabEditProfile.setOnClickListener(v -> showTab(0));
@@ -202,12 +185,9 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    // ── Role UI ───────────────────────────────────────────────
-
     private void applyRoleUI(String role) {
         currentRole = role;
 
-        // Update read-only role badge
         if (tvUserRoleBadge != null)
             tvUserRoleBadge.setText("tutor".equals(role) ? "Tutor" : "Student");
 
@@ -232,8 +212,6 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }
     }
-
-    // ── Chips ─────────────────────────────────────────────────
 
     private void setupChips() {
         for (int id : CHIP_IDS) {
@@ -264,8 +242,6 @@ public class EditProfileActivity extends AppCompatActivity {
         return selected;
     }
 
-    // ── Bio char count ────────────────────────────────────────
-
     private void setupBioCharCount() {
         if (etBio == null || tvCharCount == null) return;
         etBio.addTextChangedListener(new TextWatcher() {
@@ -277,16 +253,12 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    // ── Save buttons ──────────────────────────────────────────
-
     private void setupSaveButtons() {
         View btnSaveProfile = findViewById(R.id.btnSaveProfile);
         View btnSavePrivacy = findViewById(R.id.btnSavePrivacy);
         if (btnSaveProfile != null) btnSaveProfile.setOnClickListener(v -> saveProfile());
         if (btnSavePrivacy != null) btnSavePrivacy.setOnClickListener(v -> savePrivacy());
     }
-
-    // ── Load profile ──────────────────────────────────────────
 
     private void loadUserProfile(String uid) {
         db.collection("users").document(uid).get()
@@ -350,7 +322,6 @@ public class EditProfileActivity extends AppCompatActivity {
         if (switchShowRate        != null && showRate   != null) switchShowRate.setChecked(showRate);
         if (switchProfileVisible  != null && profileVis != null) switchProfileVisible.setChecked(profileVis);
 
-        // Load profile picture
         String photoUrl = doc.getString("profilePhotoUrl");
         if (photoUrl != null && !photoUrl.isEmpty() && ivProfilePicture != null) {
             ivProfilePicture.setVisibility(View.VISIBLE);
@@ -364,18 +335,11 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }
 
-        // ── Load verification status ──────────────────────────
         String verifStatus = doc.getString("verificationStatus");
         String verifDoc    = doc.getString("verificationDocBase64");
         updateVerificationUI(verifStatus, verifDoc != null && !verifDoc.isEmpty());
     }
 
-    // ── Verification UI ───────────────────────────────────────
-
-    /**
-     * Updates the Verification panel based on status saved in Firestore.
-     * Called every time the profile loads — persists state across sessions.
-     */
     private void updateVerificationUI(String status, boolean hasDocument) {
         TextView tvTitle   = findViewById(R.id.tvVerificationTitle);
         TextView tvDesc    = findViewById(R.id.tvVerificationDesc);
@@ -384,7 +348,6 @@ public class EditProfileActivity extends AppCompatActivity {
         View     btnUpload = findViewById(R.id.btnUploadID);
 
         if ("pending".equals(status) && hasDocument) {
-            // Already submitted — show submitted state
             if (tvTitle != null) tvTitle.setText("Document Submitted ✅");
             if (tvDesc  != null) tvDesc.setText(
                     "Your document is under review. You'll be notified once approved.");
@@ -392,13 +355,11 @@ public class EditProfileActivity extends AppCompatActivity {
                 tvLabel.setText("✅ Document already submitted");
                 tvLabel.setTextColor(0xFF00C853);
             }
-            // Show Resubmit button
             if (btnSubmit != null) {
                 btnSubmit.setText("Resubmit Document");
                 btnSubmit.setEnabled(false); // enabled only after picking a new file
                 btnSubmit.setAlpha(0.5f);
             }
-            // Resubmit: tap upload area to pick a new file, then submit button enables
             if (btnUpload != null) {
                 btnUpload.setOnClickListener(v -> {
                     selectedDocumentUri = null;
@@ -415,7 +376,6 @@ public class EditProfileActivity extends AppCompatActivity {
             }
 
         } else if ("approved".equals(status)) {
-            // Approved
             if (tvTitle != null) tvTitle.setText("Verified ✅");
             if (tvDesc  != null) tvDesc.setText(
                     "Congratulations! Your account is verified. Your badge is visible to students.");
@@ -432,8 +392,6 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         // If status is null — XML default state shown (upload prompt)
     }
-
-    // ── Save profile ──────────────────────────────────────────
 
     private void saveProfile() {
         if (currentUser == null) return;
@@ -457,7 +415,6 @@ public class EditProfileActivity extends AppCompatActivity {
         updates.put("lastName",  lastName);
         updates.put("fullName",  firstName + " " + lastName);
         updates.put("subjects",  getSelectedSubjects());
-        // Role is NOT saved from UI — fixed at signup
 
         if (currentRole.equals("student")) {
             String institution = etInstitution != null && etInstitution.getText() != null
@@ -500,8 +457,6 @@ public class EditProfileActivity extends AppCompatActivity {
                         Toast.makeText(this, "Save failed: " + e.getMessage(),
                                 Toast.LENGTH_LONG).show());
     }
-
-    // ── Activity result launchers ─────────────────────────────
 
     private Uri cameraImageUri = null;
 
@@ -608,8 +563,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 });
     }
 
-    // ── Profile photo ─────────────────────────────────────────
-
     private void showPhotoSourceDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Update Profile Photo")
@@ -692,8 +645,6 @@ public class EditProfileActivity extends AppCompatActivity {
         return Bitmap.createScaledBitmap(src, (int)(w * scale), (int)(h * scale), true);
     }
 
-    // ── Verification document ─────────────────────────────────
-
     private void openDocumentPicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/pdf");
@@ -713,7 +664,6 @@ public class EditProfileActivity extends AppCompatActivity {
         if (btnSubmit != null) { btnSubmit.setEnabled(false); btnSubmit.setText("Uploading..."); }
         TextView tvLabel = findViewById(R.id.tvUploadLabel);
 
-        // Read PDF bytes
         byte[] pdfBytes = null;
         try {
             java.io.InputStream is = getContentResolver().openInputStream(selectedDocumentUri);
@@ -760,7 +710,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 .addOnSuccessListener(u -> {
                     Toast.makeText(this, "✅ Document submitted! Under review.",
                             Toast.LENGTH_LONG).show();
-                    // Update UI immediately — no need to reload from Firestore
                     updateVerificationUI("pending", true);
                 })
                 .addOnFailureListener(e -> {
@@ -772,8 +721,6 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    // ── Logout ────────────────────────────────────────────────
 
     private void setupLogoutButton() {
         View btnLogout = findViewById(R.id.btnLogout);

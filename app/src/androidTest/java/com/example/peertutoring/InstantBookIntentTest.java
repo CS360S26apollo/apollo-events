@@ -39,6 +39,8 @@ import org.junit.runner.RunWith;
 @LargeTest
 public class InstantBookIntentTest {
 
+    private ActivityScenario<?> scenario;
+
     @Before
     public void setUp() {
         Intents.init();
@@ -46,6 +48,10 @@ public class InstantBookIntentTest {
 
     @After
     public void tearDown() {
+        if (scenario != null) {
+            try { scenario.close(); } catch (Exception ignored) {}
+            scenario = null;
+        }
         Intents.release();
     }
 
@@ -60,7 +66,7 @@ public class InstantBookIntentTest {
         intent.putExtra("tutorUid",  "seed_tutor_aisha");
         intent.putExtra("tutorName", "Aisha Malik");
         intent.putExtra("tutorRate", 40);
-        ActivityScenario.launch(intent);
+        scenario = ActivityScenario.launch(intent);
 
         sleep(1500);
 
@@ -70,7 +76,7 @@ public class InstantBookIntentTest {
 
     /**
      * TC-12-02: Selecting the 90-min button recalculates the token preview.
-     * At 50 tokens/hr: ceil(90/60) * 50 = 100 tokens.
+     * Formula: ceil(90 * 50 / 60) = ceil(75.0) = 75 tokens.
      */
     @Test
     public void testInstantBookDurationButtonUpdatesCostPreview() {
@@ -79,16 +85,18 @@ public class InstantBookIntentTest {
         intent.putExtra("tutorUid",  "seed_tutor_priya");
         intent.putExtra("tutorName", "Priya Sharma");
         intent.putExtra("tutorRate", 50);
-        ActivityScenario.launch(intent);
+        scenario = ActivityScenario.launch(intent);
 
         sleep(1000);
 
-        onView(withId(R.id.btn90min)).perform(scrollTo(), click());
+        // Scroll btn30min into view first (same row), then click btn90min directly
+        onView(withId(R.id.btn30min)).perform(scrollTo());
+        onView(withId(R.id.btn90min)).perform(click());
         sleep(300);
 
-        // 90 min @ 50/hr = ceil(1.5) * 50 = 100 tokens
+        // 90 min @ 50/hr = ceil(90 * 50 / 60) = ceil(75) = 75 tokens
         onView(withId(R.id.tvCostPreview))
-                .check(matches(withText(containsString("100"))));
+                .check(matches(withText(containsString("75"))));
     }
 
     /**
@@ -102,7 +110,7 @@ public class InstantBookIntentTest {
         intent.putExtra("tutorUid",  "seed_tutor_carlos");
         intent.putExtra("tutorName", "Carlos Rivera");
         intent.putExtra("tutorRate", 35);
-        ActivityScenario.launch(intent);
+        scenario = ActivityScenario.launch(intent);
 
         sleep(2000); // wait for Firestore slot data
 
@@ -112,7 +120,7 @@ public class InstantBookIntentTest {
         onView(withId(R.id.etTopic))
                 .perform(scrollTo(), replaceText("Organic Reactions"), closeSoftKeyboard());
 
-        onView(withId(R.id.btnBookNow)).perform(scrollTo(), click());
+        onView(withId(R.id.btnBookNow)).perform(click());
         sleep(500);
 
         // Must still be on the Instant Book screen
@@ -130,7 +138,7 @@ public class InstantBookIntentTest {
         intent.putExtra("tutorUid",  "seed_tutor_omar");
         intent.putExtra("tutorName", "Omar Siddiqui");
         intent.putExtra("tutorRate", 30);
-        ActivityScenario.launch(intent);
+        scenario = ActivityScenario.launch(intent);
 
         sleep(2000);
 
@@ -139,7 +147,7 @@ public class InstantBookIntentTest {
                 .perform(replaceText("Economics"), closeSoftKeyboard());
         // Do NOT fill etTopic
 
-        onView(withId(R.id.btnBookNow)).perform(scrollTo(), click());
+        onView(withId(R.id.btnBookNow)).perform(click());
         sleep(500);
 
         // Must still be on screen

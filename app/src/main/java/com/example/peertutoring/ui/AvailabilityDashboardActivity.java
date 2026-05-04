@@ -15,18 +15,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-/**
- * Activity that serves as the central management hub for a tutor's availability.
- * Role: Controller/View for User Story 13 (Tutor Availability).
- * Purpose: Provides a high-level summary of the tutor's schedule, blocked dates, 
- * and pricing, serving as the entry point for detailed configuration screens.
- * 
- * Design Pattern: View (Activity) following the Dashboard pattern.
- * 
- * Outstanding Issues:
- * - Stats are calculated on the client-side, which may be slow for large datasets.
- * - Profile initials are not yet displayed in the header.
- */
 public class AvailabilityDashboardActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -50,7 +38,6 @@ public class AvailabilityDashboardActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
-        // Nav cards
         if (findViewById(R.id.cardWeeklySchedule) != null)
             findViewById(R.id.cardWeeklySchedule).setOnClickListener(v ->
                     startActivity(new Intent(this, WeeklyScheduleActivity.class)));
@@ -72,10 +59,6 @@ public class AvailabilityDashboardActivity extends AppCompatActivity {
         loadStats(); // refresh after returning from sub-screens
     }
 
-    /**
-     * Fetches availability data from Firestore and calculates summary metrics.
-     * Implementation details for US 13.
-     */
     @SuppressWarnings("unchecked")
     private void loadStats() {
         if (currentUser == null) return;
@@ -86,7 +69,6 @@ public class AvailabilityDashboardActivity extends AppCompatActivity {
                 .addOnSuccessListener(doc -> {
                     if (!doc.exists()) return;
 
-                    // Weekly hours — count selected hours across all days
                     int totalHours = 0;
                     int activeDays = 0;
                     String[] days = {"mon","tue","wed","thu","fri","sat","sun"};
@@ -101,12 +83,10 @@ public class AvailabilityDashboardActivity extends AppCompatActivity {
                     if (tvWeeklyHours  != null) tvWeeklyHours.setText(String.valueOf(totalHours));
                     if (tvActiveDays   != null) tvActiveDays.setText(String.valueOf(activeDays));
 
-                    // Blocked dates
                     List<String> blocked = (List<String>) doc.get("blockedDates");
                     if (tvBlockedCount != null)
                         tvBlockedCount.setText(String.valueOf(blocked != null ? blocked.size() : 0));
 
-                    // Tokens/hour
                     Long rate = doc.getLong("hourlyRate");
                     if (tvTokensPerHour != null)
                         tvTokensPerHour.setText(String.valueOf(rate != null ? rate : 100));

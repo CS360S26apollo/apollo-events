@@ -61,11 +61,6 @@ public class SoundManager {
         });
     }
 
-    /**
-     * Plays a sequence of sine-wave tones back to back.
-     * Each tone is defined by its frequency (Hz), duration (ms), and amplitude (0..1).
-     * Runs entirely on a background thread.
-     */
     private static void playTone(int[] freqs, int[] durationsMs, float[] amplitudes) {
         executor.execute(() -> {
             for (int i = 0; i < freqs.length; i++) {
@@ -78,7 +73,6 @@ public class SoundManager {
         int numSamples = (SAMPLE_RATE * durationMs) / 1000;
         short[] samples = new short[numSamples];
 
-        // Generate sine wave with fade-in and fade-out envelope
         int fadeLen = Math.min(numSamples / 8, 200);
         for (int i = 0; i < numSamples; i++) {
             double angle = 2.0 * Math.PI * i * freqHz / SAMPLE_RATE;
@@ -91,7 +85,6 @@ public class SoundManager {
             samples[i] = (short) (Math.sin(angle) * amplitude * env * Short.MAX_VALUE);
         }
 
-        // Build AudioTrack
         AudioAttributes attrs = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -120,8 +113,7 @@ public class SoundManager {
             track.write(samples, 0, numSamples);
             track.play();
 
-            // Wait for playback to finish before returning
-            // (so sequential tones don't overlap)
+            // Wait for playback to finish so sequential tones don't overlap
             Thread.sleep(durationMs + 10);
 
         } catch (Exception e) {

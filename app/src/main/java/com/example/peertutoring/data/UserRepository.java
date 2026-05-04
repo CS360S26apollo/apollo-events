@@ -13,10 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Handles all Firestore operations for user profiles.
- * Implementation of User Stories 1, 2, 3, 4, 5, and 6.
- */
 public class UserRepository {
 
     private final FirebaseFirestore firestore;
@@ -35,7 +31,6 @@ public class UserRepository {
         void onFailure(String error);
     }
 
-    /** US1: Saves a new student profile. */
     public void saveStudentProfile(@NonNull Student student, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(student.getUid())
@@ -44,7 +39,6 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /** US2: Saves a new tutor profile. */
     public void saveTutorProfile(@NonNull Tutor tutor, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(tutor.getUid())
@@ -53,7 +47,6 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /** US3: Updates profile fields. */
     public void updateProfile(@NonNull String uid, @NonNull Map<String, Object> updates, @NonNull SaveCallback callback) {
         firestore.collection("users")
                 .document(uid)
@@ -62,10 +55,7 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /** US5 & 6: Fetches potential tutors for ranking.
-     * Note: We removed client-side sorting via Query to avoid "Missing Index" errors
-     * and to allow for more complex ranking logic in memory.
-     */
+    // Client-side sorting avoids "Missing Index" errors and allows richer in-memory ranking.
     public void getRecommendedTutors(@NonNull List<String> studentSubjects, @NonNull LoadCallback<List<DocumentSnapshot>> callback) {
         Query query = firestore.collection("users")
                 .whereEqualTo("role", "tutor")
@@ -80,7 +70,6 @@ public class UserRepository {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    /** Fetches a user document by UID. */
     public void getUserProfile(@NonNull String uid, @NonNull LoadCallback<DocumentSnapshot> callback) {
         firestore.collection("users")
                 .document(uid)
