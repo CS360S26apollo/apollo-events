@@ -56,33 +56,99 @@
 The Apollo project follows a clean architecture pattern, separating data persistence, business logic, and UI components.
 
 ```text
-PeerTutoring-Apollo/
-├── app/src/main/java/com/example/peertutoring/
-│   ├── data/           # DATA LAYER: Handles Firestore transactions and API calls.
-│   │   └── UserRepository.java      # Central repository for all user & tutor data ops.
-│   │
-│   ├── models/         # DOMAIN LAYER: Data models (POJOs) representing system entities.
-│   │   ├── User.java                # Base model for all authenticated users.
-│   │   ├── Student.java             # Extension for student-specific profiles (US 01).
-│   │   ├── Tutor.java               # Extension for tutor-specific professional data (US 02).
-│   │   └── SessionRequest.java      # State machine for the session lifecycle (US 16).
-│   │
-│   ├── ui/             # PRESENTATION LAYER: View Controllers (Activities & Fragments).
-│   │   ├── Onboarding/              # MainActivity, ProfileActivity, Fragments (US 01-04).
-│   │   ├── Discovery/               # BrowseTutorsActivity, TutorDetailActivity (US 05).
-│   │   ├── Availability/            # WeeklySchedule, BlockedDates, BufferPricing (US 13).
-│   │   └── SessionFlow/             # NewSessionRequest, TutorOffers, Tracking (US 08-10).
-│   │
-│   └── utils/          # HELPERS: Utility classes for validation and data formatting.
-│
-├── app/src/test/       # UNIT TESTS: Logic tests for models and control classes.
-│   ├── ModelUnitTest.java           # Ensures data integrity across model constructors.
-│   └── SessionLifecycleTest.java    # Validates status transitions (e.g., Requested -> Booked).
-│
-└── app/src/androidTest/ # INTENT TESTS: UI/Navigation tests using coordinate-based clicks.
-    ├── UserStoriesIntentTest.java   # Covers Onboarding, Search, and Privacy (US 01-06).
-    ├── TutorAvailabilityIntentTest.java # Covers Scheduling and Pricing settings (US 13).
-    └── SessionFlowIntentTest.java   # Covers request creation and response flow (US 08-10).
+PeerTutoring-Apollo/                                                                                                                                                     
+  ├── app/src/main/java/com/example/peertutoring/                                                                                                                          
+  │   ├── data/               # DATA LAYER: Handles Firestore transactions and API calls.                                                                                  
+  │   │   └── UserRepository.java              # Central repository for all user & tutor data ops.                                                                         
+  │   │                                                                                                                                                                    
+  │   ├── models/             # DOMAIN LAYER: Data models (POJOs) representing system entities.                                                                            
+  │   │   ├── User.java                        # Base model for all authenticated users.                                                                                   
+  │   │   ├── Student.java                     # Extension for student-specific profiles (US 01).                                                                          
+  │   │   ├── Tutor.java                       # Extension for tutor-specific professional data (US 02).                                                                   
+  │   │   ├── SessionRequest.java              # State machine for the session lifecycle (US 16).                                                                          
+  │   │   └── CrashCourse.java                 # Model for tutor-created multi-session courses.                                                                            
+  │   │                                                                                                                                                                    
+  │   ├── ui/                 # PRESENTATION LAYER: View Controllers (Activities & Fragments).                                                                             
+  │   │   ├── MainActivity.java                # Splash/entry point; routes to login or home.                                                                              
+  │   │   ├── LoginActivity.java               # Firebase email/password authentication.                                                                                   
+  │   │   ├── ProfileActivity.java             # Multi-step onboarding profile setup (US 01–02).                                                                           
+  │   │   ├── NameFragment.java                # Onboarding step: name entry.                                                                                              
+  │   │   ├── AcademicFragment.java            # Onboarding step: institution & subjects.                                                                                  
+  │   │   ├── GoalsFragment.java               # Onboarding step: learning goals.                                                                                          
+  │   │   ├── TutorIntroFragment.java          # Onboarding step: tutor intro & bio.                                                                                       
+  │   │   ├── TutorDetailsFragment.java        # Onboarding step: tutor rate & level.                                                                                      
+  │   │   ├── ProfileCompleteFragment.java     # Onboarding completion confirmation screen.                                                                                
+  │   │   ├── HomeActivity.java                # Student home dashboard.                                                                                                   
+  │   │   ├── TutorHomeActivity.java           # Tutor home dashboard.                                                                                                     
+  │   │   ├── EditProfileActivity.java         # Edit existing profile details (US 03–04).                                                                                 
+  │   │   ├── BrowseTutorsActivity.java        # Tutor discovery & search (US 05–06).                                                                                      
+  │   │   ├── TutorDetailActivity.java         # Tutor public profile view (US 05).                                                                                        
+  │   │   ├── NewSessionRequestActivity.java   # Student creates a session request (US 08).                                                                                
+  │   │   ├── SessionRequestsActivity.java     # Student's list of sent requests (US 08).                                                                                  
+  │   │   ├── TutorRequestsActivity.java       # Tutor's incoming request inbox (US 09).                                                                                   
+  │   │   ├── TutorOffersActivity.java         # Tutor counter-offer management (US 10).                                                                                   
+  │   │   ├── CounterOfferActivity.java        # Student reviews a tutor counter-offer (US 10).                                                                            
+  │   │   ├── RequestDetailActivity.java       # Detailed view of a single session request.                                                                                
+  │   │   ├── RequestResultActivity.java       # Confirmation screen after request action.
+  │   │   ├── InstantBookActivity.java         # Instant booking flow (US 11).                                                                                             
+  │   │   ├── RescheduleActivity.java          # Reschedule a booked session.
+  │   │   ├── SessionNotesActivity.java        # Post-session notes entry (US 17).                                                                                         
+  │   │   ├── RateReviewActivity.java          # Post-session rating & review (US 18).                                                                                     
+  │   │   ├── MessagingActivity.java           # In-app chat between student and tutor.                                                                                    
+  │   │   ├── TutorChatListActivity.java       # Tutor's list of active chat threads.                                                                                      
+  │   │   ├── WeeklyScheduleActivity.java      # Tutor sets weekly availability (US 13).
+  │   │   ├── AvailabilityDashboardActivity.java # Overview of tutor's availability settings.                                                                              
+  │   │   ├── BlockedDatesActivity.java        # Tutor blocks specific unavailable dates (US 13).                                                                          
+  │   │   ├── BufferPricingActivity.java       # Tutor configures buffer time & pricing (US 13).                                                                           
+  │   │   ├── StudentPreferencesActivity.java  # Student sets scheduling preferences (US 14).                                                                              
+  │   │   ├── BuyTokensActivity.java           # Token purchase flow (US 22).                                                                                              
+  │   │   ├── PurchaseSuccessActivity.java     # Confirmation screen after token purchase.                                                                                 
+  │   │   ├── TransactionHistoryActivity.java  # Token transaction ledger (US 23).                                                                                         
+  │   │   ├── TutorEarningsActivity.java       # Tutor earnings summary (US 25).                                                                                           
+  │   │   ├── WithdrawActivity.java            # Tutor token withdrawal flow (US 25).                                                                                      
+  │   │   ├── WithdrawSuccessActivity.java     # Confirmation screen after withdrawal.                                                                                     
+  │   │   ├── CoursesActivity.java             # Browse & enrol in crash courses.                                                                                          
+  │   │   ├── CoursesDetailActivity.java       # Crash course detail view.                                                                                                 
+  │   │   ├── CreateCourseActivity.java        # Tutor creates a new crash course.                                                                                         
+  │   │   └── SeedDataActivity.java            # Dev-only: seeds Firestore with test data.                                                                                 
+  │   │                                                                                                                                                                    
+  │   └── utils/              # HELPERS: Utility classes for validation and business logic.                                                                                
+  │       ├── ValidationUtils.java             # Input validation helpers (email, fields).                                                                                 
+  │       ├── EscrowManager.java               # Token escrow hold/release/refund logic (US 24).                                                                           
+  │       ├── ExpirationUtils.java             # Detects and expires stale session requests.                                                                               
+  │       ├── CancellationUtils.java           # Handles cancellation rules and token refunds.                                                                             
+  │       ├── ConflictChecker.java             # Checks scheduling conflicts against availability.                                                                         
+  │       ├── RankingEngine.java               # Scores and ranks tutors for search results (US 06).                                                                       
+  │       ├── LowBalanceDialog.java            # Reusable dialog for low token balance warnings.                                                                           
+  │       └── SoundManager.java               # Plays UI feedback sounds for key actions.                                                                                  
+  │                                                                                                                                                                        
+  ├── app/src/test/           # UNIT TESTS: Logic tests for models, utils, and control classes.                                                                            
+  │   ├── ModelUnitTest.java                   # Data integrity tests for model constructors.                                                                              
+  │   ├── SessionLifecycleTest.java            # Validates status transitions (Requested → Booked).                                                                        
+  │   ├── CrashCourseUnitTest.java             # Tests crash course model and enrolment logic.                                                                             
+  │   ├── BuyTokensUnitTest.java               # Tests token purchase calculation logic.                                                                                   
+  │   ├── InstantBookUnitTest.java             # Tests instant booking eligibility checks.                                                                                 
+  │   ├── RateReviewUnitTest.java              # Tests rating aggregation logic.                                                                                           
+  │   ├── SessionNotesUnitTest.java            # Tests session notes save/retrieve logic.
+  │   ├── TutorEarningsUnitTest.java           # Tests earnings calculation logic.                                                                                         
+  │   ├── StudentPreferencesUnitTest.java      # Tests preference persistence logic.
+  │   ├── StudentPreferencesTest.java          # Additional preference edge-case tests.                                                                                    
+  │   ├── RankingEngineTest.java               # Tests tutor ranking/scoring algorithm (US 06).                                                                            
+  │   ├── CancellationUtilsTest.java           # Tests cancellation and refund rules.                                                                                      
+  │   ├── ExpirationUtilsTest.java             # Tests request expiration window logic.                                                                                    
+  │   └── ConflictCheckerTest.java             # Tests scheduling conflict detection.                                                                                      
+  │               
+  └── app/src/androidTest/    # INTENT TESTS: UI/Navigation tests using Espresso.
+      ├── UserStoriesIntentTest.java           # Covers Onboarding, Search & Privacy (US 01–06).                                                                           
+      ├── SessionFlowIntentTest.java           # Covers request creation & response (US 08–10).                                                                            
+      ├── TutorAvailabilityIntentTest.java     # Covers scheduling & pricing settings (US 13).                                                                             
+      ├── StudentPreferencesIntentTest.java    # Covers student preference screens (US 14).                                                                                
+      ├── InstantBookIntentTest.java           # Covers instant booking UI flow (US 11).                                                                                   
+      ├── BuyTokensIntentTest.java             # Covers token purchase screens (US 22).                                                                                    
+      ├── TutorEarningsIntentTest.java         # Covers earnings & withdrawal screens (US 25).                                                                             
+      ├── RateReviewIntentTest.java            # Covers post-session rating flow (US 18).
+      ├── SessionNotesIntentTest.java          # Covers session notes UI (US 17).                                                                                          
+      └── ExpirationIntentTest.java            # Covers expired request handling UI. 
 ```
 ---
 ### **Documentation Strategy**
