@@ -37,6 +37,10 @@ public class CoursesActivity extends AppCompatActivity {
     private LinearLayout layoutCourses;
     private ListenerRegistration coursesListener;
     private String userRole = "student";
+    private java.util.List<DocumentSnapshot> allCourses = new java.util.ArrayList<>();
+    private String filterSubject = null;
+    private String filterLevel   = null;
+    private String sortBy        = "newest";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,7 @@ public class CoursesActivity extends AppCompatActivity {
             fabCreate.setOnClickListener(v ->
                     startActivity(new Intent(this, CreateCourseActivity.class)));
         }
+        setupSearchAndFilter();
     }
 
     @Override
@@ -80,8 +85,9 @@ public class CoursesActivity extends AppCompatActivity {
         if (coursesListener != null) coursesListener.remove();
     }
 
+    // ── Load courses ──────────────────────────────────────────
+
     private void loadCourses() {
-        // Students see all open courses; tutors see their own courses
         if ("tutor".equals(userRole) && currentUser != null) {
             coursesListener = db.collection("courses")
                     .whereEqualTo("tutorUid", currentUser.getUid())
@@ -97,7 +103,118 @@ public class CoursesActivity extends AppCompatActivity {
         }
     }
 
+    // ── Search & Filter ───────────────────────────────────────
+
+    private void setupSearchAndFilter() {
+        android.widget.EditText etSearch = findViewById(R.id.etSearchCourses);
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+                @Override public void afterTextChanged(android.text.Editable s) {}
+                @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+                    String q = s.toString().trim().toLowerCase();
+                    if (q.isEmpty()) { applyFiltersAndSort(); return; }
+                    java.util.List<DocumentSnapshot> filtered = new java.util.ArrayList<>();
+                    for (DocumentSnapshot doc : allCourses) {
+                        String title = doc.getString("title");
+                        String subj  = doc.getString("subject");
+                        String tutor = doc.getString("tutorName");
+                        if ((title != null && title.toLowerCase().contains(q))
+                                || (subj  != null && subj.toLowerCase().contains(q))
+                                || (tutor != null && tutor.toLowerCase().contains(q))) {
+                            filtered.add(doc);
+                        }
+                    }
+                    renderFiltered(filtered);
+                }
+            });
+        }
+
+        String[] subjects = {"All","Mathematics","Physics","Chemistry","Biology",
+                "Computer Science","English","Economics"};
+        android.widget.HorizontalScrollView hsv = findViewById(R.id.hsvSubjectFilter);
+        android.widget.LinearLayout chipRow = hsv != null
+                ? (android.widget.LinearLayout) hsv.getChildAt(0) : null;
+        if (chipRow != null) {
+            for (String subj : subjects) {
+                com.google.android.material.chip.Chip chip =
+                        new com.google.android.material.chip.Chip(this);
+                chip.setText(subj);
+                chip.setCheckable(true);
+                chip.setCheckedIconVisible(false);
+                chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(
+                        android.graphics.Color.WHITE));
+                chip.setTextColor(android.graphics.Color.parseColor("#4B5D7A"));
+                chip.setOnClickListener(v -> {
+                    filterSubject = "All".equals(subj) ? null : subj;
+                    applyFiltersAndSort();
+                });
+                chipRow.addView(chip);
+            }
+        }
+
+        android.widget.Spinner sortSpinner = findViewById(R.id.spinnerSort);
+        if (sortSpinner != null) {
+            android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+                    this, android.R.layout.simple_spinner_item,
+                    new String[]{"Newest", "Price: Low to High", "Most Enrolled"});
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            sortSpinner.setAdapter(adapter);
+            sortSpinner.setOnItemSelectedListener(
+                    new android.widget.AdapterView.OnItemSelectedListener() {
+                        @Override public void onNothingSelected(android.widget.AdapterView<?> p) {}
+                        @Override public void onItemSelected(android.widget.AdapterView<?> p,
+                                                             android.view.View v, int pos, long id) {
+                            sortBy = pos == 1 ? "price_low" : pos == 2 ? "enrolled" : "newest";
+                            applyFiltersAndSort();
+                        }
+                    });
+        }
+    }
+
+    // ── Render ────────────────────────────────────────────────
+
     private void renderCourses(java.util.List<DocumentSnapshot> courses) {
+        // Store for filtering/sorting, then apply
+        allCourses = new java.util.ArrayList<>(courses);
+        applyFiltersAndSort();
+    }
+
+    private void applyFiltersAndSort() {
+        java.util.List<DocumentSnapshot> filtered = new java.util.ArrayList<>();
+        for (DocumentSnapshot doc : allCourses) {
+            String subj = doc.getString("subject");
+            if (filterSubject != null && !filterSubject.isEmpty()) {
+                if (subj == null || !subj.equalsIgnoreCase(filterSubject)) continue;
+            }
+            filtered.add(doc);
+        }
+        filtered.sort((a, b) -> {
+            switch (sortBy) {
+                case "price_low": {
+                    long pa = a.getLong("totalTokens") != null ? a.getLong("totalTokens") : 0;
+                    long pb = b.getLong("totalTokens") != null ? b.getLong("totalTokens") : 0;
+                    return Long.compare(pa, pb);
+                }
+                case "enrolled": {
+                    long ea = a.getLong("enrolledCount") != null ? a.getLong("enrolledCount") : 0;
+                    long eb = b.getLong("enrolledCount") != null ? b.getLong("enrolledCount") : 0;
+                    return Long.compare(eb, ea);
+                }
+                default: {
+                    com.google.firebase.Timestamp ta = a.getTimestamp("createdAt");
+                    com.google.firebase.Timestamp tb = b.getTimestamp("createdAt");
+                    if (ta == null && tb == null) return 0;
+                    if (ta == null) return 1;
+                    if (tb == null) return -1;
+                    return tb.compareTo(ta);
+                }
+            }
+        });
+        renderFiltered(filtered);
+    }
+
+    private void renderFiltered(java.util.List<DocumentSnapshot> courses) {
         if (layoutCourses == null) return;
         layoutCourses.removeAllViews();
 
@@ -105,7 +222,7 @@ public class CoursesActivity extends AppCompatActivity {
             TextView empty = new TextView(this);
             empty.setText("tutor".equals(userRole)
                     ? "You haven't created any courses yet.\nTap + to create your first course!"
-                    : "No courses available yet.\nCheck back soon!");
+                    : "No courses found.\nTry a different search or filter.");
             empty.setTextColor(0xFF8B97A8);
             empty.setTextSize(15f);
             empty.setGravity(Gravity.CENTER);
@@ -136,7 +253,6 @@ public class CoursesActivity extends AppCompatActivity {
         String subject       = doc.getString("subject");
         String level         = doc.getString("level");
         String tutorName     = doc.getString("tutorName");
-        String description   = doc.getString("description");
         String emoji         = doc.getString("thumbnailEmoji");
         String color         = doc.getString("thumbnailColor");
         String status        = doc.getString("status");
@@ -153,9 +269,9 @@ public class CoursesActivity extends AppCompatActivity {
         try { parsedColor = Color.parseColor(color); }
         catch (Exception e) { parsedColor = 0xFF8A2EFF; }
 
-        // Card
         MaterialCardView card = new MaterialCardView(this);
-        LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         if (isLeft) cp.setMarginEnd(dp(8));
         else cp.setMarginStart(dp(8));
         card.setLayoutParams(cp);
@@ -168,14 +284,15 @@ public class CoursesActivity extends AppCompatActivity {
         LinearLayout inner = new LinearLayout(this);
         inner.setOrientation(LinearLayout.VERTICAL);
 
+        // Thumbnail
         LinearLayout thumb = new LinearLayout(this);
         thumb.setOrientation(LinearLayout.VERTICAL);
         thumb.setGravity(Gravity.CENTER);
         thumb.setPadding(dp(16), dp(20), dp(16), dp(16));
-
-        android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable(
-                android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
-                new int[]{parsedColor, darken(parsedColor, 0.7f)});
+        android.graphics.drawable.GradientDrawable gd =
+                new android.graphics.drawable.GradientDrawable(
+                        android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
+                        new int[]{parsedColor, darken(parsedColor, 0.7f)});
         gd.setCornerRadii(new float[]{dp(20), dp(20), dp(20), dp(20), 0, 0, 0, 0});
         thumb.setBackground(gd);
 
@@ -201,9 +318,9 @@ public class CoursesActivity extends AppCompatActivity {
         tvLevel.setPadding(dp(8), dp(4), dp(8), dp(4));
         levelBadge.addView(tvLevel);
         thumb.addView(levelBadge);
-
         inner.addView(thumb);
 
+        // Info
         LinearLayout info = new LinearLayout(this);
         info.setOrientation(LinearLayout.VERTICAL);
         info.setPadding(dp(12), dp(12), dp(12), dp(14));
@@ -227,17 +344,14 @@ public class CoursesActivity extends AppCompatActivity {
         tvTutor.setLayoutParams(tlp);
         info.addView(tvTutor);
 
-        // Stats row
         LinearLayout statsRow = new LinearLayout(this);
         statsRow.setOrientation(LinearLayout.HORIZONTAL);
         statsRow.setGravity(Gravity.CENTER_VERTICAL);
-
         TextView tvDuration = new TextView(this);
         tvDuration.setText("📅 " + (durationDays != null ? durationDays : 30) + "d");
         tvDuration.setTextColor(0xFF4B5D7A);
         tvDuration.setTextSize(11f);
         statsRow.addView(tvDuration);
-
         TextView tvSessions = new TextView(this);
         tvSessions.setText(" · " + (sessionsPerWk != null ? sessionsPerWk : 5) + "x/wk");
         tvSessions.setTextColor(0xFF4B5D7A);
@@ -245,11 +359,9 @@ public class CoursesActivity extends AppCompatActivity {
         statsRow.addView(tvSessions);
         info.addView(statsRow);
 
-        // Enrollment bar
         if (maxStudents != null && maxStudents > 0) {
             long enrolledCount = enrolled != null ? enrolled : 0;
             float fillRatio = Math.min(1f, (float) enrolledCount / maxStudents);
-
             LinearLayout barBg = new LinearLayout(this);
             barBg.setBackgroundColor(0xFFEEEEEE);
             LinearLayout.LayoutParams bbp = new LinearLayout.LayoutParams(
@@ -257,15 +369,12 @@ public class CoursesActivity extends AppCompatActivity {
             bbp.setMargins(0, dp(8), 0, dp(6));
             barBg.setLayoutParams(bbp);
             barBg.setOrientation(LinearLayout.HORIZONTAL);
-
             View fill = new View(this);
             fill.setBackgroundColor(parsedColor);
-            LinearLayout.LayoutParams fp = new LinearLayout.LayoutParams(
-                    0, ViewGroup.LayoutParams.MATCH_PARENT, fillRatio);
-            fill.setLayoutParams(fp);
+            fill.setLayoutParams(new LinearLayout.LayoutParams(
+                    0, ViewGroup.LayoutParams.MATCH_PARENT, fillRatio));
             barBg.addView(fill);
             info.addView(barBg);
-
             TextView tvSeats = new TextView(this);
             tvSeats.setText((maxStudents - enrolledCount) + " seats left");
             tvSeats.setTextColor(enrolledCount >= maxStudents ? 0xFFE53935 : 0xFF8B97A8);
@@ -273,7 +382,6 @@ public class CoursesActivity extends AppCompatActivity {
             info.addView(tvSeats);
         }
 
-        // Price + enroll row
         LinearLayout priceRow = new LinearLayout(this);
         priceRow.setOrientation(LinearLayout.HORIZONTAL);
         priceRow.setGravity(Gravity.CENTER_VERTICAL);
@@ -288,11 +396,10 @@ public class CoursesActivity extends AppCompatActivity {
         tvPrice.setTextColor(parsedColor);
         tvPrice.setTextSize(13f);
         tvPrice.setTypeface(null, Typeface.BOLD);
-        tvPrice.setLayoutParams(new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        tvPrice.setLayoutParams(new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         priceRow.addView(tvPrice);
 
-        // Status badge
         MaterialCardView statusBadge = new MaterialCardView(this);
         statusBadge.setRadius(dp(8));
         statusBadge.setCardElevation(0);

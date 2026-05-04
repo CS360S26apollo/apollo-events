@@ -27,7 +27,6 @@
                         android:text="Find Tutor" android:textColor="#FFFFFF"
                         android:textSize="22sp" android:textStyle="bold"/>
                 </LinearLayout>
-                <!-- Token balance badge -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/chipTokenBalance"
                     android:layout_width="wrap_content" android:layout_height="40dp"
@@ -65,19 +64,22 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+    <!-- *** scrollContent: hidden until role confirmed *** -->
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:padding="20dp">
 
-            <!-- Quick actions label -->
+            <!-- Quick actions -->
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Quick Actions" android:textColor="#071A3D"
                 android:textSize="18sp" android:textStyle="bold" android:layout_marginBottom="14dp"/>
 
-            <!-- Row 1: Browse Tutors + My Sessions -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginBottom="12dp">
+                android:orientation="horizontal" android:layout_marginBottom="24dp">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardBrowseTutors"
@@ -110,91 +112,72 @@
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Row 2: Crash Courses (full width banner) -->
+
+            <!-- Crash Courses banner -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardCrashCourses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp">
-
-                <!-- Gradient background layer -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/bg_button_gradient">
-
-                    <!-- Left: icon badge -->
+                android:layout_marginBottom="12dp"
+                android:clickable="true" android:focusable="true"
+                app:cardCornerRadius="20dp" app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:padding="18dp" android:background="@drawable/bg_button_gradient">
                     <com.google.android.material.card.MaterialCardView
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_marginEnd="16dp"
-                        app:cardCornerRadius="18dp"
-                        app:cardBackgroundColor="#33FFFFFF"
-                        app:cardElevation="0dp">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="🎓"
-                            android:textSize="26sp"/>
+                        android:layout_width="56dp" android:layout_height="56dp"
+                        android:layout_marginEnd="16dp" app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#33FFFFFF" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:text="🎓" android:textSize="26sp"/>
                     </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Middle: text -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Crash Courses"
-                            android:textColor="#FFFFFF"
-                            android:textSize="17sp"
-                            android:textStyle="bold"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Crash Courses" android:textColor="#FFFFFF"
+                            android:textSize="17sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:text="30-day intensive programs by top tutors"
-                            android:textColor="#CCFFFFFF"
-                            android:textSize="12sp"
+                            android:textColor="#CCFFFFFF" android:textSize="12sp"
                             android:layout_marginTop="3dp"/>
-                        <!-- Pill badge -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="wrap_content"
-                            android:layout_height="24dp"
-                            android:layout_marginTop="8dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardBackgroundColor="#33FFFFFF"
-                            app:cardElevation="0dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:paddingHorizontal="10dp"
-                                android:text="A-Level • O-Level • More"
-                                android:textColor="#FFFFFF"
-                                android:textSize="10sp"
-                                android:textStyle="bold"/>
-                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="›" android:textColor="#FFFFFF" android:textSize="28sp"
+                        android:textStyle="bold" android:layout_marginStart="8dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Right: arrow -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#FFFFFF"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:layout_marginStart="8dp"/>
+            <!-- My Enrolled Courses -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMyCourses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:clickable="true" android:focusable="true"
+                app:cardCornerRadius="20dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:padding="18dp">
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="56dp" android:layout_height="56dp"
+                        android:layout_marginEnd="16dp" app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#F3EEFF" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:text="📚" android:textSize="26sp"/>
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="My Enrolled Courses" android:textColor="#071A3D"
+                            android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="View your active crash courses"
+                            android:textColor="#8B97A8" android:textSize="12sp"
+                            android:layout_marginTop="3dp"/>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="›" android:textColor="#8A2EFF" android:textSize="28sp"
+                        android:textStyle="bold" android:layout_marginStart="8dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -239,7 +222,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Buy tokens CTA -->
+            <!-- Buy tokens CTA — hidden for tutors via Java -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardBuyTokens"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -261,12 +244,12 @@
                         android:text="🪙" android:textSize="32sp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom navigation -->
+    <!-- Bottom navigation — hidden until role confirmed -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomNav"
         android:layout_width="match_parent" android:layout_height="72dp"
         app:cardCornerRadius="0dp" app:cardBackgroundColor="#FFFFFF" app:cardElevation="8dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"

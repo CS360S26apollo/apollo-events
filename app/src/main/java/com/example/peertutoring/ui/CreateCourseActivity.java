@@ -36,7 +36,7 @@ public class CreateCourseActivity extends AppCompatActivity {
 
     private EditText etTitle, etDescription, etDurationDays,
             etSessionsPerWeek, etSessionMinutes, etTotalTokens,
-            etMaxStudents, etTopics, etZoomLink;
+            etMaxStudents, etTopics, etZoomLink, etStartDate;
     private AutoCompleteTextView spinnerSubject, spinnerLevel, spinnerType;
     private Button btnCreate;
 
@@ -49,7 +49,12 @@ public class CreateCourseActivity extends AppCompatActivity {
             "O-Level", "A-Level", "Matric", "FSc", "University", "Any Level"
     };
     private static final String[] TYPES = { "Online (Zoom)", "In-Person" };
+    private int pickedYear = -1, pickedMonth = -1, pickedDay = -1;
+    private static final String[] MONTHS = {
+            "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
+    };
 
+    // Start date
     // Thumbnail combos: {emoji, gradientStartColor}
     private static final String[][] SUBJECT_THEMES = {
             {"📐", "#8A2EFF"}, {"⚛️", "#0062FF"}, {"🧪", "#00C853"},
@@ -75,6 +80,35 @@ public class CreateCourseActivity extends AppCompatActivity {
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
         if (btnCreate != null) btnCreate.setOnClickListener(v -> validateAndCreate());
+        if (etStartDate != null) {
+            etStartDate.setFocusable(false);
+            etStartDate.setClickable(true);
+            etStartDate.setOnClickListener(v -> {
+                java.util.Calendar c = java.util.Calendar.getInstance();
+                new android.app.DatePickerDialog(this, (view, y, m, d) -> {
+                    pickedYear = y; pickedMonth = m; pickedDay = d;
+                    etStartDate.setText(MONTHS[m] + " " + d + ", " + y);
+                }, c.get(java.util.Calendar.YEAR),
+                        c.get(java.util.Calendar.MONTH),
+                        c.get(java.util.Calendar.DAY_OF_MONTH)).show();
+            });
+        }
+
+        if (etStartDate != null) {
+            etStartDate.setFocusable(false);
+            etStartDate.setClickable(true);
+            etStartDate.setOnClickListener(v -> {
+                java.util.Calendar today = java.util.Calendar.getInstance();
+                new android.app.DatePickerDialog(this, (view, year, month, day) -> {
+                    pickedYear  = year;
+                    pickedMonth = month;
+                    pickedDay   = day;
+                    etStartDate.setText(MONTHS[month] + " " + day + ", " + year);
+                }, today.get(java.util.Calendar.YEAR),
+                        today.get(java.util.Calendar.MONTH),
+                        today.get(java.util.Calendar.DAY_OF_MONTH)).show();
+            });
+        }
     }
 
     private void bindViews() {
@@ -87,6 +121,8 @@ public class CreateCourseActivity extends AppCompatActivity {
         etMaxStudents     = findViewById(R.id.etMaxStudents);
         etTopics          = findViewById(R.id.etTopics);
         etZoomLink        = findViewById(R.id.etZoomLink);
+        etStartDate       = findViewById(R.id.etStartDate);
+        etStartDate       = findViewById(R.id.etStartDate);
         spinnerSubject    = findViewById(R.id.spinnerCourseSubject);
         spinnerLevel      = findViewById(R.id.spinnerCourseLevel);
         spinnerType       = findViewById(R.id.spinnerCourseType);
@@ -138,6 +174,7 @@ public class CreateCourseActivity extends AppCompatActivity {
 
         if (totalTokens < 1)  { etTotalTokens.setError("Enter total tokens");       return; }
 
+        // Determine thumbnail theme from subject
         int themeIdx = subjectThemeIndex(subject);
         String emoji     = SUBJECT_THEMES[themeIdx][0];
         String color     = SUBJECT_THEMES[themeIdx][1];
@@ -145,6 +182,7 @@ public class CreateCourseActivity extends AppCompatActivity {
 
         if (btnCreate != null) { btnCreate.setEnabled(false); btnCreate.setText("Creating..."); }
 
+        // Fetch tutor name
         db.collection("users").document(currentUser.getUid()).get()
                 .addOnSuccessListener(doc -> {
                     String tutorName = doc.getString("fullName");
@@ -167,9 +205,22 @@ public class CreateCourseActivity extends AppCompatActivity {
                     course.put("thumbnailColor",   color);
                     course.put("sessionType",      sessionTypeVal);
                     course.put("status",           "open");
+                    if (pickedYear > 0) {
+                        java.util.Calendar cal = java.util.Calendar.getInstance();
+                        cal.set(pickedYear, pickedMonth, pickedDay, 0, 0, 0);
+                        course.put("startDate",    cal.getTime());
+                        course.put("startDateStr", MONTHS[pickedMonth] + " " + pickedDay + ", " + pickedYear);
+                    }
+                    if (pickedYear > 0) {
+                        java.util.Calendar cal = java.util.Calendar.getInstance();
+                        cal.set(pickedYear, pickedMonth, pickedDay, 0, 0, 0);
+                        course.put("startDate", cal.getTime());
+                        course.put("startDateStr", MONTHS[pickedMonth] + " " + pickedDay + ", " + pickedYear);
+                    }
                     course.put("createdAt",        FieldValue.serverTimestamp());
                     if (!zoomLink.isEmpty()) course.put("zoomLink", zoomLink);
 
+                    // Topics: split by comma
                     if (!topics.isEmpty()) {
                         course.put("topics", Arrays.asList(topics.split("\\s*,\\s*")));
                     }

@@ -47,6 +47,45 @@
         </LinearLayout>
     </LinearLayout>
 
+
+    <!-- ── Search + Sort bar ── -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="16dp" android:paddingTop="12dp" android:paddingBottom="6dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp" android:layout_height="48dp"
+            android:layout_weight="1" android:layout_marginEnd="10dp"
+            app:cardCornerRadius="24dp" app:cardBackgroundColor="#FFFFFF"
+            app:cardElevation="2dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingHorizontal="14dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🔍  " android:textSize="15sp"/>
+                <EditText android:id="@+id/etSearchCourses"
+                    android:layout_width="0dp" android:layout_height="match_parent"
+                    android:layout_weight="1" android:background="@android:color/transparent"
+                    android:hint="Search courses..." android:textSize="13sp"
+                    android:textColor="#071A3D" android:imeOptions="actionSearch"
+                    android:inputType="text"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Spinner android:id="@+id/spinnerSort"
+            android:layout_width="wrap_content" android:layout_height="48dp"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+
+    <!-- ── Subject filter chips ── -->
+    <HorizontalScrollView android:id="@+id/hsvSubjectFilter"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:paddingHorizontal="16dp" android:paddingBottom="8dp">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+    </HorizontalScrollView>
+
     <!-- ── Course list ── -->
     <ScrollView
         android:layout_width="match_parent"

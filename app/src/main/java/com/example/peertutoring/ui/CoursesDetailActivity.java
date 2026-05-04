@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.peertutoring.R;
 import com.example.peertutoring.utils.EscrowManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.example.peertutoring.ui.MessagingActivity;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -51,6 +52,7 @@ public class CoursesDetailActivity extends AppCompatActivity {
     private String sessionType;
     private String zoomLink;
     private String courseStatus;
+    private boolean isTutorOwner = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,7 @@ public class CoursesDetailActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
+        // Load user role, then course
         if (currentUser != null) {
             db.collection("users").document(currentUser.getUid()).get()
                     .addOnSuccessListener(doc -> {
@@ -96,6 +99,10 @@ public class CoursesDetailActivity extends AppCompatActivity {
         tvEmoji          = findViewById(R.id.tvCourseDetailEmoji);
         btnEnroll        = findViewById(R.id.btnEnrollCourse);
         layoutZoom       = findViewById(R.id.layoutZoomLink);
+
+        // Ask Tutor button — opens a direct chat with the tutor
+        android.widget.Button btnAsk = findViewById(R.id.btnAskTutor);
+        if (btnAsk != null) btnAsk.setOnClickListener(v -> openChatWithTutor());
     }
 
     private void loadCourse() {
@@ -121,11 +128,15 @@ public class CoursesDetailActivity extends AppCompatActivity {
                     sessionType = doc.getString("sessionType");
                     zoomLink    = doc.getString("zoomLink");
                     courseStatus = doc.getString("status");
+                    isTutorOwner = currentUser != null
+                            && currentUser.getUid().equals(tutorUid);
+                    if (isTutorOwner) loadEnrolledStudents();
 
                     totalTokens   = tokens   != null ? tokens   : 0;
                     enrolledCount = enrolled != null ? enrolled : 0;
                     maxStudents   = max      != null ? max      : 10;
 
+                    // Populate views
                     if (tvEmoji   != null) tvEmoji.setText(emoji != null ? emoji : "📚");
                     if (tvTitle   != null) tvTitle.setText(title);
                     if (tvTutor   != null) tvTutor.setText("👤 " + (tutor != null ? tutor : ""));
@@ -142,6 +153,7 @@ public class CoursesDetailActivity extends AppCompatActivity {
                     if (topics != null && !topics.isEmpty() && tvTopics != null)
                         tvTopics.setText(String.join(" • ", topics));
 
+                    // Apply thumbnail color to header
                     if (color != null) {
                         View header = findViewById(R.id.courseDetailHeader);
                         if (header != null) {
@@ -155,6 +167,7 @@ public class CoursesDetailActivity extends AppCompatActivity {
                         }
                     }
 
+                    // Zoom link
                     if ("online".equals(sessionType) && zoomLink != null && !zoomLink.isEmpty()) {
                         if (layoutZoom != null) layoutZoom.setVisibility(View.VISIBLE);
                         if (tvZoomLink != null) {
@@ -179,12 +192,47 @@ public class CoursesDetailActivity extends AppCompatActivity {
         // Tutors see a delete/edit option for their own course
         if ("tutor".equals(userRole) && currentUser != null
                 && currentUser.getUid().equals(tutorUid)) {
-            btnEnroll.setText("Delete Course");
-            btnEnroll.setBackgroundColor(0xFFE53935);
-            btnEnroll.setOnClickListener(v -> confirmDelete());
+            // Tutor sees Edit + Delete
+            btnEnroll.setText("✏️ Edit Course");
+            btnEnroll.setBackgroundColor(0xFF8A2EFF);
+            btnEnroll.setOnClickListener(v -> showEditDialog());
+
+            // Add a separate delete button below
+            Button btnDelete = new Button(this);
+            btnDelete.setText("🗑 Delete Course");
+            btnDelete.setTextColor(0xFFFFFFFF);
+            btnDelete.setBackgroundColor(0xFFE53935);
+            android.widget.LinearLayout.LayoutParams dlp = new android.widget.LinearLayout.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            dlp.setMargins(0, dpC(8), 0, 0);
+            btnDelete.setLayoutParams(dlp);
+            btnDelete.setOnClickListener(v -> confirmDelete());
+            if (btnEnroll.getParent() instanceof android.widget.LinearLayout) {
+                android.widget.LinearLayout parent =
+                        (android.widget.LinearLayout) btnEnroll.getParent();
+                parent.addView(btnDelete);
+
+                // Complete course button (only if not already completed)
+                if (!"completed".equals(courseStatus)) {
+                    Button btnComplete = new Button(this);
+                    btnComplete.setText("✓ Mark Course Complete");
+                    btnComplete.setTextColor(0xFFFFFFFF);
+                    btnComplete.setBackgroundColor(0xFF089A3C);
+                    android.widget.LinearLayout.LayoutParams clp =
+                            new android.widget.LinearLayout.LayoutParams(
+                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+                    clp.setMargins(0, dpC(8), 0, 0);
+                    btnComplete.setLayoutParams(clp);
+                    btnComplete.setOnClickListener(v -> confirmMarkComplete());
+                    parent.addView(btnComplete);
+                }
+            }
             return;
         }
 
+        // Check if full
         if ("full".equals(courseStatus) || enrolledCount >= maxStudents) {
             btnEnroll.setText("Course Full");
             btnEnroll.setEnabled(false);
@@ -192,6 +240,7 @@ public class CoursesDetailActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if already enrolled
         if (currentUser != null) {
             db.collection("enrollments")
                     .whereEqualTo("courseId", courseId)
@@ -240,8 +289,10 @@ public class CoursesDetailActivity extends AppCompatActivity {
                         return;
                     }
 
+                    // Deduct tokens
                     EscrowManager.deductFromStudent(db, currentUser.getUid(), (int) totalTokens,
                             () -> {
+                                // Record enrollment
                                 Map<String, Object> enrollment = new HashMap<>();
                                 enrollment.put("courseId",    courseId);
                                 enrollment.put("studentUid",  currentUser.getUid());
@@ -254,9 +305,11 @@ public class CoursesDetailActivity extends AppCompatActivity {
 
                                 db.collection("enrollments").add(enrollment)
                                         .addOnSuccessListener(ref -> {
+                                            // Increment enrolled count
                                             db.collection("courses").document(courseId)
                                                     .update("enrolledCount",
                                                             FieldValue.increment(1));
+                                            // Mark full if needed
                                             if (enrolledCount + 1 >= maxStudents) {
                                                 db.collection("courses").document(courseId)
                                                         .update("status", "full");
@@ -293,6 +346,271 @@ public class CoursesDetailActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    /**
+     * Opens MessagingActivity with the course tutor.
+     * Student can ask questions about the course before enrolling.
+     */
+    private void openChatWithTutor() {
+        if (tutorUid == null || currentUser == null) {
+            Toast.makeText(this, "Cannot open chat.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Build stable convId same as TutorDetailActivity
+        String myUid = currentUser.getUid();
+        String convId = myUid.compareTo(tutorUid) < 0
+                ? myUid + "_" + tutorUid
+                : tutorUid + "_" + myUid;
+
+        // Get tutor name for chat title
+        String tutorDisplayName = tvTutor != null
+                ? tvTutor.getText().toString().replace("👤 ", "") : "Tutor";
+
+        Intent intent = new Intent(this, MessagingActivity.class);
+        intent.putExtra("requestId",       convId);
+        intent.putExtra("otherPersonName", tutorDisplayName);
+        intent.putExtra("otherUid",        tutorUid);
+        intent.putExtra("tutorUid",        tutorUid);
+        intent.putExtra("studentUid",      myUid);
+        startActivity(intent);
+    }
+
+
+    // ── Feature 4: Enrolled students (tutor view) ─────────────
+
+    private void loadEnrolledStudents() {
+        db.collection("enrollments")
+                .whereEqualTo("courseId", courseId)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    android.view.View section = findViewById(R.id.layoutEnrolledStudents);
+                    android.widget.LinearLayout list =
+                            findViewById(R.id.layoutStudentList);
+                    android.widget.TextView tvCount =
+                            findViewById(R.id.tvEnrolledCount);
+
+                    if (section != null) section.setVisibility(android.view.View.VISIBLE);
+                    if (tvCount != null)
+                        tvCount.setText(snap.size() + " student" + (snap.size() != 1 ? "s" : "") + " enrolled");
+
+                    if (list != null) {
+                        list.removeAllViews();
+                        for (com.google.firebase.firestore.DocumentSnapshot doc : snap.getDocuments()) {
+                            String name = doc.getString("studentName");
+                            java.util.Date enrolledAt = doc.getDate("enrolledAt");
+
+                            android.widget.LinearLayout row = new android.widget.LinearLayout(this);
+                            row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                            android.widget.LinearLayout.LayoutParams rp =
+                                    new android.widget.LinearLayout.LayoutParams(
+                                            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+                            rp.setMargins(0, 0, 0, dpC(10));
+                            row.setLayoutParams(rp);
+
+                            // Avatar
+                            com.google.android.material.card.MaterialCardView avatar =
+                                    new com.google.android.material.card.MaterialCardView(this);
+                            android.widget.LinearLayout.LayoutParams ap =
+                                    new android.widget.LinearLayout.LayoutParams(dpC(40), dpC(40));
+                            ap.setMarginEnd(dpC(12));
+                            avatar.setLayoutParams(ap);
+                            avatar.setRadius(dpC(20));
+                            avatar.setCardElevation(0);
+                            avatar.setCardBackgroundColor(0xFF8A2EFF);
+                            android.widget.TextView tvInit = new android.widget.TextView(this);
+                            String initials = (name != null && !name.isEmpty())
+                                    ? String.valueOf(name.charAt(0)).toUpperCase() : "?";
+                            tvInit.setText(initials);
+                            tvInit.setTextColor(0xFFFFFFFF);
+                            tvInit.setTextSize(16f);
+                            tvInit.setGravity(android.view.Gravity.CENTER);
+                            tvInit.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
+                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT));
+                            avatar.addView(tvInit);
+                            row.addView(avatar);
+
+                            // Name + date
+                            android.widget.LinearLayout info = new android.widget.LinearLayout(this);
+                            info.setOrientation(android.widget.LinearLayout.VERTICAL);
+                            info.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
+                                    0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+                            android.widget.TextView tvName = new android.widget.TextView(this);
+                            tvName.setText(name != null ? name : "Student");
+                            tvName.setTextColor(0xFF071A3D);
+                            tvName.setTextSize(14f);
+                            tvName.setTypeface(null, android.graphics.Typeface.BOLD);
+                            info.addView(tvName);
+                            if (enrolledAt != null) {
+                                android.widget.TextView tvDate = new android.widget.TextView(this);
+                                tvDate.setText("Enrolled: " + new java.text.SimpleDateFormat(
+                                        "MMM d", java.util.Locale.getDefault()).format(enrolledAt));
+                                tvDate.setTextColor(0xFF8B97A8);
+                                tvDate.setTextSize(12f);
+                                info.addView(tvDate);
+                            }
+                            row.addView(info);
+                            list.addView(row);
+                        }
+                        if (snap.isEmpty()) {
+                            android.widget.TextView empty = new android.widget.TextView(this);
+                            empty.setText("No students enrolled yet.");
+                            empty.setTextColor(0xFF8B97A8);
+                            empty.setTextSize(13f);
+                            list.addView(empty);
+                        }
+                    }
+                });
+    }
+
+
+    // ── Feature 9: Release escrow when course completes ───────
+
+    private void confirmMarkComplete() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Mark Course as Complete?")
+                .setMessage("This will:\n\n"
+                        + "• Release tokens to your account from all enrolled students\n"
+                        + "• Mark the course as completed\n"
+                        + "• Students will be prompted to leave a review\n\n"
+                        + "This cannot be undone.")
+                .setPositiveButton("Complete Course", (d, w) -> processCourseCompletion())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void processCourseCompletion() {
+        if (courseId == null || tutorUid == null) return;
+
+        // Get all enrollments for this course
+        db.collection("enrollments")
+                .whereEqualTo("courseId", courseId)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    if (snap.isEmpty()) {
+                        // No students enrolled — just mark complete
+                        db.collection("courses").document(courseId)
+                                .update("status", "completed");
+                        Toast.makeText(this, "Course marked as complete.", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+
+                    // Calculate total tokens to release
+                    long totalToRelease = 0;
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : snap.getDocuments()) {
+                        Long t = doc.getLong("tokens");
+                        if (t != null) totalToRelease += t;
+                    }
+                    final long release = totalToRelease;
+
+                    // Release tokens to tutor using atomic increment
+                    db.collection("users").document(tutorUid)
+                            .update("tokens",
+                                    com.google.firebase.firestore.FieldValue.increment(release),
+                                    "totalEarnings",
+                                    com.google.firebase.firestore.FieldValue.increment(release))
+                            .addOnSuccessListener(u -> {
+                                // Mark course completed
+                                db.collection("courses").document(courseId)
+                                        .update("status", "completed");
+                                // Update all enrollments
+                                for (com.google.firebase.firestore.DocumentSnapshot doc : snap.getDocuments()) {
+                                    doc.getReference().update("status", "completed");
+                                }
+                                // Log earnings
+                                java.util.Map<String, Object> earning = new java.util.HashMap<>();
+                                earning.put("tutorUid",    tutorUid);
+                                earning.put("courseId",    courseId);
+                                earning.put("tokens",      release);
+                                earning.put("type",        "course_completion");
+                                earning.put("createdAt",   com.google.firebase.firestore.FieldValue.serverTimestamp());
+                                db.collection("tutorEarnings").add(earning);
+
+                                Toast.makeText(this,
+                                        "✅ Course completed! " + release + " tokens released to your account.",
+                                        Toast.LENGTH_LONG).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Error: " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show());
+                });
+    }
+
+    // ── Feature 5: Edit course (tutor only) ───────────────────
+
+    private void showEditDialog() {
+        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
+        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+        layout.setPadding(dpC(20), dpC(12), dpC(20), dpC(8));
+
+        android.widget.TextView tvLabel = new android.widget.TextView(this);
+        tvLabel.setText("Update Zoom Link");
+        tvLabel.setTextColor(0xFF8B97A8);
+        tvLabel.setTextSize(12f);
+        tvLabel.setPadding(0, 0, 0, dpC(4));
+        layout.addView(tvLabel);
+
+        android.widget.EditText etZoom = new android.widget.EditText(this);
+        etZoom.setHint("https://zoom.us/j/...");
+        etZoom.setText(zoomLink != null ? zoomLink : "");
+        etZoom.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        etZoom.setTextSize(13f);
+        layout.addView(etZoom);
+
+        android.widget.TextView tvLabel2 = new android.widget.TextView(this);
+        tvLabel2.setText("Update Description");
+        tvLabel2.setTextColor(0xFF8B97A8);
+        tvLabel2.setTextSize(12f);
+        tvLabel2.setPadding(0, dpC(16), 0, dpC(4));
+        layout.addView(tvLabel2);
+
+        android.widget.EditText etDesc = new android.widget.EditText(this);
+        etDesc.setHint("Course description...");
+        String currentDesc = tvDescription != null
+                ? tvDescription.getText().toString() : "";
+        etDesc.setText(currentDesc);
+        etDesc.setMinLines(3);
+        etDesc.setGravity(android.view.Gravity.TOP);
+        etDesc.setInputType(android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        layout.addView(etDesc);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("✏️ Edit Course")
+                .setView(layout)
+                .setPositiveButton("Save", (d, w) -> {
+                    String newZoom = etZoom.getText().toString().trim();
+                    String newDesc = etDesc.getText().toString().trim();
+                    java.util.Map<String, Object> updates = new java.util.HashMap<>();
+                    if (!newZoom.isEmpty()) {
+                        updates.put("zoomLink", newZoom);
+                        zoomLink = newZoom;
+                    }
+                    if (!newDesc.isEmpty()) updates.put("description", newDesc);
+                    if (!updates.isEmpty()) {
+                        db.collection("courses").document(courseId).update(updates)
+                                .addOnSuccessListener(u -> {
+                                    Toast.makeText(this, "✅ Course updated!", Toast.LENGTH_SHORT).show();
+                                    if (tvDescription != null && !newDesc.isEmpty())
+                                        tvDescription.setText(newDesc);
+                                    if (!newZoom.isEmpty() && layoutZoom != null) {
+                                        layoutZoom.setVisibility(android.view.View.VISIBLE);
+                                        if (tvZoomLink != null) tvZoomLink.setText("🎥 " + newZoom);
+                                    }
+                                });
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private int dpC(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
     private int darken(int color, float factor) {

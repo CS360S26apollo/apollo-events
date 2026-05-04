@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F0F8">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_gradient"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="48dp"
+        android:paddingBottom="20dp"
+        android:paddingHorizontal="20dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="44dp" android:layout_height="44dp"
+            android:layout_marginEnd="12dp"
+            app:cardCornerRadius="22dp" app:cardBackgroundColor="#33FFFFFF"
+            app:cardElevation="0dp">
+            <ImageButton android:id="@+id/btnBack"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="#FFFFFF" android:contentDescription="Back"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="My Courses" android:textColor="#FFFFFF"
+                android:textSize="20sp" android:textStyle="bold"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Your enrolled crash courses"
+                android:textColor="#CCFFFFFF" android:textSize="12sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Course list -->
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout
+            android:id="@+id/layoutMyCourses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"/>
+    </ScrollView>
+
+</LinearLayout>

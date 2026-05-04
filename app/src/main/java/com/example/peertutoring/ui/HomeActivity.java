@@ -17,6 +17,10 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+/**
+ * Main landing screen of the application.
+ * Synchronized with the updated dashboard layout.
+ */
 public class HomeActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -41,14 +45,16 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        tvGreeting = findViewById(R.id.tvGreeting);
-        tvUserName = findViewById(R.id.tvUserName);
-        tvTokenBalance = findViewById(R.id.tvTokenBalance);
+        tvGreeting        = findViewById(R.id.tvGreeting);
+        tvUserName        = findViewById(R.id.tvUserName);
+        tvTokenBalance    = findViewById(R.id.tvTokenBalance);
         tvUpcomingSubject = findViewById(R.id.tvUpcomingSubject);
-        tvUpcomingTime = findViewById(R.id.tvUpcomingTime);
+        tvUpcomingTime    = findViewById(R.id.tvUpcomingTime);
     }
 
     private void setupClickListeners() {
+
+        // Search bar opens Browse Tutors
         View searchBar = findViewById(R.id.tvSearchHint);
         if (searchBar != null) {
             searchBar.setOnClickListener(v -> {
@@ -57,6 +63,7 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
+        // Browse Tutors card
         View cardBrowse = findViewById(R.id.cardBrowseTutors);
         if (cardBrowse != null) {
             cardBrowse.setOnClickListener(v -> {
@@ -65,6 +72,7 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
+        // My Sessions card
         View cardMyRequests = findViewById(R.id.cardMyRequests);
         if (cardMyRequests != null) {
             cardMyRequests.setOnClickListener(v -> {
@@ -73,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
-        // Crash Courses card — browse/enroll in tutor crash courses
+        // Crash Courses banner — browse all available courses
         View cardCourses = findViewById(R.id.cardCrashCourses);
         if (cardCourses != null) {
             cardCourses.setOnClickListener(v -> {
@@ -82,7 +90,16 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
-        // Token balance chip in header — tapping shows purchase screen (US-23)
+        // My Courses card — see courses the student is enrolled in
+        View cardMyCourses = findViewById(R.id.cardMyCourses);
+        if (cardMyCourses != null) {
+            cardMyCourses.setOnClickListener(v -> {
+                SoundManager.playClick(this);
+                startActivity(new Intent(this, MyCoursesActivity.class));
+            });
+        }
+
+        // Token balance chip — opens purchase screen (US-23)
         View chipTokenBalance = findViewById(R.id.chipTokenBalance);
         if (chipTokenBalance != null) {
             chipTokenBalance.setOnClickListener(v -> {
@@ -91,6 +108,7 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
+        // "Need more tokens?" CTA card
         View cardBuyTokens = findViewById(R.id.cardBuyTokens);
         if (cardBuyTokens != null) {
             cardBuyTokens.setOnClickListener(v -> {
@@ -99,12 +117,20 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
 
+        // View All Sessions
         View tvViewAll = findViewById(R.id.tvViewAll);
         if (tvViewAll != null) {
             tvViewAll.setOnClickListener(v -> {
                 SoundManager.playClick(this);
                 startActivity(new Intent(this, SessionRequestsActivity.class));
             });
+        }
+
+        // Upcoming session card — tappable
+        View cardUpcoming = findViewById(R.id.cardUpcomingSession);
+        if (cardUpcoming != null) {
+            cardUpcoming.setOnClickListener(v ->
+                    startActivity(new Intent(this, SessionRequestsActivity.class)));
         }
     }
 
@@ -113,6 +139,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         if (currentUser != null) {
             startUserListener();
+            loadUpcomingSession();
         }
     }
 
@@ -125,19 +152,21 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    // ── Live user data ────────────────────────────────────────
+
     private void startUserListener() {
         userListener = db.collection("users").document(currentUser.getUid())
                 .addSnapshotListener((doc, e) -> {
                     if (e != null || doc == null || !doc.exists()) return;
 
-                    String name = doc.getString("firstName");
+                    String name     = doc.getString("firstName");
                     String fullName = doc.getString("fullName");
-                    Long tokens = doc.getLong("tokens");
-                    String role = doc.getString("role");
+                    Long   tokens   = doc.getLong("tokens");
+                    String role     = doc.getString("role");
 
                     if (role != null) userRole = role;
 
-                    // Tutor landed here by mistake — redirect
+                    // Tutor landed here — redirect to their dashboard
                     if ("tutor".equals(role)) {
                         startActivity(new Intent(HomeActivity.this, TutorHomeActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -145,20 +174,64 @@ public class HomeActivity extends AppCompatActivity {
                         return;
                     }
 
-                    if (tvUserName != null) {
+                    if (tvUserName != null)
                         tvUserName.setText(fullName != null ? fullName : "User");
-                    }
 
                     if (tvTokenBalance != null) {
                         long bal = tokens != null ? tokens : 0;
-                        tvTokenBalance.setText(NumberFormat.getNumberInstance(Locale.getDefault()).format(bal));
+                        tvTokenBalance.setText(
+                                NumberFormat.getNumberInstance(Locale.getDefault()).format(bal));
                     }
 
-                    if (tvGreeting != null && name != null) {
-                        tvGreeting.setText("Welcome back, " + name + " 👋");
+                    if (tvGreeting != null && name != null && !name.isEmpty()) {
+                        int hour = java.util.Calendar.getInstance()
+                                .get(java.util.Calendar.HOUR_OF_DAY);
+                        String timeGreet = hour < 12 ? "Good morning"
+                                : hour < 17 ? "Good afternoon" : "Good evening";
+                        tvGreeting.setText(timeGreet + ", " + name + " 👋");
                     }
                 });
     }
+
+    // ── Upcoming session ──────────────────────────────────────
+
+    private void loadUpcomingSession() {
+        if (currentUser == null) return;
+        db.collection("sessionRequests")
+                .whereEqualTo("studentUid", currentUser.getUid())
+                .whereEqualTo("status", "booked")
+                .limit(5)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    if (snap.isEmpty()) return;
+                    java.util.Date now = new java.util.Date();
+                    com.google.firebase.firestore.DocumentSnapshot soonest = null;
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : snap.getDocuments()) {
+                        java.util.Date d = doc.getDate("sessionDate");
+                        if (d == null) d = doc.getDate("scheduledDate");
+                        if (d != null && d.after(now)) {
+                            if (soonest == null) soonest = doc;
+                        }
+                    }
+                    if (soonest == null) soonest = snap.getDocuments().get(0);
+                    String subject = soonest.getString("subject");
+                    String tutor   = soonest.getString("tutorName");
+                    java.util.Date date = soonest.getDate("sessionDate");
+                    if (date == null) date = soonest.getDate("scheduledDate");
+                    if (tvUpcomingSubject != null)
+                        tvUpcomingSubject.setText(
+                                (subject != null ? subject : "Session")
+                                        + (tutor != null ? " with " + tutor : ""));
+                    if (tvUpcomingTime != null && date != null)
+                        tvUpcomingTime.setText(
+                                new java.text.SimpleDateFormat("EEE, MMM d • h:mm a",
+                                        Locale.getDefault()).format(date));
+                    else if (tvUpcomingTime != null)
+                        tvUpcomingTime.setText("Tap to view details");
+                });
+    }
+
+    // ── Bottom nav ────────────────────────────────────────────
 
     private void setupBottomNav() {
         View navHome     = findViewById(R.id.navHome);
@@ -166,7 +239,7 @@ public class HomeActivity extends AppCompatActivity {
         View navMessages = findViewById(R.id.navMessages);
         View navProfile  = findViewById(R.id.navProfile);
 
-        if (navHome != null) navHome.setOnClickListener(v -> { /* Already here */ });
+        if (navHome != null) navHome.setOnClickListener(v -> { /* already here */ });
 
         if (navBrowse != null) {
             navBrowse.setOnClickListener(v -> {
@@ -180,7 +253,9 @@ public class HomeActivity extends AppCompatActivity {
             navMessages.setOnClickListener(v -> {
                 SoundManager.playClick(this);
                 startActivity(new Intent(this,
-                        "tutor".equals(userRole) ? TutorRequestsActivity.class : SessionRequestsActivity.class));
+                        "tutor".equals(userRole)
+                                ? TutorRequestsActivity.class
+                                : SessionRequestsActivity.class));
                 overridePendingTransition(0, 0);
             });
         }

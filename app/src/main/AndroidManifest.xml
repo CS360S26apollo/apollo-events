@@ -101,7 +101,8 @@
 
         <activity android:name=".ui.TutorChatListActivity"  android:exported="false"/>
         <activity android:name=".ui.CoursesActivity"          android:exported="false"/>
-        <activity android:name=".ui.CoursesDetailActivity"     android:exported="false"/>
+        <activity android:name=".ui.CoursesDetailActivity"   android:exported="false"/>
+        <activity android:name=".ui.MyCoursesActivity"         android:exported="false"/>
         <activity android:name=".ui.CreateCourseActivity"     android:exported="false"
             android:windowSoftInputMode="adjustResize"/>
 

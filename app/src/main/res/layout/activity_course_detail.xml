@@ -221,6 +221,42 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+
+            <!-- Enrolled Students (tutor only — shown via Java) -->
+            <LinearLayout android:id="@+id/layoutEnrolledStudents"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:visibility="gone"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="16dp">
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="👥 " android:textSize="18sp"/>
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Enrolled Students" android:textColor="#071A3D"
+                                android:textSize="15sp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvEnrolledCount"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="0 students" android:textColor="#8A2EFF"
+                                android:textSize="13sp" android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout android:id="@+id/layoutStudentList"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="vertical"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
             <!-- Zoom link (shown only when available) -->
             <LinearLayout android:id="@+id/layoutZoomLink"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -256,11 +292,12 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- ── Enroll button ── -->
+    <!-- ── Action buttons ── -->
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#FFFFFF" android:elevation="8dp" android:padding="16dp">
+        android:background="#FFFFFF" android:elevation="8dp"
+        android:orientation="vertical" android:padding="16dp">
 
+        <!-- Token cost row -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent" android:layout_height="wrap_content"
             app:cardCornerRadius="16dp" app:cardBackgroundColor="#F9F5FF"
@@ -280,12 +317,31 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <Button android:id="@+id/btnEnrollCourse"
-            android:layout_width="match_parent" android:layout_height="56dp"
-            android:text="Enroll Now" android:textAllCaps="false"
-            android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"
-            android:background="@drawable/bg_button_gradient"
-            app:backgroundTint="@null"/>
+        <!-- Two-button row: Ask Tutor + Enroll -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Ask Tutor — opens chat with the course tutor -->
+            <Button android:id="@+id/btnAskTutor"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1" android:layout_marginEnd="10dp"
+                android:text="💬 Ask Tutor" android:textAllCaps="false"
+                android:textColor="#8A2EFF" android:textSize="15sp" android:textStyle="bold"
+                android:background="@android:color/transparent"
+                app:backgroundTint="@null"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:strokeColor="#8A2EFF" app:strokeWidth="2dp"
+                app:cornerRadius="28dp"/>
+
+            <!-- Enroll -->
+            <Button android:id="@+id/btnEnrollCourse"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Enroll Now" android:textAllCaps="false"
+                android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold"
+                android:background="@drawable/bg_button_gradient"
+                app:backgroundTint="@null" app:cornerRadius="28dp"/>
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
