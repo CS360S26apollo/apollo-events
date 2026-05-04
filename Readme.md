@@ -1,7 +1,7 @@
 # Project Documentation
 
 ## TA Feedback <a name="ta-feedback"></a>
-> **Status:** No major feedback to be incorporated, received from TA on Phase 2. The project is proceeding according to the original design with minor refinements to the onboarding flow.
+> **Status:** No major feedback to be incorporated, received from TA on Phase 3. The project is proceeding according to the original design with minor refinements to the onboarding flow.
 
 - [Team Information](#team-information)
 - [Project Structure & Documentation](#project-structure)
@@ -13,6 +13,10 @@
   - [Meeting – Mar 26, 2026](#meeting--mar-26-2026)
   - [Meeting – Apr 01, 2026](#meeting--apr-01-2026)
   - [Meeting – Apr 05, 2026](#meeting--apr-05-2026)
+  - [Meeting – Apr 10, 2026](#meeting--apr-10-2026)
+  - [Meeting – Apr 17, 2026](#meeting--apr-17-2026)
+  - [Meeting – Apr 24, 2026](#meeting--apr-24-2026)
+  - [Meeting – May 2, 2026](#meeting--may-2-2026)
 
 - [UML Diagrams](#uml-diagrams)
 
@@ -22,13 +26,15 @@
   - [Product Backlog – Project Part 1](#product-backlog--project-part-1)
   - [Product Backlog – Project Part 2](#product-backlog--project-part-2)
   - [Product Backlog – Project Part 3](#product-backlog--project-part-3)
+  - [Product Backlog – Project Part 4](#product-backlog--project-part-4)
 
 - [Sprint Planning & Reviews](#sprint-planning-reviews)
 
 - [Wireframes](#wireframes)
   - [Wireframes – Project Part 1](#wireframes--project-part-1)
-  - [Wireframes – Project Part 2 (Figma)](#wireframes--project-part-2) 
+  - [Wireframes – Project Part 2 (Figma)](#wireframes--project-part-2)
   - [Wireframes – Project Part 3](#wireframes--project-part-3)
+  - [Wireframes – Project Part 4](#wireframes--project-part-4)
 
 ---
 
@@ -298,6 +304,158 @@ Sunday, April 05, 2026
 - [x] Close Sprint 3 by April 7, 2026
 ---
 
+## Meeting – Apr 10, 2026
+
+### Date
+Friday, April 10, 2026
+
+### Attendance
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
+
+---
+
+### Key Takeaways
+- Discussed Phase 3 progress and identified weaknesses in booking validation and UI flow.  
+- Planned overall strategy for Project Phase 4.  
+- Finalized Sprint 1 user stories and responsibilities.  
+
+---
+
+### Discussion Points
+- Review of previous phase  
+- Planning strategy for Phase 4  
+- Improvements to booking and filtering systems  
+- App fixes and optimization planning  
+
+---
+
+### Action Items
+- [x] Implement US 07 – Matching Preferences  
+- [x] Implement US 11 – Auto Expire Requests  
+- [x] Implement US 12 – Instant Booking  
+- [x] Fix UI and validation issues  
+- [x] Prepare Sprint 1 documentation  
+
+---
+
+## Meeting – Apr 17, 2026
+
+### Date
+Friday, April 17, 2026
+
+### Attendance
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
+
+---
+
+### Key Takeaways
+- Successfully completed Sprint 1 with US 07, US 11, and US 12.  
+- Discussed testing results and improvements.  
+- Planned Sprint 2 implementation.  
+
+---
+
+### Discussion Points
+- Sprint 1 review  
+- Improvements in booking workflow  
+- Sprint 2 planning  
+- General app fixes  
+
+---
+
+### Action Items
+- [x] Close Sprint 1  
+- [x] Implement US 14 – Prevent Double Booking  
+- [x] Implement US 15 – Reschedule/Cancel Sessions  
+- [x] Implement US 17 – Session Notes  
+- [x] Implement US 18 – Rate & Review  
+- [x] Add test cases and bug fixes  
+
+---
+
+## Meeting – Apr 24, 2026
+
+### Date
+Friday, April 24, 2026
+
+### Attendance
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
+
+---
+
+### Key Takeaways
+- Successfully completed Sprint 2 with US 14, US 15, and US 17, US 18.  
+- Planned Sprint 3 focused on wallet and escrow features.  
+- Improved app stability and navigation flow.  
+
+---
+
+### Discussion Points
+- Sprint 2 review  
+- Conflict handling and review system  
+- Financial feature planning  
+- Documentation updates  
+
+---
+
+### Action Items
+- [x] Close Sprint 2  
+- [x] Implement US 19 – Buy Tokens  
+- [x] Implement US 20 – Escrow Hold  
+- [x] Implement US 21 – Token Withdrawal  
+- [x] Improve transaction handling and app stability  
+
+---
+
+## Meeting – May 2, 2026
+
+### Date
+Saturday, May 2, 2026
+
+### Attendance
+- Ali Iqbal  
+- Abdullah Khaliq  
+- M. Abdullah Iqbal  
+- Hassan Fayyaz  
+- M. Zain ul Abideen  
+
+---
+
+### Key Takeaways
+- Successfully completed Sprint 3 with US 19, US 20, and US 21.  
+- Finalized Phase 4 implementation and testing.  
+- Completed app fixes and documentation updates.  
+
+---
+
+### Discussion Points
+- Sprint 3 review  
+- Wallet and escrow verification  
+- Final testing and bug fixing  
+- Submission preparation  
+
+---
+
+### Action Items
+- [x] Close Sprint 3  
+- [x] Complete final testing  
+- [x] Apply final UI fixes  
+- [x] Finalize documentation and UML  
+- [x] Prepare project submission  
+
+---
 
 ## UML Diagrams <a name="uml-diagrams"></a>
 
@@ -349,14 +507,12 @@ Sunday, April 05, 2026
 | **US 15** | Reschedule/Cancel: Change bookings within rules | Medium | Open | Medium | 5 | Final |
 | **US 16** | Session Lifecycle: Track from request to completion | High | Open | Medium | 5 | Half |
 | **US 17** | Session Notes: Tutor adds outcomes/action items | Low | Open | Low | 3 | Final |
-| **US 18** | Progress Tracking: View milestones/feedback trends | Medium | Open | Medium | 5 | Final |
-| **US 19** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final |
-| **US 20** | Verified Reviews: One review per completed session | Medium | Open | Medium | 5 | Final |
-| **US 21** | Report Reviews: Flag inappropriate/suspicious content | Low | Open | Low | 3 | Final |
-| **US 22** | Review Sorting: Sort by helpfulness/quality | Low | Open | Low | 3 | Final |
-| **US 23** | Buy Tokens: Purchase and load in-app wallet | High | Open | High | 8 | Final |
-| **US 24** | Escrow Hold: Tokens held until session completion | High | Open | High | 13 | Final |
-| **US 25** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final |
+| **US 18** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final |
+| **US 19** | Buy Tokens: Purchase and load in-app wallet | High | Open | High | 8 | Final |
+| **US 20** | Escrow Hold: Tokens held until session completion | High | Open | High | 13 | Final |
+| **US 21** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final |
+
+---
 
 ### Product Backlog – Project Part 3
 | ID | User Story | Priority | Status | Risk | Points | Checkpoint | Completed |
@@ -378,17 +534,37 @@ Sunday, April 05, 2026
 | **US 15** | Reschedule/Cancel: Change bookings within rules | Medium | Open | Medium | 5 | Final | — |
 | **US 16** | Session Lifecycle: Track from request to completion | High | **Done** | Medium | 5 | Half | ✅ Sprint 3 |
 | **US 17** | Session Notes: Tutor adds outcomes/action items | Low | Open | Low | 3 | Final | — |
-| **US 18** | Progress Tracking: View milestones/feedback trends | Medium | Open | Medium | 5 | Final | — |
-| **US 19** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final | — |
-| **US 20** | Verified Reviews: One review per completed session | Medium | Open | Medium | 5 | Final | — |
-| **US 21** | Report Reviews: Flag inappropriate/suspicious content | Low | Open | Low | 3 | Final | — |
-| **US 22** | Review Sorting: Sort by helpfulness/quality | Low | Open | Low | 3 | Final | — |
-| **US 23** | Buy Tokens: Purchase and load in-app wallet | High | Open | High | 8 | Final | — |
-| **US 24** | Escrow Hold: Tokens held until session completion | High | Open | High | 13 | Final | — |
-| **US 25** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final | — |
+| **US 18** | Rate & Review: Student provides feedback post-session | Low | Open | Low | 3 | Final | — |
+| **US 19** | Buy Tokens: Purchase and load in-app wallet | High | Open | High | 8 | Final | — |
+| **US 20** | Escrow Hold: Tokens held until session completion | High | Open | High | 13 | Final | — |
+| **US 21** | Token Withdrawal: Tutor requests payout of earnings | High | Open | High | 8 | Final | — |
 
-![Product Backlog - Phase 3](doc/Part3Backlog.png)
 ---
+
+### Product Backlog – Project Part 4
+| ID | User Story | Priority | Status | Risk | Points | Checkpoint | Completed |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| **US 01** | Student Signup: Create account with goals/subjects | High | **Done** | Low | 3 | Half | ✅ Sprint 1 |
+| **US 02** | Tutor Signup: Create profile with bio/rates | High | **Done** | Low | 3 | Half | ✅ Sprint 1 |
+| **US 03** | Edit Profile: Manage visibility and accuracy | Medium | **Done** | Low | 2 | Half | ✅ Sprint 1 |
+| **US 04** | Verification Badge: Upload ID for "Verified" status | Medium | **Done** | Medium | 5 | Half | ✅ Sprint 1 |
+| **US 05** | Recommended Tutors: View tutors based on needs | High | **Done** | High | 8 | Final | ✅ Sprint 2 |
+| **US 06** | Ranking Logic: System ranks by rating/responsiveness | High | **Done** | High | 13 | Final | ✅ Sprint 3 |
+| **US 07** | Matching Preferences: Filter by budget/level/type | Medium | **Done** | Medium | 5 | Final | ✅ Sprint 1 |
+| **US 08** | Request a Session: Student sends request with goals | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
+| **US 09** | Tutor Response: Accept, decline, or counter-offer | High | **Done** | Medium | 5 | Half | ✅ Sprint 2 |
+| **US 10** | Track Request Status: View pending/accepted status | Medium | **Done** | Low | 3 | Half | ✅ Sprint 2 |
+| **US 11** | Auto-Expire: System clears old pending requests | Low | **Done** | Medium | 3 | Final | ✅ Sprint 1 |
+| **US 12** | Instant Book: Book slots without tutor approval | Medium | **Done** | Medium | 5 | Final | ✅ Sprint 1 |
+| **US 13** | Tutor Availability: Set weekly hours/breaks | High | **Done** | Medium | 5 | Half | ✅ Sprint 3 |
+| **US 14** | Prevent Double-Booking: Detect scheduling conflicts | High | **Done** | High | 8 | Final | ✅ Sprint 2 |
+| **US 15** | Reschedule/Cancel: Change bookings within rules | Medium | **Done** | Medium | 5 | Final | ✅ Sprint 2 |
+| **US 16** | Session Lifecycle: Track from request to completion | High | **Done** | Medium | 5 | Half | ✅ Sprint 3 |
+| **US 17** | Session Notes: Tutor adds outcomes/action items | Low | **Done** | Low | 3 | Final | ✅ Sprint 2 |
+| **US 18** | Rate & Review: Student provides feedback post-session | Low | **Done** | Low | 3 | Final | ✅ Sprint 2 |
+| **US 19** | Buy Tokens: Purchase and load in-app wallet | High | **Done** | High | 8 | Final | ✅ Sprint 3 |
+| **US 20** | Escrow Hold: Tokens held until session completion | High | **Done** | High | 13 | Final | ✅ Sprint 3 |
+| **US 21** | Token Withdrawal: Tutor requests payout of earnings | High | **Done** | High | 8 | Final | ✅ Sprint 3 |
 
 ## Sprint Planning & Reviews <a name="sprint-planning-reviews"></a>
 
@@ -427,6 +603,47 @@ All four user stories were successfully implemented and closed within the sprint
 **Review:**  
 All three user stories were implemented and sprint closed on schedule. US 13 enables tutors to configure weekly availability including working hours, unavailable dates, and buffer time for accurate slot generation. US 16 introduces end-to-end session lifecycle tracking across all statuses (requested → booked → completed / cancelled / no-show). Javadoc was added to all Phase 3 classes, full Phase 3 documentation was completed, and the UML diagram was updated to reflect all sprint 3 additions. US 06 introduces Ranking Logic for tutors using subject match, tutor rating, responsiveness, and availability compatibility so that recommendations are relevant and fair.
 
+
+## Sprint Planning & Reviews <a name="sprint-planning-reviews"></a>
+
+### Sprint 1
+**Dates:** Apr 10, 2026 – Apr 17, 2026
+
+**Planned User Stories:**
+- US 07: Matching Preferences
+- US 11: Auto-Expire Requests
+- US 12: Instant Book
+
+**Review:**  
+All planned user stories were successfully implemented and tested within the sprint timeline. The matching system now supports preference-based filtering, inactive requests automatically expire after a defined duration, and students can instantly book available tutor slots. Test cases were added for all implemented user stories to ensure functionality and stability. Additional fixes were made to improve UI consistency and request validation.
+
+---
+
+### Sprint 2
+**Dates:** Apr 17, 2026 – Apr 24, 2026
+
+**Planned User Stories:**
+- US 14: Prevent Double-Booking
+- US 15: Reschedule/Cancel Sessions
+- US 17: Session Notes
+- US 18: Rate & Review
+
+**Review:**  
+All Sprint 2 user stories were completed successfully. The system now prevents conflicting bookings, supports rescheduling and cancellation workflows, allows tutors to add session notes, and enables students to submit tutor reviews after completed sessions. Test cases were implemented for all Sprint 2 features, and Javadoc documentation was expanded for newly added classes and methods. Additional bug fixes improved app navigation and Firestore synchronization.
+
+---
+
+### Sprint 3
+**Dates:** Apr 24, 2026 – May 02, 2026
+
+**Planned User Stories:**
+- US 19: Buy Tokens
+- US 20: Escrow Hold
+- US 21: Token Withdrawal
+
+**Review:**  
+Sprint 3 focused on implementing the financial lifecycle of the platform. Wallet balance management, escrow protection, and tutor withdrawal requests were completed and tested successfully. Test cases were added for all financial workflows, and final Javadoc documentation was completed across the project. Final application fixes, UML updates, and documentation refinements were completed, and the project was prepared for final submission.
+
 ## Wireframes
 
 ### Wireframes – Project Part 1
@@ -438,82 +655,104 @@ _Add screenshots or links to wireframe images._
 * **User Story 01: Student Registration**
   * [US 01 - figma screen](https://droop-area-07497312.figma.site/)
   * **Description:** This screen handles the initial student signup, goal setting, and subject selection.
+
 * **User Story 02: Tutor Profile Creation**
   * [US 02 - figma screen](https://upbeat-type-80148988.figma.site/)
   * **Description:** This screen allows tutors to set their rates, bio, and expertise levels.
+
 * **User Story 03: Profile Visibility Management**
   * [US 03 - figma screen](https://disc-nebula-91631195.figma.site/)
   * **Description:** Interface for users to toggle profile privacy and update account information.
+
 * **User Story 04: Identity Verification Badge**
   * [US 04 - figma screen](https://wool-tempo-72920640.figma.site/)
   * **Description:** Upload portal for official ID documents to earn the "Verified" badge for trust.
-  * #### **Phase 2: Discovery & Matching Logic**
+
+---
+
+#### **Phase 2: Discovery & Matching Logic**
+
 * **User Story 05: Tutor Recommendations**
   * [US 05 - figma screen](https://frame-theme-83662306.figma.site/)
   * **Description:** A personalized dashboard showing tutors that match the student's specific learning goals.
+
 * **User Story 06: Ranking Engine Display**
   * [US 06 - figma screen](https://type-azalea-96297080.figma.site/)
   * **Description:** Dynamic list of tutors sorted by rating, responsiveness, and subject relevance.
+
 * **User Story 07: Advanced Matching Filters**
   * [US 07 - figma screen](https://cell-apron-07825627.figma.site/)
   * **Description:** Detailed search interface to filter tutors by budget, language, and session level.
+
+---
+
 #### **Phase 3: Scheduling & The Booking Lifecycle**
+
 * **User Story 08: Session Request Submission**
   * [US 08 - figma screen](https://retina-step-47133644.figma.site/)
   * **Description:** Form for students to send session requests with specific topics and desired times.
+
 * **User Story 09: Tutor Request Management**
   * [US 09 - figma screen](https://snow-party-78133997.figma.site/)
   * **Description:** Tutor side dashboard to accept, decline, or suggest counter offers for session requests.
+
 * **User Story 10: Request Status Tracking**
   * [US 10 - figma screen](https://glass-ruler-66720644.figma.site/)
   * **Description:** Real time tracking of request states (Pending, Accepted, or Declined) for both users.
+
 * **User Story 11: Request Auto-Expiration**
   * [US 11 - figma screen](https://maroon-action-89075264.figma.site/)
-  * **Description:** Visual feedback/notification screen for requests that have expired due to inactivity.
+  * **Description:** Visual feedback screen for requests that have expired due to inactivity.
+
 * **User Story 12: Instant Booking Portal**
   * [US 12 - figma screen](https://whirl-mop-53947330.figma.site/)
-  * **Description:** Interface allowing students to book available slots immediately without tutor manual approval.
+  * **Description:** Interface allowing students to instantly book available tutor slots.
+
 * **User Story 13: Availability Calendar Manager**
   * [US 13 - figma screen](https://upload-self-32625465.figma.site/)
-  * **Description:** Calendar tool for tutors to set their working hours, breaks, and unavailable dates.
+  * **Description:** Calendar tool for tutors to set working hours and unavailable dates.
+
 * **User Story 14: Double-Booking Prevention**
   * [US 14 - figma screen](https://zebra-mentor-49868617.figma.site/)
-  * **Description:** Error state and conflict detection alerts that prevent scheduling sessions during busy slots.
+  * **Description:** Conflict detection alerts that prevent overlapping bookings.
+
 * **User Story 15: Cancellation & Rescheduling**
   * [US 15 - figma screen](https://pry-beige-43915897.figma.site/)
-  * **Description:** Management screen for modifying or cancelling bookings according to platform rules.
+  * **Description:** Management screen for modifying or cancelling bookings.
+
 * **User Story 16: Active Session Lifecycle**
   * [US 16 - figma screen](https://veggie-oats-68762995.figma.site/)
-  * **Description:** Monitoring screen for ongoing sessions, showing time remaining and status updates.
-#### **Phase 4: Feedback & Progress Monitoring**
+  * **Description:** Monitoring screen for ongoing sessions and status updates.
+
+---
+
+#### **Phase 4: Feedback & Session Notes**
+
 * **User Story 17: Post-Session Tutor Notes**
   * [US 17 - figma screen](https://import-done-88623223.figma.site/)
-  * **Description:** Form for tutors to record session outcomes, homework, and student feedback.
-* **User Story 18: Student Progress Dashboard**
-  * [US 18 - figma screen](https://wise-taupe-57553558.figma.site/)
-  * **Description:** Visual representation of student milestones, hours completed, and learning trends.
-* **User Story 19: Student Rating & Review**
-  * [US 19 - figma screen](https://koala-fix-35034417.figma.site/)
-  * **Description:** Interactive rating system for students to provide qualitative feedback on tutors.
-* **User Story 20: Verified Review Verification**
-  * [US 20 - figma screen](https://modify-kite-56382271.figma.site/)
-  * **Description:** Badge system ensuring only students who completed a session can post a review.
-* **User Story 21: Content Moderation & Reporting**
-  * [US 21 - figma screen](https://tower-bass-85856634.figma.site/)
-  * **Description:** Reporting tool to flag inappropriate reviews or suspicious profiles for admin review.
-* **User Story 22: Review Filtering & Sorting**
-  * [US 22 - figma screen](https://jazz-os-97737612.figma.site/)
-  * **Description:** Utility to sort reviews by most recent, highest rating, or community helpfulness.
+  * **Description:** Form for tutors to record session outcomes and student feedback.
+
+* **User Story 18: Student Rating & Review**
+  * [US 18 - figma screen](https://koala-fix-35034417.figma.site/)
+  * **Description:** Interactive rating system for students to provide tutor feedback.
+
+---
+
 #### **Phase 5: Financial Lifecycle & Token Security**
-* **User Story 23: Token Purchase & Wallet Balance**
-  * [US 23 - figma screen](https://photo-goat-19100088.figma.site/)
+
+* **User Story 19: Token Purchase & Wallet Balance**
+  * [US 19 - figma screen](https://photo-goat-19100088.figma.site/)
   * **Description:** Secure payment gateway for students to buy platform tokens and view balances.
-* **User Story 24: Escrow Hold & Payment Security**
-  * [US 24 - figma screen](https://cerise-base-50475017.figma.site/)
-  * **Description:** Notification screen showing tokens being held securely until session completion.
-* **User Story 25: Tutor Token Withdrawal**
-  * [US 25 - figma screen](https://grain-verify-90660343.figma.site/)
-  * **Description:** Professional portal for tutors to request payouts and convert tokens to currency.
+
+* **User Story 20: Escrow Hold & Payment Security**
+  * [US 20 - figma screen](https://cerise-base-50475017.figma.site/)
+  * **Description:** Notification screen showing tokens being securely held until session completion.
+
+* **User Story 21: Tutor Token Withdrawal**
+  * [US 21 - figma screen](https://grain-verify-90660343.figma.site/)
+  * **Description:** Portal for tutors to request payouts and withdraw earnings.
+
+---
     
 ## StoryBoard Diagram <a name="uml-diagrams"></a>
 
@@ -521,4 +760,7 @@ _Add screenshots or links to wireframe images._
 
 
 ### Wireframes – Project Part 3
+_Add screenshots or links to wireframe images._
+
+### Wireframes – Project Part 4
 _Add screenshots or links to wireframe images._
